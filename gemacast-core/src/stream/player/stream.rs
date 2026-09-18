@@ -55,10 +55,9 @@ impl OboeRenderer {
         if !self.is_playing.load(Ordering::Relaxed) {
             while self.packet_consumer.try_pop().is_some() {}
 
-            // 优化点：使用极微弱的正负交替信号 (+1e-5 / -1e-5)，人耳完全静音，
-            // 且能完美穿透手机硬件 DC 滤波器，打破小米 isLongTimeZeroData 60s 倒计时
+            // 改为 1e-4 (约 3 / 32767，转为整数是 3，人耳完全不可闻，打破系统检测)
             for (i, sample) in out.iter_mut().enumerate() {
-                *sample = if i % 2 == 0 { 1e-5 } else { -1e-5 };
+                *sample = if i % 2 == 0 { 1e-4 } else { -1e-4 };
             }
 
             if self.was_playing {
@@ -73,11 +72,11 @@ impl OboeRenderer {
             .ingest_packets(&mut self.packet_consumer);
         self.jitter_manager.fill_output(out, vol);
 
-        // 只有当 jitter buffer 饥饿导致整帧输出全是 0.0 时，才注入防休眠抖动
+        // 缓冲区饥饿时也使用 1e-4 填充
         let is_all_zero = out.iter().take(64).all(|&s| s == 0.0);
         if is_all_zero {
             for (i, sample) in out.iter_mut().enumerate() {
-                *sample = if i % 2 == 0 { 1e-5 } else { -1e-5 };
+                *sample = if i % 2 == 0 { 1e-4 } else { -1e-4 };
             }
         }
     }
@@ -140,8 +139,13 @@ impl AudioOutputCallback for OboeCallbackI16 {
         for chunk in out.chunks_mut(capacity) {
             let staging = &mut self.scratch[..chunk.len()];
             self.renderer.render(staging);
-            for (dst, src) in chunk.iter_mut().zip(staging.iter()) {
-                *dst = (src.clamp(-1.0, 1.0) * i16::MAX as f32) as i16;
+            for (i, (dst, src)) in chunk.iter_mut().zip(staging.iter()).enumerate() {
+                let mut val = (src.clamp(-1.0, 1.0) * i16::MAX as f32) as i16;
+                // 终极拦截：如果最终输出为 0，强制赋予 1 / -1，杜绝任何可能产生纯 0 的情况
+                if val == 0 {
+                    val = if i % 2 == 0 { 1 } else { -1 };
+                }
+                *dst = val;
             }
         }
 
@@ -246,8 +250,8 @@ pub fn build_playback_stream(
 
                 if !is_playing.load(Ordering::Relaxed) {
                     while packet_consumer.try_pop().is_some() {}
-                    for sample in data.iter_mut() {
-                        *sample = 0.0;
+                    for (i, sample) in data.iter_mut().enumerate() {
+                        *sample = if i % 2 == 0 { 1e-4 } else { -1e-4 };
                     }
                     if was_playing {
                         jitter_manager.reset();
@@ -323,8 +327,8 @@ pub fn build_cpal_fallback_stream(
 
                 if !is_playing.load(Ordering::Relaxed) {
                     while packet_consumer.try_pop().is_some() {}
-                    for sample in data.iter_mut() {
-                        *sample = 0.0;
+                    for (i, sample) in data.iter_mut().enumerate() {
+                        *sample = if i % 2 == 0 { 1e-4 } else { -1e-4 };
                     }
                     if was_playing {
                         jitter_manager.reset();
