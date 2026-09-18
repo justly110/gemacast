@@ -55,7 +55,8 @@ impl OboeRenderer {
         if !self.is_playing.load(Ordering::Relaxed) {
             while self.packet_consumer.try_pop().is_some() {}
             for sample in out.iter_mut() {
-                *sample = 0.0;
+                // Prevent Android AudioTrack 'isLongTimeZeroData' timeout (60s)
+                *sample = 1e-4;
             }
             if self.was_playing {
                 self.jitter_manager.reset();
@@ -68,6 +69,13 @@ impl OboeRenderer {
         self.jitter_manager
             .ingest_packets(&mut self.packet_consumer);
         self.jitter_manager.fill_output(out, vol);
+
+        // Also prevent timeout when playing but the jitter buffer is starved/empty
+        for sample in out.iter_mut() {
+            if *sample == 0.0 {
+                *sample = 1e-4;
+            }
+        }
     }
 }
 
