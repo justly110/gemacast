@@ -54,10 +54,13 @@ impl OboeRenderer {
 
         if !self.is_playing.load(Ordering::Relaxed) {
             while self.packet_consumer.try_pop().is_some() {}
-            for sample in out.iter_mut() {
-                // Prevent Android AudioTrack 'isLongTimeZeroData' timeout (60s)
-                *sample = 1e-4;
+
+            // 优化点：使用极微弱的正负交替信号 (+1e-5 / -1e-5)，人耳完全静音，
+            // 且能完美穿透手机硬件 DC 滤波器，打破小米 isLongTimeZeroData 60s 倒计时
+            for (i, sample) in out.iter_mut().enumerate() {
+                *sample = if i % 2 == 0 { 1e-5 } else { -1e-5 };
             }
+
             if self.was_playing {
                 self.jitter_manager.reset();
                 self.was_playing = false;
@@ -70,10 +73,11 @@ impl OboeRenderer {
             .ingest_packets(&mut self.packet_consumer);
         self.jitter_manager.fill_output(out, vol);
 
-        // Also prevent timeout when playing but the jitter buffer is starved/empty
-        for sample in out.iter_mut() {
-            if *sample == 0.0 {
-                *sample = 1e-4;
+        // 只有当 jitter buffer 饥饿导致整帧输出全是 0.0 时，才注入防休眠抖动
+        let is_all_zero = out.iter().take(64).all(|&s| s == 0.0);
+        if is_all_zero {
+            for (i, sample) in out.iter_mut().enumerate() {
+                *sample = if i % 2 == 0 { 1e-5 } else { -1e-5 };
             }
         }
     }
