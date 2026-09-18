@@ -1,7 +1,7 @@
 name: Build Android APK (Manual)
 
 on:
-  workflow_dispatch: # 支持网页上手动点击按钮一键编译
+  workflow_dispatch: # 支持网页端手动一键触发
   push:
     branches: [main]
     paths:
@@ -28,12 +28,10 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Setup Android SDK & NDK
-        uses: android-actions/setup-android@v3
-
+      # 直接使用 GitHub Runner 内置的 Android SDK，绕过易崩溃的第三方 Action
       - name: Install Pinned NDK & Build Tools
         run: |
-          echo "y" | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install "ndk;25.2.9519653" "cmake;3.22.1" "build-tools;34.0.0"
+          echo "y" | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install "ndk;25.2.9519653" "cmake;3.22.1" "build-tools;34.0.0" "platforms;android-36"
           echo "ANDROID_NDK_HOME=$ANDROID_HOME/ndk/25.2.9519653" >> $GITHUB_ENV
           echo "ANDROID_NDK_ROOT=$ANDROID_HOME/ndk/25.2.9519653" >> $GITHUB_ENV
           echo "NDK_HOME=$ANDROID_HOME/ndk/25.2.9519653" >> $GITHUB_ENV
@@ -48,7 +46,7 @@ jobs:
         uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ steps.rust.outputs.version }}
-          targets: aarch64-linux-android, armv7-linux-androideabi, i686-linux-android, x86_64-linux-android
+          targets: aarch64-linux-android, armv7-linux-androideabi, x86_64-linux-android
 
       - name: Cache Rust
         uses: Swatinem/rust-cache@v2
@@ -73,16 +71,27 @@ jobs:
           jq --arg v "$VERSION" '.version = $v' package.json > package.tmp.json && mv package.tmp.json package.json
           jq --arg v "$VERSION" '.version = $v' src-tauri/tauri.conf.json > src-tauri/tauri.conf.tmp && mv src-tauri/tauri.conf.tmp src-tauri/tauri.conf.json
 
-      - name: Build APK via Tauri
+      - name: Build Unsigned APK via Tauri
         working-directory: ./gemacast-mobile
         run: |
           bunx tauri android build --apk
 
+      # 生成临时签名密钥并自动给 APK 签名（手机安装必备，否则会提示解析包错误）
+      - name: Sign APK with Debug Keystore
+        run: |
+          keytool -genkey -v -keystore debug.keystore -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000 -storepass android -keypass android -dname "CN=Android Debug,O=Android,C=US"
+          
+          # 寻找刚才打包生成的未签名 APK
+          APK_FILE=$(find gemacast-mobile/src-tauri/gen/android/app/build/outputs/apk -name "*.apk" | head -n 1)
+          echo "Found APK: $APK_FILE"
+          
+          # 对齐并签名
+          $ANDROID_HOME/build-tools/34.0.0/apksigner sign --ks debug.keystore --ks-pass pass:android --key-pass pass:android --out gemacast-mobile-signed.apk "$APK_FILE"
+          echo "Signed successfully: gemacast-mobile-signed.apk"
+
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: gemacast-mobile-apk
-          path: |
-            gemacast-mobile/src-tauri/gen/android/app/build/outputs/apk/**/release/*.apk
-            gemacast-mobile/src-tauri/gen/android/app/build/outputs/apk/**/debug/*.apk
+          name: gemacast-mobile-signed
+          path: gemacast-mobile-signed.apk
           retention-days: 7
