@@ -27,7 +27,7 @@ export function HelpDialog({
               type="button"
               className="text-muted-foreground hover:text-foreground transition-colors"
               onClick={onClose}
-              aria-label="Close help"
+              aria-label="关闭帮助"
             >
               <X className="h-4 w-4" />
             </button>
@@ -65,7 +65,7 @@ export function useHelpDialog() {
         e.stopPropagation();
         openHelp(helpKey);
       }}
-      aria-label="Help"
+      aria-label="帮助"
     >
       ?
     </button>

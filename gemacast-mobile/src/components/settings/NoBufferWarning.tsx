@@ -16,14 +16,12 @@ export function NoBufferWarningDialog({
       ref={dialogRef}
       className="fixed inset-0 z-50 m-auto w-[min(90vw,360px)] rounded-lg border border-border bg-popover p-5 text-popover-foreground shadow-xl backdrop:bg-black/50"
     >
-      <h2 className="mb-2 text-base font-semibold text-foreground">No Buffer Mode</h2>
+      <h2 className="mb-2 text-base font-semibold text-foreground">无缓冲模式</h2>
       <p className="mb-4 text-sm text-muted-foreground">
-        This mode disables all audio buffering. Audio will play the instant it arrives, with zero
-        safety net.
+        此模式将禁用所有音频缓冲。音频数据到达手机后即刻播放，没有任何容错缓冲安全区。
       </p>
       <p className="mb-4 text-sm text-muted-foreground">
-        On unstable Wi-Fi connections, you may experience crackling, pops, or brief audio drops.
-        This mode is best suited for wired connections (USB/ADB) or very stable 5 GHz Wi-Fi.
+        在不稳定的 Wi-Fi 网络下，可能会遇到爆音、杂音或短暂声音丢失。此模式最适合有线连接 (USB/ADB) 或极其稳定的 5 GHz Wi-Fi。
       </p>
 
       <label className="mb-4 flex items-center gap-2 cursor-pointer select-none">
@@ -39,7 +37,7 @@ export function NoBufferWarningDialog({
             strokeWidth={4}
           />
         </div>
-        <span className="text-sm text-muted-foreground">Don&apos;t show this again</span>
+        <span className="text-sm text-muted-foreground">不再提示</span>
       </label>
 
       <div className="flex justify-end">
@@ -48,7 +46,7 @@ export function NoBufferWarningDialog({
           className="rounded-default bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90 active:opacity-80"
           onClick={handleOk}
         >
-          Ok
+          确定
         </button>
       </div>
     </dialog>

@@ -45,9 +45,7 @@ export function Toast({ toast }: { toast: ToastType }) {
             type="button"
             className="text-left text-xs font-semibold text-status-lost underline underline-offset-2 hover:opacity-80"
             onClick={() => dialogRef.current?.showModal()}
-          >
-            Click for details
-          </button>
+          > 点击查看详情 </button>
         )}
       </div>
 
@@ -55,7 +53,7 @@ export function Toast({ toast }: { toast: ToastType }) {
         type="button"
         className="shrink-0 -mr-2 flex items-center justify-center rounded-full p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
         onClick={() => dismiss(toast.id)}
-        aria-label="Close toast"
+        aria-label="关闭提示"
       >
         <X className="h-4 w-4" />
       </button>
@@ -68,7 +66,7 @@ export function Toast({ toast }: { toast: ToastType }) {
             if (e.target === dialogRef.current) dialogRef.current.close();
           }}
         >
-          <h3 className="mb-3 text-base font-semibold">Error Details</h3>
+          <h3 className="mb-3 text-base font-semibold">错误详情</h3>
           <div className="mb-4 min-h-25 max-h-[50vh] overflow-x-auto overflow-y-auto rounded-default bg-secondary p-3 text-xs whitespace-pre font-mono">
             {toast.fullLog}
           </div>
@@ -76,9 +74,7 @@ export function Toast({ toast }: { toast: ToastType }) {
             type="button"
             className="btn btn-secondary w-full"
             onClick={() => dialogRef.current?.close()}
-          >
-            Close
-          </button>
+          > 关闭 </button>
         </dialog>
       )}
     </div>

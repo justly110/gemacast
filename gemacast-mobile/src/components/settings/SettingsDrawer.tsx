@@ -68,7 +68,7 @@ export function SettingsDrawer() {
 
       <div
         role="dialog"
-        aria-label="Settings"
+        aria-label="设置"
         inert={!open}
         className={`
           fixed top-0 left-0 z-50 flex h-dvh w-screen flex-col overflow-hidden
@@ -89,7 +89,7 @@ export function SettingsDrawer() {
             type="button"
             className="text-muted-foreground transition-colors hover:text-foreground"
             onClick={handleClose}
-            aria-label="Close Settings"
+            aria-label="关闭设置"
           >
             <X className="h-5 w-5" />
           </button>
@@ -101,7 +101,7 @@ export function SettingsDrawer() {
 
           <div>
             <SectionLabel helpButton={help.renderHelpButton('buffer-preset')}>
-              Buffer Preset
+              缓冲预设
             </SectionLabel>
             <BufferPresetSelect />
             <CustomJitterConfig renderHelpButton={help.renderHelpButton} />
@@ -111,7 +111,7 @@ export function SettingsDrawer() {
 
           <div>
             <SectionLabel helpButton={help.renderHelpButton('audio-bitrate')}>
-              Audio Bitrate Quality
+              音频码率质量
             </SectionLabel>
             <BitrateSelect />
           </div>
@@ -119,7 +119,7 @@ export function SettingsDrawer() {
           <SectionDivider />
 
           <div>
-            <SectionLabel helpButton={help.renderHelpButton('audio-gain')}>Audio Gain</SectionLabel>
+            <SectionLabel helpButton={help.renderHelpButton('audio-gain')}>音频增益</SectionLabel>
             <GainSlider />
           </div>
 
@@ -129,11 +129,11 @@ export function SettingsDrawer() {
             <div className="flex items-center justify-between">
               <div>
                 <SectionLabel helpButton={help.renderHelpButton('exclusive-mode')}>
-                  Exclusive Mode
+                  独占模式
                 </SectionLabel>
                 {!exclusiveSupported && (
                   <p className="-mt-1 text-[0.7rem] text-muted-foreground/70">
-                    Not supported on this device
+                    当前设备不支持
                   </p>
                 )}
               </div>
@@ -143,11 +143,11 @@ export function SettingsDrawer() {
             <div className="flex items-center justify-between">
               <div>
                 <SectionLabel helpButton={help.renderHelpButton('match-pc-volume')}>
-                  Match Volume With PC
+                  与电脑音量同步
                 </SectionLabel>
                 {!volumeSyncSupported && (
                   <p className="-mt-1 text-[0.7rem] text-muted-foreground/70">
-                    Not reported by this PC
+                    当前电脑未上报音量
                   </p>
                 )}
               </div>
@@ -156,14 +156,14 @@ export function SettingsDrawer() {
 
             <div className="flex items-center justify-between">
               <SectionLabel helpButton={help.renderHelpButton('keep-screen-on')}>
-                Keep Screen On
+                保持屏幕常亮
               </SectionLabel>
               <KeepScreenOnToggle />
             </div>
 
             <div className="flex items-center justify-between">
               <SectionLabel helpButton={help.renderHelpButton('auto-reconnect')}>
-                Auto Reconnect
+                自动重新连接
               </SectionLabel>
               <AutoReconnectToggle />
             </div>
@@ -172,21 +172,20 @@ export function SettingsDrawer() {
           <SectionDivider />
 
           <div>
-            <SectionLabel helpButton={help.renderHelpButton('connection-mode')}>Mode</SectionLabel>
+            <SectionLabel helpButton={help.renderHelpButton('connection-mode')}>连接模式</SectionLabel>
             <ModeSelector />
           </div>
 
           <SectionDivider />
 
           <div>
-            <SectionLabel>Paired PCs</SectionLabel>
+            <SectionLabel>已配对电脑</SectionLabel>
             <ForgetPcIdentity />
           </div>
 
           <div className="flex flex-col gap-y-1 mt-4 border-t border-border pt-6 text-center justify-center">
             <p className="text-xs text-muted-foreground">
-              USB Tethering or 5 GHz Wi-Fi is recommended for lowest latency. Use{' '}
-              <em>Buffer Presets</em> above to trade off between delay and stability.
+              推荐使用 USB 网络共享或 5 GHz Wi-Fi 以获得最低延迟。可在上方通过 <em>缓冲预设</em> 在延迟与稳定性之间权衡。
             </p>
             <a
               className="mt-3 flex flex-row justify-center items-center text-[0.9rem] text-primary hover:underline gap-x-2"

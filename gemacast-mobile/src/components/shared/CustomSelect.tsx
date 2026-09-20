@@ -63,7 +63,7 @@ export function CustomSelect<T extends string = string>({
         aria-expanded={open}
         aria-haspopup="listbox"
       >
-        <span>{selectedOption?.label ?? 'Select...'}</span>
+        <span>{selectedOption?.label ?? '请选择…'}</span>
         <span
           className={`ml-2 text-xs text-muted-foreground transition-transform duration-200 ${
             open && !closing ? 'rotate-180' : ''

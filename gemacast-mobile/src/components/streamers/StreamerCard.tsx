@@ -66,7 +66,7 @@ export function StreamerCard({
         <div className="flex min-w-0 flex-col gap-0.5">
           <p className="truncate text-sm font-medium text-card-foreground">{streamer.deviceName}</p>
           <p className="truncate text-xs text-muted-foreground">
-            {isAdb ? 'ADB (USB Debug)' : streamer.addr.split(':')[0]}
+            {isAdb ? 'ADB (USB 调试)' : streamer.addr.split(':')[0]}
           </p>
         </div>
       </div>
@@ -86,12 +86,12 @@ export function StreamerCard({
             }
           `}
           onClick={onToggle}
-          aria-label={`${isConnected ? 'Disconnect from' : 'Connect to'} ${streamer.deviceName}`}
+          aria-label={`${isConnected ? '断开与' : '连接至'} ${streamer.deviceName}`}
         >
           <span
             className={`transition-opacity duration-150 ${showLoading ? 'opacity-0' : 'opacity-100'}`}
           >
-            {isConnected ? 'Disconnect' : 'Connect'}
+            {isConnected ? '断开' : '连接'}
           </span>
           {showLoading && (
             <span className="absolute left-1/2 top-1/2 inline-block h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 animate-spin rounded-full border-[1.5px] border-current border-t-transparent" />
@@ -105,7 +105,7 @@ export function StreamerCard({
             className="inline-flex shrink-0 items-center justify-center rounded-[calc(var(--radius-default)-0.2rem)] border border-border bg-background p-1.5 text-foreground transition-all duration-150 hover:bg-primary hover:text-primary-foreground"
             onClick={onPlayPause}
             aria-label={
-              isPlaying ? `Pause ${streamer.deviceName}` : `Resume ${streamer.deviceName}`
+              isPlaying ? `暂停 ${streamer.deviceName}` : `继续 ${streamer.deviceName}`
             }
           >
             {isPlaying ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}

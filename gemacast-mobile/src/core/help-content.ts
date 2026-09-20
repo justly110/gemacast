@@ -1,44 +1,42 @@
 export const HELP_CONTENT: Record<string, { title: string; body: string }> = {
   'buffer-preset': {
-    title: 'Buffer Preset',
-    body: 'The app holds a little audio back before playing it, so anything arriving late still makes it in time. A bigger buffer means fewer drop-outs but more delay.\n\n• Auto — picks the size for you. Recommended.\n• Wired — the smallest. For USB or ADB only.\n• Fast to Resilient — fixed sizes, small to large. Pick a bigger one if the audio breaks up.\n• Custom — your own size, saved by name.\n• No Buffer — plays instantly. Only works on a perfect connection.\n\nEach preset shows its size next to the name.',
+    title: '缓冲预设 (Buffer Preset)',
+    body: '应用会在播放前留出少许音频缓冲，以确保稍有延迟到达的数据包仍能顺利播放。缓冲区越大，爆音和断续越少，但延迟也会相应增加。\n\n• 自动 (Auto) — 自动探测并匹配最佳缓冲大小。推荐使用。\n• 有线模式 (Wired) — 最小缓冲。仅适用于 USB 网络共享或 ADB 调试线缆。\n• 极速到高抗抖动 (Fast 至 Resilient) — 固定缓冲大小，由小到大。若声音偶有断续卡顿，请选择更大的预设。\n• 自定义 (Custom) — 手动指定缓冲大小并保存专属名称。\n• 无缓冲 (No Buffer) — 音频到达即刻播放，零容错空间。仅适用于极佳的网络环境。\n\n每个预设名称旁均标注了其对应的毫秒大小。',
   },
-
   'static-depth': {
-    title: 'Buffer Depth',
-    body: 'The exact buffer size to use. Automatic sizing is turned off.\n\nA bigger number means fewer drop-outs but more delay.\n\nAnything from 0 to 5000 milliseconds.',
+    title: '缓冲深度 (Buffer Depth)',
+    body: '使用的确切固定缓冲区大小（自动调整将关闭）。\n\n数值越大，断续卡顿越少，但声音延迟越大。\n\n设置范围为 0 到 5000 毫秒。',
   },
-
   'exclusive-mode': {
-    title: 'Exclusive Mode',
-    body: "Sends audio straight to your phone's audio hardware instead of through Android, which saves a little delay.\n\nOther apps may lose their sound while Gemacast is playing. Some phones do not allow this at all — the toggle is greyed out if yours does not.\n\nLeave it off unless you want the lowest delay possible.",
+    title: '独占模式 (Exclusive Mode)',
+    body: '绕过 Android 系统音频混音器，将音频直接发送至手机底层音频硬件，从而节省极微小的处理延迟。\n\n在 Gemacast 播放期间，手机上的其他应用程序可能无法发声。部分手机系统完全不支持此模式（若不支持，该开关将置灰）。\n\n除非您追求极致的超低延迟，否则建议保持关闭。',
   },
   'keep-screen-on': {
-    title: 'Keep Screen On',
-    body: 'Keeps the screen awake while the app is open.\n\nAudio keeps playing with the screen off, but some phones slow the app down (throttle the wifi chip & performance) once it is off, which can cause stuttering and buffer bloat. Turn this on if that happens. Otherwise leave it off and save battery.',
+    title: '保持屏幕常亮 (Keep Screen On)',
+    body: '在应用在前台运行时保持屏幕常亮不休眠。\n\n虽然熄屏后音频仍会在后台播放，但部分手机熄屏后会激进降频 Wi-Fi 芯片和 CPU 性能，从而造成音频断续和缓冲积压。若发生此情况，请开启此开关。正常情况下建议保持关闭以节省电量。',
   },
   'auto-reconnect': {
-    title: 'Auto Reconnect',
-    body: 'When you open the app again, it connects to the last PC you used, on the same connection mode. If you are on a different mode, it switches for you.\n\nIf the connection drops while you are in the app, it reconnects by itself.\n\nIt will not reconnect if:\n• You disconnected it yourself\n• The PC disconnected you from its system tray\n• That connection mode is not available — cable unplugged, or Wi-Fi off',
+    title: '自动重新连接 (Auto Reconnect)',
+    body: '重新打开应用时，会自动连接到上次使用的电脑及相同的连接模式。如果当前处于不同模式，会自动为您切换。\n\n在应用使用过程中如果连接中断，也会自动尝试重连。\n\n在以下情况将不会自动重连：\n• 您主动手动点击了断开连接\n• 电脑端在托盘菜单中主动断开了您的手机\n• 该连接模式不可用 — 例如数据线已拔出或 Wi-Fi 已关闭',
   },
   'connection-mode': {
-    title: 'Connection Mode',
-    body: 'How the phone reaches the PC, listed from lowest delay to highest.\n\n• USB — cable, with USB tethering turned on in Android settings. Lowest delay and the steadiest.\n• ADB — cable, using Android developer mode. About as good as USB. Use it if your phone cannot tether.\n• Wi-Fi — no cable, but more delay. 5 GHz is usually fine; 2.4 GHz stutters the most.\n\nThe app works out which one you are on and sets the buffer to match. The badge on the main screen shows what it found.',
+    title: '连接模式 (Connection Mode)',
+    body: '手机与电脑通信的方式，按延迟由低到高排列：\n\n• USB — 数据线连接，需在安卓系统设置中开启“USB 网络共享”。延迟最低且最为平稳。\n• ADB — 数据线连接，利用安卓开发者 USB 调试模式转发。性能接近 USB，适合手机不支持网络共享时使用。\n• Wi-Fi — 无需线缆，但延迟相对略高。5 GHz 频段通常表现良好；2.4 GHz 干扰较多容易卡顿。\n\n应用会自动识别当前所处模式并调整缓冲。主界面顶部的标签会显示检测到的网络链路。',
   },
   'audio-bitrate': {
-    title: 'Audio Bitrate Quality',
-    body: 'How much the audio is compressed before being sent.\n\nHigher is not always better. 128 Kbps is recommended and is hard to tell apart from the original. Go lower if the audio keeps breaking up. Uncompressed sends the audio with no compression at all and needs a fast, steady connection.',
+    title: '音频码率质量 (Audio Bitrate Quality)',
+    body: '音频在传输前被压缩的码率大小。\n\n码率并非越高越好。推荐使用 128 Kbps，在音质上与无损原声几乎无异。若音频持续断音卡顿，请调低码率。未压缩 (Uncompressed PCM) 完全不压缩音频，但需要极高且极其稳定的网络带宽。',
   },
   'audio-gain': {
-    title: 'Audio Gain',
-    body: "Volume for the stream, on top of your phone's volume buttons.\n\n• 0 dB — no change. Leave it here unless the volume is wrong.\n• Above 0 — louder, for quiet PC audio. Too much makes it distort.\n• Below 0 — quieter, for loud PC audio.\n\nYour setting is remembered for next time.",
+    title: '音频增益 (Audio Gain)',
+    body: '音频流的音量增益（独立叠加于手机自身音量键之上）。\n\n• 0 dB — 保持原声不改变。音量正常时保持此项即可。\n• 大于 0 — 放大音量，适合电脑端音源较小的情况。增益过大可能导致破音失真。\n• 小于 0 — 降低音量，适合电脑端音源过大的情况。\n\n设置会自动记住供下次使用。',
   },
   'match-pc-volume': {
-    title: 'Match Volume With PC',
-    body: "Follows your PC's own volume slider, so turning the PC down turns the phone down too.\n\nIt stacks on top of Audio Gain and your phone's volume buttons, so a PC at half volume plays at half of whatever you already set. Muting the PC silences the stream.\n\nThe PC tells the phone whenever its volume moves. The toggle is greyed out if the PC cannot report it.",
+    title: '与电脑音量同步 (Match Volume With PC)',
+    body: '跟随电脑自身的系统音量滑块调节：在电脑上调低音量时，手机端也会同步降低音量。\n\n它叠加在“音频增益”和手机物理音量键之上，如果电脑处于半音量，则手机播放您已设定音量的一半。若电脑静音，手机端流媒体也会静音。\n\n电脑音量变动时会主动通知手机。若当前电脑无法汇报音量，开关将置灰。',
   },
   'connection-metrics': {
-    title: 'Connection Metrics',
-    body: 'Live numbers, all in milliseconds.\n\n• Buffer — how much audio is waiting to play. This is the biggest part of your delay, and it grows on its own when the connection gets worse.\n• RTT — how long a message takes to reach the PC and come back. Shows n/a on ADB, which is normal.\n• Jitter — how unevenly the audio is arriving. This is what causes stuttering, and what pushes Buffer up.\n\nIf Buffer is high on the Auto preset, move closer to the router, switch to 5 GHz, or use a cable.',
+    title: '连接指标 (Connection Metrics)',
+    body: '实时连接状态数据（单位均为毫秒 ms）：\n\n• 缓冲 (Buffer) — 正在等待播放的音频缓冲时长。这是延迟的主要组成部分，网络恶化时会自动增大。\n• 往返延迟 (RTT) — 数据包从手机到电脑往返所需的时间。在 ADB 模式下显示为 n/a，属正常现象。\n• 抖动 (Jitter) — 音频数据包到达间隔的不均匀程度。抖动是导致卡顿并迫使缓冲区扩大的主要原因。\n\n如果在“自动”预设下缓冲居高不下，建议靠近路由器、切换至 5 GHz Wi-Fi 或改用数据线连接。',
   },
 };

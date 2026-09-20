@@ -40,8 +40,8 @@ export function BufferPresetSelect() {
       label: sp.name,
       description:
         sp.config.staticTargetMs != null
-          ? `Fixed ${sp.config.staticTargetMs}ms buffer`
-          : 'User-saved preset',
+          ? `固定 ${sp.config.staticTargetMs}ms 缓冲区`
+          : '用户保存的预设',
     }));
 
     return [...builtIn, ...saved];

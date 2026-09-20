@@ -21,7 +21,7 @@ export function ThemeToggle() {
         hover:bg-accent active:scale-90
       `}
       onClick={toggle}
-      aria-label="Toggle Theme"
+      aria-label="切换主题"
     >
       {/* Sun icon */}
       <Sun

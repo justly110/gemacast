@@ -21,11 +21,11 @@ function getLinkMeta(link: NetworkLink): LinkMeta {
     case 'wifi2_4Ghz':
       return { icon: Wifi, label: '2.4 GHz', color: 'text-accent-yellow' };
     case 'ethernet':
-      return { icon: Globe, label: 'Ethernet', color: 'text-accent-aqua' };
+      return { icon: Globe, label: '以太网', color: 'text-accent-aqua' };
     case 'wifiUnknown':
       return { icon: Wifi, label: 'WiFi', color: 'text-muted-foreground' };
     default:
-      return { icon: HelpCircle, label: 'Unknown', color: 'text-muted-foreground/60' };
+      return { icon: HelpCircle, label: '未知网络', color: 'text-muted-foreground/60' };
   }
 }
 
@@ -63,8 +63,8 @@ export function NetworkLinkBadge({ withLeadingSeparator = false }: NetworkLinkBa
       className="inline-flex min-w-0 items-center gap-1.5 text-[11px] font-medium"
       title={
         isSymmetric
-          ? `Link: ${effective.label}`
-          : `Phone ${phone.label}, PC ${pc.label} — buffer tuned for ${effective.label}`
+          ? `网络链路: ${effective.label}`
+          : `手机端 ${phone.label}，电脑端 ${pc.label} — 缓冲针对 ${effective.label} 优化`
       }
     >
       {withLeadingSeparator && (

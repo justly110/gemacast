@@ -31,7 +31,7 @@ function AppInner() {
             .catch(console.warn);
         } else {
           lastBackPressed = now;
-          useToastStore.getState().show('info', 'Press back again to exit');
+          useToastStore.getState().show('info', '再次点击返回键退出应用');
           window.history.pushState(null, '', '#root');
         }
       }
@@ -57,7 +57,7 @@ export function App() {
 
   useEffect(() => {
     (async () => {
-      let bestName = 'Unknown Android Device';
+      let bestName = '未知安卓设备';
       let finalUuid = getOrCreateDeviceId();
       let localIp = '127.0.0.1';
 

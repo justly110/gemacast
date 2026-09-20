@@ -68,9 +68,9 @@ export function GainSlider() {
             type="button"
             className="text-xs text-muted-foreground hover:text-foreground transition-colors"
             onClick={handleReset}
-            aria-label="Reset gain to 0 dB"
+            aria-label="重置增益为 0 dB"
           >
-            Reset
+            重置
           </button>
         )}
       </div>
@@ -90,7 +90,7 @@ export function GainSlider() {
           value={localDb}
           onChange={handleChange}
           className="gain-slider w-full"
-          aria-label="Audio gain"
+          aria-label="音频增益"
           style={
             {
               '--fill-pos': `calc(10px + (100% - 20px) * ${offset})`,

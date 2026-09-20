@@ -10,8 +10,8 @@ export type PresetDefinition = {
 export const JITTER_PRESETS: PresetDefinition[] = [
   {
     id: 'auto',
-    name: 'Auto',
-    description: 'Automatically discovers the lowest stable latency for your connection.',
+    name: '自动',
+    description: '自动探测并维持当前网络连接下的最低稳定延迟。',
     config: {
       minDepthMs: 25,
       comfortCapMs: 1000,
@@ -21,8 +21,8 @@ export const JITTER_PRESETS: PresetDefinition[] = [
   },
   {
     id: 'wired',
-    name: 'Wired',
-    description: 'USB, ADB, or near-perfect connections. Fixed 10ms buffer.',
+    name: '有线模式',
+    description: 'USB、ADB 或近乎完美的连接。固定 10ms 缓冲区。',
     config: {
       minDepthMs: 0,
       comfortCapMs: 10,
@@ -33,8 +33,8 @@ export const JITTER_PRESETS: PresetDefinition[] = [
   },
   {
     id: 'fast',
-    name: 'Fast',
-    description: 'Good 5 GHz Wi-Fi. Fixed 30ms buffer — very low latency.',
+    name: '极速',
+    description: '优质 5 GHz Wi-Fi。固定 30ms 缓冲区 — 超低延迟。',
     config: {
       minDepthMs: 10,
       comfortCapMs: 30,
@@ -45,8 +45,8 @@ export const JITTER_PRESETS: PresetDefinition[] = [
   },
   {
     id: 'balanced',
-    name: 'Balanced',
-    description: 'Most Wi-Fi networks. Fixed 60ms buffer — reliable with low latency.',
+    name: '均衡',
+    description: '适用于大多数 Wi-Fi 网络。固定 60ms 缓冲区 — 兼顾低延迟与稳定性。',
     config: {
       minDepthMs: 20,
       comfortCapMs: 60,
@@ -57,8 +57,8 @@ export const JITTER_PRESETS: PresetDefinition[] = [
   },
   {
     id: 'stable',
-    name: 'Stable',
-    description: 'Congested or 2.4 GHz Wi-Fi. Fixed 120ms buffer — extra headroom.',
+    name: '稳定',
+    description: '拥挤网络或 2.4 GHz Wi-Fi。固定 120ms 缓冲区 — 提供更大容错空间。',
     config: {
       minDepthMs: 40,
       comfortCapMs: 120,
@@ -69,8 +69,8 @@ export const JITTER_PRESETS: PresetDefinition[] = [
   },
   {
     id: 'resilient',
-    name: 'Resilient',
-    description: 'Bad Wi-Fi or screen-off streaming. Fixed 200ms buffer — maximum stability.',
+    name: '高抗抖动',
+    description: '较差的 Wi-Fi 或熄屏播放。固定 200ms 缓冲区 — 最大限度防断续。',
     config: {
       minDepthMs: 60,
       comfortCapMs: 200,
@@ -81,14 +81,14 @@ export const JITTER_PRESETS: PresetDefinition[] = [
   },
   {
     id: 'custom',
-    name: 'Custom',
-    description: 'Define your own buffer parameters manually.',
+    name: '自定义',
+    description: '手动配置专属的缓冲参数。',
     config: null,
   },
   {
     id: 'nobuffer',
-    name: 'No Buffer',
-    description: 'Play audio instantly as it arrives. Zero buffering, zero safety net.',
+    name: '无缓冲',
+    description: '音频到达即刻播放。零缓冲，零安全容错空间。',
     config: {
       minDepthMs: 0,
       comfortCapMs: 0,

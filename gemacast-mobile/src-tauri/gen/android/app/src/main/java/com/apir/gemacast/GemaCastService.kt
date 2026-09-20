@@ -212,10 +212,10 @@ class GemaCastService : Service() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 CHANNEL_ID,
-                "Gemacast Background Audio",
+                "Gemacast 后台音频",
                 NotificationManager.IMPORTANCE_LOW
             ).apply {
-                description = "Keeps audio streaming active in the background"
+                description = "保持后台音频流处于活跃状态"
                 setShowBadge(false)
             }
             (getSystemService(NOTIFICATION_SERVICE) as NotificationManager)
@@ -268,20 +268,20 @@ class GemaCastService : Service() {
         val disconnectIntent = Intent(this, GemaCastService::class.java).apply { action = "USER_DISCONNECT" }
         val pendingDisconnectIntent = PendingIntent.getService(this, 1, disconnectIntent, PendingIntent.FLAG_IMMUTABLE)
 
-        val playPauseActionText = if (isPlayingState) "Stop" else "Resume"
+        val playPauseActionText = if (isPlayingState) "暂停" else "继续"
         val playPauseIcon = if (isPlayingState) android.R.drawable.ic_media_pause else android.R.drawable.ic_media_play
         val playPauseIntent = Intent(this, GemaCastService::class.java).apply { action = if (isPlayingState) "USER_PAUSE" else "USER_RESUME" }
         val pendingPlayPauseIntent = PendingIntent.getService(this, 4, playPauseIntent, PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
 
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle("Gemacast")
-            .setContentText(if (isPlayingState) "Streaming audio from PC…" else "Paused")
+            .setContentText(if (isPlayingState) "正在接收电脑音频…" else "已暂停")
             .setSmallIcon(R.mipmap.ic_launcher)
             .setContentIntent(pendingOpenIntent)
             .setOngoing(isPlayingState)
             .setSilent(true)
             .addAction(playPauseIcon, playPauseActionText, pendingPlayPauseIntent)
-            .addAction(android.R.drawable.ic_menu_close_clear_cancel, "Disconnect", pendingDisconnectIntent)
+            .addAction(android.R.drawable.ic_menu_close_clear_cancel, "断开连接", pendingDisconnectIntent)
             .setStyle(
                 MediaStyle()
                     .setShowActionsInCompactView(0, 1)

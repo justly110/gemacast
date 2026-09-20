@@ -11,8 +11,8 @@ export function Toggle({
   id,
   checked,
   onChange,
-  labelOn = 'ON',
-  labelOff = 'OFF',
+  labelOn = '开',
+  labelOff = '关',
   disabled = false,
 }: ToggleProps) {
   return (

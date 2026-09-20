@@ -38,10 +38,10 @@ export function getPairingDecisionWarning(error: unknown): string | null {
   const message = error instanceof Error ? error.message : String(error);
   const normalized = message.toLowerCase();
   if (normalized.includes('pairing_cancelled') || normalized.includes('cancelled on the phone')) {
-    return 'Pairing cancelled';
+    return '配对已取消';
   }
   if (normalized.includes('pairing_rejected') || normalized.includes('rejected on the pc')) {
-    return 'Pairing request rejected on the PC';
+    return '电脑端拒绝了配对请求';
   }
   return null;
 }
@@ -203,7 +203,7 @@ export async function disconnect(
       });
       store.getState().resetMetrics();
       tauriBridge.notifyStreamingStopped().catch(console.warn);
-      if (forgetStreamer) toast.getState().show('info', 'Disconnected');
+      if (forgetStreamer) toast.getState().show('info', '已断开连接');
       return ok(true);
     }
 
@@ -352,13 +352,13 @@ export async function handleLinkRecovered(deviceRegistered: boolean | null) {
   if (!streamer) return;
 
   console.info(`Link recovered (PC still had us registered: ${deviceRegistered})`);
-  toast.getState().show('info', 'Connection restored — reconnecting');
+  toast.getState().show('info', '网络连接已恢复 — 正在重新连接');
   await connectToStreamer(streamer);
 }
 
 export function handleLinkRecoveryGaveUp() {
   store.getState().patch({ connectionHealth: 'lost' });
-  toast.getState().show('warning', 'Could not reach the PC — tap to reconnect');
+  toast.getState().show('warning', '无法连接到电脑 — 点击以重试');
 }
 
 export async function changeAudioSource(source: AudioSource): Promise<Result<true, GemaCastError>> {
@@ -374,7 +374,7 @@ export async function changeAudioSource(source: AudioSource): Promise<Result<tru
       source,
     });
     store.getState().setCurrentAudioSource(source);
-    toast.getState().show('success', 'Audio source changed');
+    toast.getState().show('success', '音源已切换');
     return ok(true);
   } catch (e) {
     console.error('Failed to change source:', e);

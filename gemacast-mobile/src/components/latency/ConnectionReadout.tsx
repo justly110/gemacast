@@ -13,7 +13,7 @@ export function ConnectionReadout() {
 
   return (
     <section
-      aria-label="Connection status"
+      aria-label="连接状态"
       className="surface-card rounded-lg px-4 py-3 animate-[fade-in_200ms_ease-out]"
     >
       <div className="flex items-center gap-1.5">

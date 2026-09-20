@@ -4,21 +4,21 @@ import { CustomSelect, type SelectOption } from '../shared/CustomSelect';
 import type { BitratePreset } from '../../core/types';
 
 const BITRATE_OPTIONS: SelectOption<BitratePreset>[] = [
-  { value: '10', label: '10 Kbps', description: 'Voice quality' },
-  { value: '24', label: '24 Kbps', description: 'Low quality' },
-  { value: '32', label: '32 Kbps', description: 'FM Radio quality' },
-  { value: '64', label: '64 Kbps', description: 'Standard quality' },
-  { value: '96', label: '96 Kbps', description: 'Good quality' },
-  { value: '128', label: '128 Kbps — High (Default)', description: 'Recommended for most use' },
-  { value: '256', label: '256 Kbps', description: 'Very high quality' },
-  { value: '450', label: '450 Kbps', description: 'Near-transparent' },
-  { value: '512', label: '512 Kbps', description: 'Maximum Opus quality' },
+  { value: '10', label: '10 Kbps', description: '语音通话音质' },
+  { value: '24', label: '24 Kbps', description: '低音质' },
+  { value: '32', label: '32 Kbps', description: '调频广播音质' },
+  { value: '64', label: '64 Kbps', description: '标准音质' },
+  { value: '96', label: '96 Kbps', description: '良好音质' },
+  { value: '128', label: '128 Kbps — 高 (默认)', description: '推荐绝大多数场景使用' },
+  { value: '256', label: '256 Kbps', description: '极高音质' },
+  { value: '450', label: '450 Kbps', description: '接近无损 (近透明)' },
+  { value: '512', label: '512 Kbps', description: 'Opus 最高音质' },
   {
     value: 'raw',
-    label: 'Uncompressed PCM',
-    description: 'Zero latency codec path — very high bandwidth',
+    label: '未压缩 PCM',
+    description: '零编解码延迟 — 占用极高网络带宽',
   },
-  { value: 'custom', label: 'Custom Bitrate', description: 'Specify your own bitrate value' },
+  { value: 'custom', label: '自定义码率', description: '手动指定码率数值' },
 ];
 
 export function BitrateSelect() {
@@ -40,7 +40,7 @@ export function BitrateSelect() {
     if (opt.value === 'custom' && settings.bitratePreset === 'custom') {
       return {
         ...opt,
-        label: `Custom - ${settings.customBitrateKbps} Kbps`,
+        label: `自定义 - ${settings.customBitrateKbps} Kbps`,
       };
     }
     return opt;
@@ -78,7 +78,7 @@ export function BitrateSelect() {
               Number(customKbps) > 512
             }
           >
-            Apply
+            应用
           </button>
         </div>
       )}

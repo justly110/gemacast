@@ -37,7 +37,7 @@ export function useManualConnect() {
     const forbidden =
       first === 0 || first === 127 || first >= 224 || (first === 255 && last === 255);
     if (!validIpv4 || forbidden) {
-      useToastStore.getState().show('warning', 'Invalid IP address');
+      useToastStore.getState().show('warning', '无效的 IP 地址');
       return;
     }
 
@@ -50,7 +50,7 @@ export function useManualConnect() {
         deviceId: useAppStore.getState().deviceInfo.deviceId,
       });
     } catch {
-      useToastStore.getState().show('warning', 'This IP is unreachable');
+      useToastStore.getState().show('warning', '此 IP 地址无法访问');
       useAppStore.getState().patch({ isLoading: false });
       return;
     } finally {
@@ -59,7 +59,7 @@ export function useManualConnect() {
 
     const manualStreamer = {
       deviceId: `manual-${trimmed}`,
-      deviceName: `Manual: ${trimmed}`,
+      deviceName: `手动连接: ${trimmed}`,
       addr: `${trimmed}:${Ports.DISCOVERY}`,
       isOffline: false,
     };
@@ -79,7 +79,7 @@ export function useManualConnect() {
     } else if (previousStreamer) {
       const restored = await connectToStreamer(previousStreamer);
       if (!restored.ok) {
-        useToastStore.getState().show('warning', 'Could not restore the previous stream');
+        useToastStore.getState().show('warning', '无法恢复先前的音频流');
       }
     }
   };

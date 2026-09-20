@@ -17,15 +17,15 @@ export type ErrorOptions = {
 };
 
 export const ERROR_MESSAGES: Record<ErrorCode, string> = {
-  [ErrorCode.NETWORK_FAILED_TO_START_DISCOVERY]: 'Failed to start UDP discovery',
-  [ErrorCode.NETWORK_FAILED_TO_STOP_DISCOVERY]: 'Failed to stop UDP discovery',
-  [ErrorCode.NETWORK_DISCOVERY_ERROR]: 'An error occurred during background discovery',
-  [ErrorCode.NETWORK_STREAMER_TIMEOUT]: 'PC streamer stopped responding — attempting to reconnect',
-  [ErrorCode.NETWORK_RECONNECT_FAILED]: 'Could not reconnect after several attempts',
-  [ErrorCode.AUDIO_PLAYBACK_ERROR]: 'An error occurred during audio playback',
-  [ErrorCode.AUDIO_FAILED_TO_START_PLAYBACK]: 'Failed to start audio playback',
-  [ErrorCode.AUDIO_FAILED_TO_STOP_PLAYBACK]: 'Failed to stop audio playback',
-  [ErrorCode.UNKNOWN_ERROR]: 'An unknown error occurred',
+  [ErrorCode.NETWORK_FAILED_TO_START_DISCOVERY]: '启动 UDP 设备发现失败',
+  [ErrorCode.NETWORK_FAILED_TO_STOP_DISCOVERY]: '停止 UDP 设备发现失败',
+  [ErrorCode.NETWORK_DISCOVERY_ERROR]: '后台设备发现过程中发生错误',
+  [ErrorCode.NETWORK_STREAMER_TIMEOUT]: '电脑端推流已无响应 — 正在尝试重连',
+  [ErrorCode.NETWORK_RECONNECT_FAILED]: '多次尝试后仍无法恢复连接',
+  [ErrorCode.AUDIO_PLAYBACK_ERROR]: '音频播放过程中发生错误',
+  [ErrorCode.AUDIO_FAILED_TO_START_PLAYBACK]: '启动音频播放失败',
+  [ErrorCode.AUDIO_FAILED_TO_STOP_PLAYBACK]: '停止音频播放失败',
+  [ErrorCode.UNKNOWN_ERROR]: '发生未知错误',
 };
 
 export class GemaCastError extends Error {

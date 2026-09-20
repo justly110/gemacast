@@ -28,7 +28,7 @@ export function ManualConnect() {
         aria-expanded={expanded}
         aria-controls="manual-connect-form"
       >
-        Connect by Address
+        通过 IP 地址连接
         <ChevronDown
           className={`
             h-4 w-4 text-muted-foreground transition-transform duration-200
@@ -70,9 +70,7 @@ export function ManualConnect() {
             >
               <span
                 className={`transition-opacity duration-150 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
-              >
-                Connect
-              </span>
+              > 连接 </span>
               {isLoading && (
                 <span className="absolute left-1/2 top-1/2 inline-block h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 animate-spin rounded-full border-[1.5px] border-current border-t-transparent" />
               )}

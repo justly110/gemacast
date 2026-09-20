@@ -34,11 +34,11 @@ export function validateJitterConfig(config: JitterConfig): ValidationResult {
       config.staticTargetMs < 0 ||
       config.staticTargetMs > 5000
     ) {
-      errors.push({ field: 'staticTargetMs', message: 'Must be a whole number from 0 to 5000' });
+      errors.push({ field: 'staticTargetMs', message: '必须为 0 到 5000 之间的整数' });
     }
   } else {
     // staticTargetMs is required for custom presets
-    errors.push({ field: 'staticTargetMs', message: 'Buffer depth is required' });
+    errors.push({ field: 'staticTargetMs', message: '缓冲深度不能为空' });
   }
 
   return { valid: errors.length === 0, errors };

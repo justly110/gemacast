@@ -12,8 +12,8 @@ type ConfirmDialogProps = {
 export function ConfirmDialog({
   open,
   message,
-  confirmLabel = 'Delete',
-  cancelLabel = 'Cancel',
+  confirmLabel = '确定',
+  cancelLabel = '取消',
   onConfirm,
   onCancel,
 }: ConfirmDialogProps) {

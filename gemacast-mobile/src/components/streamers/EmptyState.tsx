@@ -8,10 +8,10 @@ export function EmptyState() {
         <Radio className="relative h-6 w-6 text-primary" />
       </div>
       <p className="m-0 text-[0.9rem] font-semibold text-foreground">
-        Scanning for PCs on your network…
+        正在扫描局域网中的电脑…
       </p>
       <p className="m-0 text-[0.8rem] text-muted-foreground">
-        Make sure Gemacast is running on your PC
+        请确保电脑端已运行 Gemacast
       </p>
     </div>
   );

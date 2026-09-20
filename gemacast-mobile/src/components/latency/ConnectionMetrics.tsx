@@ -60,19 +60,19 @@ export function ConnectionMetrics({ renderHelpButton }: ConnectionMetricsProps =
     <div
       className="mt-2.5 grid w-full grid-cols-[auto_1fr_auto_1fr_auto_1fr_auto] items-stretch animate-[fade-in_200ms_ease-out]"
       role="group"
-      aria-label="Connection metrics"
+      aria-label="连接指标"
     >
       <span aria-hidden="true" className={renderHelpButton ? 'w-6' : ''} />
-      <Metric label="Buffer" ms={metrics.bufferMs} tone={bandColor(metrics.bufferMs, 30, 60)} />
+      <Metric label="缓冲" ms={metrics.bufferMs} tone={bandColor(metrics.bufferMs, 30, 60)} />
       <span aria-hidden="true" className="readout-divider w-px self-stretch" />
       <Metric
-        label="RTT"
+        label="往返延迟"
         ms={metrics.networkRttMs}
         tone={bandColor(metrics.networkRttMs, 30, 80)}
         placeholder={isLoopback ? 'n/a' : undefined}
       />
       <span aria-hidden="true" className="readout-divider w-px self-stretch" />
-      <Metric label="Jitter" ms={metrics.jitterMs} tone={bandColor(metrics.jitterMs, 10, 25)} />
+      <Metric label="抖动" ms={metrics.jitterMs} tone={bandColor(metrics.jitterMs, 10, 25)} />
       <span className="self-center">{renderHelpButton?.('connection-metrics')}</span>
     </div>
   );

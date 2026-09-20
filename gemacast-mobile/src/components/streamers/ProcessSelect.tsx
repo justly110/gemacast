@@ -83,7 +83,7 @@ export function ProcessSelect({
   return (
     <div className="relative flex w-full items-center gap-2 pt-2">
       <span className="shrink-0 whitespace-nowrap text-[0.7rem] font-medium text-muted-foreground">
-        Source:
+        音源:
       </span>
       <button
         type="button"
@@ -114,7 +114,7 @@ export function ProcessSelect({
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search process..."
+              placeholder="搜索进程..."
               className={`
                 flex-1 min-w-0 border-none bg-card px-[0.6rem] py-2 text-[0.7rem]
                 text-card-foreground outline-none focus:bg-secondary
@@ -122,7 +122,7 @@ export function ProcessSelect({
             />
             <button
               type="button"
-              aria-label="Refresh process list"
+              aria-label="刷新进程列表"
               className={`
                 flex w-8 shrink-0 items-center justify-center border-l border-border bg-transparent
                 p-[0.4rem] text-muted-foreground transition-colors hover:bg-accent hover:text-card-foreground
@@ -169,7 +169,7 @@ export function ProcessSelect({
                 `}
                 onClick={() => handleSelect({ type: 'desktop' })}
               >
-                <Monitor className="mr-2 h-3.5 w-3.5 shrink-0" /> Desktop Audio
+                <Monitor className="mr-2 h-3.5 w-3.5 shrink-0" /> 桌面整机音频
               </button>
             )}
 
@@ -183,7 +183,7 @@ export function ProcessSelect({
                   disabled={isProcessDisabled}
                   title={
                     isProcessDisabled
-                      ? 'Per-process capture is not available on this PC'
+                      ? '此电脑不支持按进程捕获音频'
                       : undefined
                   }
                   className={`
@@ -217,12 +217,12 @@ export function ProcessSelect({
 
             {!supportsProcessCapture && filteredProcesses.length > 0 && (
               <p className="border-t border-border px-3 py-2 text-[10px] text-muted-foreground">
-                Per-process capture unavailable on this PC
+                此电脑不支持按进程捕获音频
               </p>
             )}
 
             {filteredProcesses.length === 0 && (
-              <p className="px-3 py-2 text-xs text-muted-foreground">No processes found</p>
+              <p className="px-3 py-2 text-xs text-muted-foreground">未找到相关进程</p>
             )}
           </div>
         </div>

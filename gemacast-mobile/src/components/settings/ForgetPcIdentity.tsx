@@ -41,7 +41,7 @@ export function ForgetPcIdentity() {
       })
       .catch((error) => {
         if (active) {
-          useToastStore.getState().show('error', 'Could not load paired PCs', String(error));
+          useToastStore.getState().show('error', '无法加载已配对电脑', String(error));
         }
       });
     return () => {
@@ -80,21 +80,21 @@ export function ForgetPcIdentity() {
         useAppStore.getState().patch({ lastConnectedStreamer: null, lastConnectedMode: null });
       }
       setPairedPcIds((ids) => ids.filter((id) => id !== pc.deviceId));
-      useToastStore.getState().show('success', `Forgot ${pc.deviceName}`);
+      useToastStore.getState().show('success', `已清除 ${pc.deviceName} 的配对信息`);
     } catch (error) {
-      useToastStore.getState().show('error', `Could not forget ${pc.deviceName}`, String(error));
+      useToastStore.getState().show('error', `清除 ${pc.deviceName} 配对信息失败`, String(error));
     }
   };
 
   return (
     <div className="space-y-2">
       {streamers.length === 0 ? (
-        <p className="text-xs text-muted-foreground/70">No paired PCs</p>
+        <p className="text-xs text-muted-foreground/70">暂无已配对电脑</p>
       ) : (
         <div
           className="max-h-40 space-y-1 overflow-y-auto overscroll-contain pr-1"
           role="list"
-          aria-label="Paired PCs"
+          aria-label="已配对电脑"
         >
           {streamers.map((streamer) => (
             <div
@@ -108,8 +108,8 @@ export function ForgetPcIdentity() {
               <button
                 type="button"
                 className="shrink-0 rounded-default p-2 text-muted-foreground hover:bg-muted hover:text-status-lost"
-                title={`Forget ${streamer.deviceName}`}
-                aria-label={`Forget ${streamer.deviceName}`}
+                title={`清除 ${streamer.deviceName} 的配对`}
+                aria-label={`清除 ${streamer.deviceName} 的配对`}
                 onClick={() => setSelectedPc(streamer)}
               >
                 <Trash2 className="h-4 w-4" />
@@ -127,7 +127,8 @@ export function ForgetPcIdentity() {
               : `Forget the saved identity for ${selectedPc.deviceName}?`
             : ''
         }
-        confirmLabel="Forget"
+        confirmLabel="清除配对"
+        cancelLabel="取消"
         onConfirm={forget}
         onCancel={() => setSelectedPc(null)}
       />

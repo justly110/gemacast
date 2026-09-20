@@ -17,15 +17,15 @@ const STATUS_CONFIG: Record<
   Status,
   { tone: string; label: string } | ((attempts: number) => { tone: string; label: string })
 > = {
-  [Status.Idle]: { tone: 'text-muted-foreground', label: 'Idle' },
-  [Status.Listening]: { tone: 'text-muted-foreground', label: 'Scanning…' },
-  [Status.Connecting]: { tone: 'text-muted-foreground', label: 'Connecting…' },
-  [Status.Connected]: { tone: 'text-foreground', label: 'Connected' },
-  [Status.Playing]: { tone: 'text-foreground', label: 'Playing' },
-  [Status.Paused]: { tone: 'text-status-warn', label: 'Paused' },
+  [Status.Idle]: { tone: 'text-muted-foreground', label: '空闲' },
+  [Status.Listening]: { tone: 'text-muted-foreground', label: '扫描中…' },
+  [Status.Connecting]: { tone: 'text-muted-foreground', label: '连接中…' },
+  [Status.Connected]: { tone: 'text-foreground', label: '已连接' },
+  [Status.Playing]: { tone: 'text-foreground', label: '播放中' },
+  [Status.Paused]: { tone: 'text-status-warn', label: '已暂停' },
   [Status.Reconnecting]: (attempts) => ({
     tone: 'text-status-warn',
-    label: attempts > 0 ? `Reconnecting (${attempts}/5)…` : 'Reconnecting…',
+    label: attempts > 0 ? `重连中 (${attempts}/5)…` : '重连中…',
   }),
 };
 

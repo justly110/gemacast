@@ -62,13 +62,13 @@ export function CustomJitterConfig({ renderHelpButton }: CustomJitterConfigProps
   const { config } = editor;
 
   const FIELD_LABELS: Record<string, string> = {
-    staticTargetMs: 'Buffer Depth',
+    staticTargetMs: '缓冲深度',
   };
 
   return (
     <div className="mt-3 flex flex-col gap-3 rounded-lg border border-border bg-background p-4 animate-[fade-in_200ms_ease-out]">
       <div className="flex items-center justify-between">
-        <span className="flex items-center text-[0.9rem] text-foreground">Preset Name</span>
+        <span className="flex items-center text-[0.9rem] text-foreground">预设名称</span>
         <input
           type="text"
           value={editor.presetName}
@@ -77,8 +77,8 @@ export function CustomJitterConfig({ renderHelpButton }: CustomJitterConfigProps
             editor.isEditingSaved
               ? editor.config && editor.savedMatchIndex >= 0
                 ? undefined
-                : 'My Preset'
-              : 'My Preset'
+                : '我的预设'
+              : '我的预设'
           }
           maxLength={30}
           className="w-35 rounded-sm border border-border bg-background px-2 py-1 text-left text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary"
@@ -87,7 +87,7 @@ export function CustomJitterConfig({ renderHelpButton }: CustomJitterConfigProps
 
       <div className="flex items-center justify-between">
         <span className="flex items-center text-[0.9rem] text-foreground">
-          Buffer Depth
+          缓冲深度
           {renderHelpButton('static-depth')}
         </span>
         <div className="flex items-center justify-end">
@@ -119,7 +119,7 @@ export function CustomJitterConfig({ renderHelpButton }: CustomJitterConfigProps
           onClick={editor.handleSave}
           disabled={!editor.canSave}
         >
-          Save Preset
+          保存预设
         </button>
       </div>
 
@@ -129,15 +129,15 @@ export function CustomJitterConfig({ renderHelpButton }: CustomJitterConfigProps
           className="mt-1 w-full rounded-md border border-destructive bg-destructive/10 p-[0.6rem] text-[0.9rem] font-semibold text-destructive transition-colors hover:bg-destructive hover:text-destructive-foreground active:opacity-80"
           onClick={editor.requestDelete}
         >
-          Delete Preset
+          删除预设
         </button>
       )}
 
       <ConfirmDialog
         open={editor.isDeleteDialogOpen}
-        message="Are you sure you want to delete this saved preset? This action cannot be undone."
-        confirmLabel="Delete"
-        cancelLabel="Cancel"
+        message="确定要删除此保存的预设吗？此操作无法撤销。"
+        confirmLabel="删除"
+        cancelLabel="取消"
         onConfirm={editor.confirmDelete}
         onCancel={editor.cancelDelete}
       />
