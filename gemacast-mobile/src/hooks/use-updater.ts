@@ -20,6 +20,9 @@ export function useUpdater() {
   // --- Actions ---
 
   const checkForUpdates = async () => {
+    // 直接标记为已是最新版本，不执行任何联网检查
+    useUpdateStore.getState().setUpToDate();
+    return;
     useUpdateStore.getState().setChecking();
 
     // Don't delete the downloaded APK while the user is in the install flow.
@@ -48,8 +51,9 @@ export function useUpdater() {
 
   // --- Check for updates on first mount (only if still idle) ---
   useEffect(() => {
-    if (store.status !== 'idle') return;
-    checkForUpdates();
+    // 注释掉，启动时不再自动检查更新
+    // if (store.status !== 'idle') return;
+    // checkForUpdates();
     // eslint-disable-next-line react-hooks/exhaustive-deps -- only on first mount when idle
   }, []);
 
