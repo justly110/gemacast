@@ -18,7 +18,7 @@ use oboe::{
 use ringbuf::traits::*;
 use std::sync::{
     Arc,
-    atomic::{AtomicBool, AtomicU32, Ordering},
+    atomic::{AtomicBool, AtomicU32, Ordering, AtomicUsize},
 };
 #[cfg(not(target_os = "android"))]
 use tokio::sync::mpsc;
@@ -46,8 +46,6 @@ struct OboeRenderer {
     is_playing: Arc<AtomicBool>,
     was_playing: bool,
 }
-
-use std::sync::atomic::{AtomicUsize, Ordering};
 
 // 记录静音时长的采样帧计数器
 static SILENCE_COUNTER: AtomicUsize = AtomicUsize::new(0);
