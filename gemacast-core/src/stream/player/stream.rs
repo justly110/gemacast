@@ -165,13 +165,8 @@ impl AudioOutputCallback for OboeCallbackI16 {
         for chunk in out.chunks_mut(capacity) {
             let staging = &mut self.scratch[..chunk.len()];
             self.renderer.render(staging);
-            for (i, (dst, src)) in chunk.iter_mut().zip(staging.iter()).enumerate() {
-                let mut val = (src.clamp(-1.0, 1.0) * i16::MAX as f32) as i16;
-                // 终极拦截：如果最终输出为 0，强制赋予 1 / -1，杜绝任何可能产生纯 0 的情况
-                if val == 0 {
-                    val = if i % 2 == 0 { 1 } else { -1 };
-                }
-                *dst = val;
+            for (dst, src) in chunk.iter_mut().zip(staging.iter()) {
+                *dst = (src.clamp(-1.0, 1.0) * i16::MAX as f32) as i16;
             }
         }
 
