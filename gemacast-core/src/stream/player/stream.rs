@@ -47,18 +47,45 @@ struct OboeRenderer {
     was_playing: bool,
 }
 
+use std::sync::atomic::{AtomicUsize, Ordering};
+
+// 记录静音时长的采样帧计数器
+static SILENCE_COUNTER: AtomicUsize = AtomicUsize::new(0);
+
 #[cfg(target_os = "android")]
 impl OboeRenderer {
     fn render(&mut self, out: &mut [f32]) {
         let vol = f32::from_bits(self.volume.load(Ordering::Relaxed));
 
+        // 辅助闭包：平时填 0，每隔约 25 秒注入 0.1 秒的 20Hz 脉冲打断系统 60s 倒计时
+        let fill_anti_timeout = |buffer: &mut [f32]| {
+            let channels = 2; // 立体声
+            let frames = buffer.len() / channels;
+            
+            for f in 0..frames {
+                let count = SILENCE_COUNTER.fetch_add(1, Ordering::Relaxed);
+                // 以 48000Hz 采样率计，25 秒约为 1,200,000 帧
+                let cycle_pos = count % 1_200_000;
+                
+                // 每隔 25 秒，产生持续 4800 帧（0.1 秒）的 20Hz 正弦波
+                let sample_val = if cycle_pos < 4800 {
+                    // 20Hz 在 48000Hz 采样率下的相位
+                    let phase = (cycle_pos as f32 / 48000.0) * 20.0 * 2.0 * std::f32::consts::PI;
+                    // 幅度设为 0.06 (换算为 16位 整数约 2000，远超系统的 small 阈值)
+                    0.06 * phase.sin()
+                } else {
+                    0.0
+                };
+
+                buffer[f * channels] = sample_val;
+                buffer[f * channels + 1] = sample_val;
+            }
+        };
+
         if !self.is_playing.load(Ordering::Relaxed) {
             while self.packet_consumer.try_pop().is_some() {}
 
-            // 改为 1e-4 (约 3 / 32767，转为整数是 3，人耳完全不可闻，打破系统检测)
-            for (i, sample) in out.iter_mut().enumerate() {
-                *sample = if i % 2 == 0 { 1e-4 } else { -1e-4 };
-            }
+            fill_anti_timeout(out);
 
             if self.was_playing {
                 self.jitter_manager.reset();
@@ -72,12 +99,13 @@ impl OboeRenderer {
             .ingest_packets(&mut self.packet_consumer);
         self.jitter_manager.fill_output(out, vol);
 
-        // 缓冲区饥饿时也使用 1e-4 填充
+        // 如果正在播放但缓冲区空了（比如电脑暂停播放），也注入脉冲保活
         let is_all_zero = out.iter().take(64).all(|&s| s == 0.0);
         if is_all_zero {
-            for (i, sample) in out.iter_mut().enumerate() {
-                *sample = if i % 2 == 0 { 1e-4 } else { -1e-4 };
-            }
+            fill_anti_timeout(out);
+        } else {
+            // 一旦电脑恢复正常声音，立刻重置计数器
+            SILENCE_COUNTER.store(0, Ordering::Relaxed);
         }
     }
 }
