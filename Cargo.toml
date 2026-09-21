@@ -4,13 +4,12 @@ members = ["gemacast-core", "gemacast-pc", "gemacast-mobile/src-tauri"]
 
 [workspace.package]
 version = "6.6.6"
->>>>>>> upstream/main
-edition = "2024"
+edition = "2026"
 authors = ["Echa Apriliyanto <echa.apriliyanto.dev@gmail.com>"]
 license = "GPL-3.0-or-later"
-homepage = "https://github.com/apirJS/gemacast"
-description = "Low-latency real-time audio streaming from PC to Android over a local network and ADB."
-repository = "https://github.com/apirJS/gemacast"
+homepage = "https://github.com/justly110/gemacast"
+description = "gemacast汉化版"
+repository = "https://github.com/justly110/gemacast"
 keywords = ["audio", "streaming"]
 categories = ["multimedia"]
 
