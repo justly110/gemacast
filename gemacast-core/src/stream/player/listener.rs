@@ -278,6 +278,7 @@ fn spawn_packet_receive_thread<T: crate::ports::transport::AudioPacketTransport 
             vec![0u8; SEQ_NUM_SIZE + crate::audio::FORMAT_FLAG_SIZE + MAX_OPUS_PACKET_SIZE];
         let mut last_packet_time = std::time::Instant::now();
         let mut first_packet_received = false;
+        let mut stalled_packet_count: usize = 0; // 👈 加上这行初始化变量
 
         while active.load(Ordering::Relaxed) {
             let result = transport.receive_audio_packet(&mut recv_buff);
@@ -342,17 +343,38 @@ fn spawn_packet_receive_thread<T: crate::ports::transport::AudioPacketTransport 
                 continue;
             };
 
+// ==================== 修改后 ====================
             let seq_num = packet.seq_num;
             let is_silence = packet.is_silence;
             let is_uncompressed = packet.is_uncompressed;
 
+            // 1. 尝试推入队列
             if packet_producer.try_push(packet).is_err() {
-                tracing::warn!(
-                    "[WARN] SPSC ring buffer full, dropped seq {}. Audio callback may be stalled.",
-                    seq_num
-                );
-            }
+                stalled_packet_count += 1;
 
+                // 2. 只有在刚开始堵塞时打一行日志，避免每秒疯狂刷屏
+                if stalled_packet_count % 50 == 1 {
+                    tracing::warn!(
+                        "[WARN] SPSC ring buffer full (count: {}), dropped seq {}. Audio callback stalled.",
+                        stalled_packet_count,
+                        seq_num
+                    );
+                }
+
+                // 3. 核心自愈逻辑：如果连续 50 个包（约 1 秒）队列都毫无动静，证明底层 Oboe 已被系统杀除
+                // 主动触发重连机制，重新创建全新音频流！
+                if stalled_packet_count >= 50 {
+                    tracing::error!(
+                        "[Player] Audio output stream dead/stalled for >1s, triggering audio stream recovery..."
+                    );
+                    let _ = network_dropped_tx.try_send(());
+                    break; // 退出当前坏死的接收线程，交由外层重新拉起
+                }
+            } else {
+                // 一旦有成功推入，说明播放流正常活跃，立即清零计数器
+                stalled_packet_count = 0;
+            }
+// ==================== 修改后 ====================
             if let Some(ref tx) = latency_tx
                 && seq_num.is_multiple_of(100)
             {
