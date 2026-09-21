@@ -3,10 +3,7 @@ resolver = "2"
 members = ["gemacast-core", "gemacast-pc", "gemacast-mobile/src-tauri"]
 
 [workspace.package]
-<<<<<<< HEAD
 version = "6.6.6"
-=======
-version = "0.5.2"
 >>>>>>> upstream/main
 edition = "2024"
 authors = ["Echa Apriliyanto <echa.apriliyanto.dev@gmail.com>"]
