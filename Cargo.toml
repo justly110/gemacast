@@ -4,7 +4,7 @@ members = ["gemacast-core", "gemacast-pc", "gemacast-mobile/src-tauri"]
 
 [workspace.package]
 version = "6.6.6"
-edition = "2026"
+edition = "2024"
 authors = ["Echa Apriliyanto <echa.apriliyanto.dev@gmail.com>"]
 license = "GPL-3.0-or-later"
 homepage = "https://github.com/justly110/gemacast"
