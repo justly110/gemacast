@@ -8,33 +8,64 @@ type LinkMeta = {
   icon: LucideIcon;
   label: string;
   color: string;
+  badgeBg: string;
 };
 
 function getLinkMeta(link: NetworkLink): LinkMeta {
   switch (link) {
     case 'adb':
-      return { icon: Cable, label: 'ADB', color: 'text-accent-green' };
+      return {
+        icon: Cable,
+        label: 'ADB 调试',
+        color: 'text-accent-green',
+        badgeBg: 'bg-accent-green/10 border-accent-green/20',
+      };
     case 'usbTether':
-      return { icon: Usb, label: 'USB', color: 'text-accent-green' };
+      return {
+        icon: Usb,
+        label: 'USB 共享',
+        color: 'text-accent-green',
+        badgeBg: 'bg-accent-green/10 border-accent-green/20',
+      };
     case 'wifi5Ghz':
-      return { icon: Wifi, label: '5 GHz', color: 'text-accent-aqua' };
+      return {
+        icon: Wifi,
+        label: '5 GHz 极速',
+        color: 'text-accent-aqua',
+        badgeBg: 'bg-accent-aqua/10 border-accent-aqua/20',
+      };
     case 'wifi2_4Ghz':
-      return { icon: Wifi, label: '2.4 GHz', color: 'text-accent-yellow' };
+      return {
+        icon: Wifi,
+        label: '2.4 GHz',
+        color: 'text-accent-yellow',
+        badgeBg: 'bg-accent-yellow/10 border-accent-yellow/20',
+      };
     case 'ethernet':
-      return { icon: Globe, label: '以太网', color: 'text-accent-aqua' };
+      return {
+        icon: Globe,
+        label: '以太网',
+        color: 'text-accent-blue',
+        badgeBg: 'bg-accent-blue/10 border-accent-blue/20',
+      };
     case 'wifiUnknown':
-      return { icon: Wifi, label: 'WiFi', color: 'text-muted-foreground' };
+      return {
+        icon: Wifi,
+        label: 'Wi-Fi',
+        color: 'text-muted-foreground',
+        badgeBg: 'bg-muted/40 border-border/40',
+      };
     default:
-      return { icon: HelpCircle, label: '未知网络', color: 'text-muted-foreground/60' };
+      return {
+        icon: HelpCircle,
+        label: '未知网络',
+        color: 'text-muted-foreground/60',
+        badgeBg: 'bg-muted/30 border-border/30',
+      };
   }
 }
 
 type NetworkLinkBadgeProps = {
-  /**
-   * Render a leading `|` rule. Opt-in because the badge is self-hiding — the
-   * caller cannot know whether it will render, so it has to own the separator or
-   * a stray divider is left behind when there is no link to show.
-   */
   withLeadingSeparator?: boolean;
 };
 
@@ -51,8 +82,6 @@ export function NetworkLinkBadge({ withLeadingSeparator = false }: NetworkLinkBa
   const effective = getLinkMeta(linkPair.effective);
   const EffectiveIcon = effective.icon;
 
-  // Named per side rather than as "effective vs the other one", so the tooltip
-  // stays correct when `effective` is neither side (rule 4, above).
   const isSymmetric = linkPair.phone === linkPair.pc;
   const phone = getLinkMeta(linkPair.phone);
   const pc = getLinkMeta(linkPair.pc);
@@ -60,7 +89,7 @@ export function NetworkLinkBadge({ withLeadingSeparator = false }: NetworkLinkBa
   return (
     <div
       id="network-link-badge"
-      className="inline-flex min-w-0 items-center gap-1.5 text-[11px] font-medium"
+      className="inline-flex min-w-0 items-center gap-1.5"
       title={
         isSymmetric
           ? `网络链路: ${effective.label}`
@@ -68,12 +97,16 @@ export function NetworkLinkBadge({ withLeadingSeparator = false }: NetworkLinkBa
       }
     >
       {withLeadingSeparator && (
-        <span aria-hidden="true" className="text-muted-foreground/40">
-          |
+        <span aria-hidden="true" className="text-border/80">
+          •
         </span>
       )}
-      <EffectiveIcon size={12} className={`shrink-0 ${effective.color}`} aria-hidden="true" />
-      <span className={`truncate ${effective.color}`}>{effective.label}</span>
+      <div
+        className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px] font-medium backdrop-blur-md transition-colors ${effective.badgeBg}`}
+      >
+        <EffectiveIcon size={12} className={`shrink-0 ${effective.color}`} aria-hidden="true" />
+        <span className={`truncate ${effective.color}`}>{effective.label}</span>
+      </div>
     </div>
   );
 }

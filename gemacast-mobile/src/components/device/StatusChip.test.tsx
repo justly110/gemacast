@@ -17,25 +17,25 @@ describe('StatusChip', () => {
   it('renders Idle label', () => {
     useAppStore.getState().setStatus(Status.Idle);
     render(<StatusChip />);
-    expect(screen.getByText('Idle')).toBeTruthy();
+    expect(screen.getByText('空闲')).toBeTruthy();
   });
 
   it('renders Scanning label when Listening', () => {
     useAppStore.getState().setStatus(Status.Listening);
     render(<StatusChip />);
-    expect(screen.getByText('Scanning…')).toBeTruthy();
+    expect(screen.getByText('扫描中…')).toBeTruthy();
   });
 
   it('renders Connected label', () => {
     useAppStore.getState().setStatus(Status.Connected);
     render(<StatusChip />);
-    expect(screen.getByText('Connected')).toBeTruthy();
+    expect(screen.getByText('已连接')).toBeTruthy();
   });
 
   it('renders Playing label', () => {
     useAppStore.getState().setStatus(Status.Playing);
     render(<StatusChip />);
-    expect(screen.getByText('Playing')).toBeTruthy();
+    expect(screen.getByText('播放中')).toBeTruthy();
   });
 
   it('renders Reconnecting with attempt count', () => {
@@ -44,13 +44,13 @@ describe('StatusChip', () => {
       reconnectAttempts: 3,
     });
     render(<StatusChip />);
-    expect(screen.getByText('Reconnecting (3/5)…')).toBeTruthy();
+    expect(screen.getByText('重连中 (3/5)…')).toBeTruthy();
   });
 
   it('renders Paused label', () => {
     useAppStore.getState().setStatus(Status.Paused);
     render(<StatusChip />);
-    expect(screen.getByText('Paused')).toBeTruthy();
+    expect(screen.getByText('已暂停')).toBeTruthy();
   });
 
   it('has role="status" for accessibility', () => {

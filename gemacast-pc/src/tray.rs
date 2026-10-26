@@ -72,17 +72,17 @@ impl TrayManager {
     /// Create the tray icon and initial menu.
     pub fn new() -> Result<Self, tray_icon::Error> {
         let tray_menu = Menu::new();
-        let broadcast_toggle_item = MenuItem::new("Stop Stream", true, None);
-        let connected_devices_submenu = Submenu::new("Connected Phones", true);
-        let no_devices_placeholder = MenuItem::new("No devices connected yet", false, None);
-        let check_update_menu_item = MenuItem::new("Check for Updates", true, None);
+        let broadcast_toggle_item = MenuItem::new("停止串流", true, None);
+        let connected_devices_submenu = Submenu::new("已连接的手机", true);
+        let no_devices_placeholder = MenuItem::new("暂无已连接设备", false, None);
+        let check_update_menu_item = MenuItem::new("检查更新", true, None);
         let launch_on_startup_item = CheckMenuItem::new(
-            "Launch on Startup",
+            "开机自启动",
             true,
             crate::autostart::is_autostart_enabled(),
             None,
         );
-        let quit_menu_item = MenuItem::new("quit", true, None);
+        let quit_menu_item = MenuItem::new("退出", true, None);
 
         let _ = connected_devices_submenu.append(&no_devices_placeholder);
 
@@ -205,7 +205,7 @@ impl TrayManager {
         self.remove_update_checking_item();
         self.remove_update_up_to_date_item();
 
-        let item = MenuItem::new(format!("Install Update (v{version})"), true, None);
+        let item = MenuItem::new(format!("安装更新 (v{version})"), true, None);
         let sep = PredefinedMenuItem::separator();
 
         let _ = self.tray_menu.prepend(&sep);
@@ -232,7 +232,7 @@ impl TrayManager {
         self.remove_update_checking_item();
         self.remove_update_up_to_date_item();
 
-        let item = MenuItem::new("Update failed — click to retry", true, None);
+        let item = MenuItem::new("更新失败 — 点击重试", true, None);
         let sep = PredefinedMenuItem::separator();
 
         let _ = self.tray_menu.prepend(&sep);
@@ -259,7 +259,7 @@ impl TrayManager {
         self.remove_update_checking_item();
         self.remove_update_up_to_date_item();
 
-        let item = MenuItem::new("Checking for updates...", false, None);
+        let item = MenuItem::new("正在检查更新…", false, None);
         let sep = PredefinedMenuItem::separator();
 
         let _ = self.tray_menu.prepend(&sep);
@@ -286,7 +286,7 @@ impl TrayManager {
         self.remove_update_checking_item();
         self.remove_update_up_to_date_item();
 
-        let item = MenuItem::new("✓ App is up to date", false, None);
+        let item = MenuItem::new("✓ 当前已是最新版本", false, None);
         let sep = PredefinedMenuItem::separator();
 
         let _ = self.tray_menu.prepend(&sep);

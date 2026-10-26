@@ -18,37 +18,37 @@ export function ConfirmDialog({
   onCancel,
 }: ConfirmDialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
+
   useEffect(() => {
-    if (open && dialogRef.current && !dialogRef.current.open) {
-      dialogRef.current.showModal();
-    } else if (!open && dialogRef.current?.open) {
-      dialogRef.current.close();
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    if (open && !dialog.open) {
+      dialog.showModal();
+    } else if (!open && dialog.open) {
+      dialog.close();
     }
   }, [open]);
+
   return (
     <dialog
       ref={dialogRef}
-      className={`
-        fixed inset-0 z-50 m-auto max-h-[min(80vh,28rem)] min-w-0 w-[min(90vw,320px)]
-        max-w-[calc(100vw-2rem)] overflow-hidden rounded-lg border border-border
-        bg-popover p-5 text-popover-foreground shadow-xl
-        backdrop:bg-black/50
-      `}
-      onClose={(e) => {
-        e.stopPropagation();
-        onCancel();
-      }}
+      className="fixed inset-0 z-50 m-auto w-[min(90vw,380px)] rounded-3xl border border-border/80 bg-popover/90 p-6 text-popover-foreground shadow-[0_24px_60px_rgba(0,0,0,0.35)] backdrop-blur-2xl backdrop:bg-black/60 backdrop:backdrop-blur-sm"
     >
-      <p className="mb-4 max-h-[min(50vh,16rem)] overflow-y-auto overscroll-contain pr-1 text-sm wrap-anywhere">
+      <p className="mb-6 text-sm font-medium leading-relaxed text-foreground overflow-y-auto max-h-40 [overflow-wrap:anywhere]">
         {message}
       </p>
-      <div className="flex gap-2">
-        <button type="button" className="btn btn-secondary flex-1 font-semibold" onClick={onCancel}>
+      <div className="flex justify-end gap-2.5">
+        <button
+          type="button"
+          className="rounded-xl border border-border/70 bg-muted/40 px-4 py-2 text-xs font-semibold text-muted-foreground transition-all duration-150 hover:bg-muted hover:text-foreground active:scale-95"
+          onClick={onCancel}
+        >
           {cancelLabel}
         </button>
         <button
           type="button"
-          className="btn btn-destructive flex-1 font-semibold text-primary-foreground!"
+          className="rounded-xl bg-destructive px-4.5 py-2 text-xs font-semibold text-primary-foreground! shadow-sm transition-all duration-150 hover:bg-destructive/90 active:scale-95"
           onClick={onConfirm}
         >
           {confirmLabel}

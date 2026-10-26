@@ -21,17 +21,17 @@ const platforms: Platform[] = [
   {
     icon: WindowsLogo,
     name: 'Windows',
-    requirement: '10 or newer, captures with WASAPI',
-    primaryLabel: 'Installer (.msi)',
+    requirement: 'Windows 10 或更高版本 (WASAPI 采集)',
+    primaryLabel: '安装包 (.msi)',
     primaryHref: links.windowsInstaller,
-    secondaryLabel: 'Portable (.zip)',
+    secondaryLabel: '免安装便携版 (.zip)',
     secondaryHref: links.windowsPortable,
   },
   {
     icon: LinuxLogo,
     name: 'Linux',
-    requirement: 'Needs a running PipeWire session',
-    primaryLabel: 'Archive (.tar.xz)',
+    requirement: '需要运行 PipeWire 0.3+ / WirePlumber',
+    primaryLabel: '归档包 (.tar.xz)',
     primaryHref: links.linuxArchive,
     secondaryLabel: 'deb / rpm / AppImage',
     secondaryHref: links.releases,
@@ -39,44 +39,46 @@ const platforms: Platform[] = [
   {
     icon: AppleLogo,
     name: 'macOS',
-    requirement: '13 or newer for ScreenCaptureKit',
-    primaryLabel: 'Universal (.dmg)',
+    requirement: 'macOS 13 或更高 (ScreenCaptureKit)',
+    primaryLabel: '通用安装包 (.dmg)',
     primaryHref: links.macosDmg,
-    secondaryLabel: 'Other builds',
+    secondaryLabel: '更多架构与版本',
     secondaryHref: links.releases,
   },
 ]
 </script>
 
 <template>
-  <article class="offset-shadow flex flex-col border border-primary bg-card">
+  <article class="flex flex-col rounded-3xl border border-white/10 bg-slate-900/45 backdrop-blur-2xl shadow-2xl overflow-hidden">
     <header
-      class="flex items-center gap-x-3 border-b border-primary bg-secondary px-4 py-3 sm:px-5 sm:py-4"
+      class="flex items-center gap-x-3.5 border-b border-white/10 bg-white/5 px-6 py-4.5"
     >
-      <span class="border border-primary bg-card p-2 text-primary">
+      <span class="flex h-10 w-10 items-center justify-center rounded-2xl border border-sky-400/30 bg-sky-400/10 text-sky-400 shadow-[0_0_12px_rgba(56,189,248,0.2)]">
         <MonitorIcon class="size-5" />
       </span>
       <div class="flex flex-col">
-        <h3 class="font-[Black_Ops_One] text-lg text-primary sm:text-xl">The streamer</h3>
-        <p class="font-mono text-xs text-muted-foreground">Runs in your desktop's tray</p>
+        <h3 class="text-lg font-bold text-white tracking-tight sm:text-xl">电脑端 Streamer</h3>
+        <p class="text-xs font-medium text-slate-400">常驻系统托盘，捕获桌面或应用音频</p>
       </div>
     </header>
 
-    <ul class="flex grow flex-col divide-y divide-border">
+    <ul class="flex grow flex-col divide-y divide-white/10">
       <li
         v-for="platform in platforms"
         :key="platform.name"
-        class="flex grow flex-col gap-3 p-4 sm:p-5"
+        class="flex grow flex-col gap-3.5 p-6"
       >
         <div class="flex items-center gap-x-3">
-          <component :is="platform.icon" class="size-5 shrink-0 text-primary" />
+          <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white/5 border border-white/10 text-sky-400">
+            <component :is="platform.icon" class="size-4.5" />
+          </div>
           <div class="flex min-w-0 flex-col">
-            <h4 class="font-mono text-sm font-bold text-primary">{{ platform.name }}</h4>
-            <p class="font-mono text-xs text-muted-foreground">{{ platform.requirement }}</p>
+            <h4 class="text-sm font-bold text-white tracking-tight">{{ platform.name }}</h4>
+            <p class="text-xs text-slate-400">{{ platform.requirement }}</p>
           </div>
         </div>
 
-        <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
+        <div class="grid grid-cols-1 gap-2.5 sm:grid-cols-2 pt-1">
           <ActionButton :href="platform.primaryHref" external>
             <span>{{ platform.primaryLabel }}</span>
           </ActionButton>

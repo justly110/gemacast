@@ -14,7 +14,7 @@ withDefaults(
     :href="href"
     :target="href && external ? '_blank' : undefined"
     :rel="href && external ? 'noreferrer' : undefined"
-    class="active:text-primary/85 sm:hover:text-primary/85 sm:active:scale-95 font-semibold text-primary justify-start md:justify-center bg-primary-foreground flex items-center gap-x-1 py-1 px-2 rounded-sm cursor-pointer whitespace-nowrap"
+    class="flex items-center gap-x-1.5 rounded-xl border border-transparent px-3.5 py-1.5 text-sm font-semibold text-slate-300 transition-all duration-200 hover:border-white/10 hover:bg-white/10 hover:text-sky-400 active:scale-95 cursor-pointer whitespace-nowrap"
   >
     <slot></slot>
   </component>

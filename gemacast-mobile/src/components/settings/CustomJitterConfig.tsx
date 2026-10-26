@@ -13,14 +13,11 @@ function NumberInput({
 }) {
   const [local, setLocal] = useState(value == null ? '' : value.toString());
 
-  // Sync local state when external value changes
   useEffect(() => {
     if (value == null) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setLocal('');
     } else {
-      // Don't overwrite if the local text evaluates to the same number (e.g. '' == 0 or '02' == 2)
-      // This prevents the annoying '0' from popping back in when the user deletes the text.
       const parsedLocal = local === '' ? 0 : Number(local);
       if (parsedLocal !== value) {
         setLocal(value.toString());
@@ -66,9 +63,9 @@ export function CustomJitterConfig({ renderHelpButton }: CustomJitterConfigProps
   };
 
   return (
-    <div className="mt-3 flex flex-col gap-3 rounded-lg border border-border bg-background p-4 animate-[fade-in_200ms_ease-out]">
-      <div className="flex items-center justify-between">
-        <span className="flex items-center text-[0.9rem] text-foreground">预设名称</span>
+    <div className="mt-3 flex flex-col gap-3.5 rounded-2xl border border-border/70 bg-background/50 p-4 backdrop-blur-md animate-[fade-in_200ms_ease-out]">
+      <div className="flex items-center justify-between gap-3">
+        <span className="text-xs font-semibold text-foreground">预设名称</span>
         <input
           type="text"
           value={editor.presetName}
@@ -81,12 +78,12 @@ export function CustomJitterConfig({ renderHelpButton }: CustomJitterConfigProps
               : '我的预设'
           }
           maxLength={30}
-          className="w-35 rounded-sm border border-border bg-background px-2 py-1 text-left text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+          className="w-40 rounded-xl border border-border/70 bg-background/60 px-3 py-1.5 text-xs text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/25"
         />
       </div>
 
-      <div className="flex items-center justify-between">
-        <span className="flex items-center text-[0.9rem] text-foreground">
+      <div className="flex items-center justify-between gap-3">
+        <span className="flex items-center gap-1 text-xs font-semibold text-foreground">
           缓冲深度
           {renderHelpButton('static-depth')}
         </span>
@@ -94,15 +91,15 @@ export function CustomJitterConfig({ renderHelpButton }: CustomJitterConfigProps
           <NumberInput
             value={config.staticTargetMs}
             onChange={(val) => editor.updateField({ staticTargetMs: val ?? null })}
-            className="mr-1.5 w-15 rounded-sm border border-border bg-background px-2 py-1 text-right text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+            className="mr-1.5 w-20 rounded-xl border border-border/70 bg-background/60 px-2.5 py-1.5 text-right font-mono text-xs text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/25"
           />
-          <span className="text-foreground w-4 text-right">ms</span>
+          <span className="text-xs font-semibold text-muted-foreground w-5 text-right">ms</span>
         </div>
       </div>
 
       {!editor.isValid && editor.validationErrors.length > 0 && (
-        <div className="mt-1 rounded-md border border-destructive/20 bg-destructive/10 p-2 text-[0.8rem] text-destructive">
-          <ul className="list-inside list-disc">
+        <div className="mt-1 rounded-xl border border-destructive/30 bg-destructive/10 p-2.5 text-xs text-destructive">
+          <ul className="list-inside list-disc space-y-0.5">
             {editor.validationErrors.map((err, i) => (
               <li key={i}>
                 <strong>{FIELD_LABELS[err.field] || err.field}:</strong> {err.message}
@@ -112,26 +109,26 @@ export function CustomJitterConfig({ renderHelpButton }: CustomJitterConfigProps
         </div>
       )}
 
-      <div className="mt-1">
+      <div className="mt-1 flex flex-col gap-2">
         <button
           type="button"
-          className="w-full rounded-md bg-primary p-[0.6rem] text-[0.9rem] font-semibold text-primary-foreground transition-opacity hover:opacity-90 active:opacity-80 disabled:cursor-not-allowed disabled:opacity-40"
+          className="w-full rounded-xl bg-primary py-2.5 text-xs font-bold text-primary-foreground shadow-sm transition-all duration-150 hover:opacity-90 active:scale-98 disabled:cursor-not-allowed disabled:opacity-40"
           onClick={editor.handleSave}
           disabled={!editor.canSave}
         >
           保存预设
         </button>
-      </div>
 
-      {editor.isEditingSaved && (
-        <button
-          type="button"
-          className="mt-1 w-full rounded-md border border-destructive bg-destructive/10 p-[0.6rem] text-[0.9rem] font-semibold text-destructive transition-colors hover:bg-destructive hover:text-destructive-foreground active:opacity-80"
-          onClick={editor.requestDelete}
-        >
-          删除预设
-        </button>
-      )}
+        {editor.isEditingSaved && (
+          <button
+            type="button"
+            className="w-full rounded-xl border border-destructive/30 bg-destructive/10 py-2.5 text-xs font-bold text-destructive transition-all duration-150 hover:bg-destructive hover:text-destructive-foreground active:scale-98"
+            onClick={editor.requestDelete}
+          >
+            删除预设
+          </button>
+        )}
+      </div>
 
       <ConfirmDialog
         open={editor.isDeleteDialogOpen}

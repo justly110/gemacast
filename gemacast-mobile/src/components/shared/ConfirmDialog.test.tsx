@@ -2,9 +2,6 @@ import { describe, it, expect, afterEach, beforeEach, mock } from 'bun:test';
 import { render, screen, cleanup, fireEvent } from '@testing-library/react';
 import { ConfirmDialog } from './ConfirmDialog';
 
-// One test below stubs `open` on the prototype. bun test shares a single runtime
-// across files, so leaving it stubbed makes every dialog in every later file
-// report itself as already open.
 const nativeOpen = Object.getOwnPropertyDescriptor(HTMLDialogElement.prototype, 'open')!;
 
 beforeEach(() => {
@@ -30,8 +27,8 @@ describe('ConfirmDialog', () => {
       <ConfirmDialog open={true} message="Are you sure?" onConfirm={mock()} onCancel={mock()} />,
     );
     expect(screen.getByText('Are you sure?')).toBeTruthy();
-    expect(screen.getByText('Delete')).toBeTruthy();
-    expect(screen.getByText('Cancel')).toBeTruthy();
+    expect(screen.getByText('确定')).toBeTruthy();
+    expect(screen.getByText('取消')).toBeTruthy();
   });
 
   it('bounds long messages and uses a stronger confirm-button foreground', () => {
@@ -40,9 +37,9 @@ describe('ConfirmDialog', () => {
 
     const messageElement = screen.getByText(message);
     expect(messageElement.className).toContain('overflow-y-auto');
-    expect(messageElement.className).toContain('wrap-anywhere');
+    expect(messageElement.className).toContain('overflow-wrap:anywhere');
 
-    const confirmButton = screen.getByRole('button', { name: 'Delete', hidden: true });
+    const confirmButton = screen.getByRole('button', { name: '确定', hidden: true });
     expect(confirmButton.className).toContain('font-semibold');
     expect(confirmButton.className).toContain('text-primary-foreground!');
   });
@@ -50,14 +47,14 @@ describe('ConfirmDialog', () => {
   it('calls onConfirm when confirm button clicked', () => {
     const onConfirm = mock();
     render(<ConfirmDialog open={true} message="Test" onConfirm={onConfirm} onCancel={mock()} />);
-    fireEvent.click(screen.getByText('Delete'));
+    fireEvent.click(screen.getByText('确定'));
     expect(onConfirm).toHaveBeenCalled();
   });
 
   it('calls onCancel when cancel button clicked', () => {
     const onCancel = mock();
     render(<ConfirmDialog open={true} message="Test" onConfirm={mock()} onCancel={onCancel} />);
-    fireEvent.click(screen.getByText('Cancel'));
+    fireEvent.click(screen.getByText('取消'));
     expect(onCancel).toHaveBeenCalled();
   });
 
@@ -65,7 +62,6 @@ describe('ConfirmDialog', () => {
     const { rerender } = render(
       <ConfirmDialog open={true} message="Test" onConfirm={mock()} onCancel={mock()} />,
     );
-    // Mock open property on dialog
     Object.defineProperty(HTMLDialogElement.prototype, 'open', {
       get: () => true,
       configurable: true,

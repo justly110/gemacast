@@ -9,77 +9,78 @@ interface FooterLink {
 }
 
 const projectLinks: FooterLink[] = [
-  { label: "Source on GitHub", href: links.repo, external: true },
-  { label: "Latest release", href: links.releases, external: true },
-  { label: "Report an issue", href: links.issues, external: true },
+  { label: "GitHub 源码仓库", href: links.repo, external: true },
+  { label: "最新发布版本", href: links.releases, external: true },
+  { label: "反馈与建议", href: links.issues, external: true },
 ];
 
 const pageLinks: FooterLink[] = [
-  { label: "Features", href: "#features", external: false },
-  { label: "Demo", href: "#demo", external: false },
-  { label: "Download", href: "#download", external: false },
-  { label: "FAQ", href: "#faq", external: false },
+  { label: "功能特性", href: "#features", external: false },
+  { label: "实机演示", href: "#demo", external: false },
+  { label: "客户端下载", href: "#download", external: false },
+  { label: "常见问题", href: "#faq", external: false },
 ];
 </script>
 
 <template>
-  <footer class="bg-foreground text-accent">
+  <footer class="border-t border-white/10 bg-slate-950/80 backdrop-blur-2xl text-slate-400">
     <div
-      class="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-10 sm:px-6 sm:py-12 md:flex-row md:justify-between lg:px-10"
+      class="mx-auto flex max-w-6xl flex-col gap-10 px-6 py-12 md:flex-row md:justify-between lg:px-12"
     >
-      <div class="flex flex-col gap-y-3 md:max-w-md">
-        <div class="flex items-center gap-x-2">
-          <img
-            src="../../assets/images/logo.svg"
-            width="36"
-            height="36"
-            alt="Gemacast"
-            class="size-9"
-          />
-          <span class="font-[Black_Ops_One] text-lg text-secondary">Gemacast</span>
+      <div class="flex flex-col gap-y-3.5 md:max-w-md">
+        <div class="flex items-center gap-x-2.5">
+          <div class="flex h-9 w-9 items-center justify-center rounded-xl border border-sky-400/30 bg-sky-400/10">
+            <img
+              src="../../assets/images/logo.svg"
+              width="24"
+              height="24"
+              alt="Gemacast"
+              class="size-6 object-contain"
+            />
+          </div>
+          <span class="text-xl font-black tracking-tight text-white">Gemacast</span>
         </div>
-        <p class="font-mono text-xs leading-relaxed text-accent sm:text-sm">
-          Streams your PC's audio to your phone over Wi-Fi, USB, or a cable, with tens of
-          milliseconds of delay.
+        <p class="text-xs leading-relaxed text-slate-400 sm:text-sm font-normal">
+          通过 Wi-Fi、USB 网络共享或 ADB 线缆，将 PC 音频以数十毫秒级超低延迟实时串流至安卓手机。
         </p>
         <a
           :href="links.contact"
-          class="font-mono flex w-fit items-center gap-x-2 text-xs text-accent underline decoration-accent/40 underline-offset-4 transition-colors sm:text-sm sm:hover:text-secondary"
+          class="flex w-fit items-center gap-x-2 text-xs text-slate-300 transition-colors hover:text-sky-400"
         >
-          <MailIcon class="size-4 shrink-0" />
+          <MailIcon class="size-4 shrink-0 text-sky-400" />
           <span>echa.apriliyanto.dev@gmail.com</span>
         </a>
       </div>
 
-      <nav class="grid grid-cols-2 gap-8 sm:gap-12">
+      <nav class="grid grid-cols-2 gap-8 sm:gap-14">
         <div class="flex flex-col gap-y-3">
-          <h3 class="font-mono text-xs font-bold uppercase tracking-[0.2em] text-secondary">
-            Project
+          <h3 class="text-xs font-bold uppercase tracking-[0.18em] text-white">
+            项目与开源
           </h3>
-          <ul class="flex flex-col gap-y-2">
+          <ul class="flex flex-col gap-y-2.5">
             <li v-for="link in projectLinks" :key="link.label">
               <a
                 :href="link.href"
                 target="_blank"
                 rel="noreferrer"
-                class="font-mono flex items-center gap-x-1.5 text-xs text-accent transition-colors sm:text-sm sm:hover:text-secondary"
+                class="flex items-center gap-x-1.5 text-xs text-slate-400 transition-colors hover:text-sky-400"
               >
                 <span>{{ link.label }}</span>
-                <ExternalLinkIcon class="size-3 shrink-0" />
+                <ExternalLinkIcon class="size-3 shrink-0 opacity-70" />
               </a>
             </li>
           </ul>
         </div>
 
         <div class="flex flex-col gap-y-3">
-          <h3 class="font-mono text-xs font-bold uppercase tracking-[0.2em] text-secondary">
-            On this page
+          <h3 class="text-xs font-bold uppercase tracking-[0.18em] text-white">
+            导航
           </h3>
-          <ul class="flex flex-col gap-y-2">
+          <ul class="flex flex-col gap-y-2.5">
             <li v-for="link in pageLinks" :key="link.label">
               <a
                 :href="link.href"
-                class="font-mono text-xs text-accent transition-colors sm:text-sm sm:hover:text-secondary"
+                class="text-xs text-slate-400 transition-colors hover:text-sky-400"
               >
                 {{ link.label }}
               </a>
@@ -89,35 +90,35 @@ const pageLinks: FooterLink[] = [
       </nav>
     </div>
 
-    <div class="border-t border-accent/20">
+    <div class="border-t border-white/5 py-6">
       <div
-        class="mx-auto flex max-w-6xl flex-col items-center gap-3 px-4 py-5 sm:flex-row sm:justify-between sm:px-6 lg:px-10"
+        class="mx-auto flex max-w-6xl flex-col items-center gap-3 px-6 sm:flex-row sm:justify-between lg:px-12"
       >
-        <div class="flex flex-col text-xs gap-y-1">
-          <span class="font-mono text-center text-accent"> Built by Echa Apriliyanto. </span>
-          <div class="flex flex-row gap-x-1 items-center">
-            <ScaleIcon class="size-4"/>
-            <a href="https://github.com/apirJS/gemacast?tab=GPL-3.0-1-ov-file" target="_blank">GPL 3.0</a>
+        <div class="flex flex-col sm:flex-row items-center gap-x-4 text-xs text-slate-500">
+          <span>原作者 Echa Apriliyanto · 由 justly110 汉化与维护</span>
+          <div class="flex items-center gap-x-1 text-slate-400">
+            <ScaleIcon class="size-3.5"/>
+            <a href="https://github.com/justly110/gemacast" target="_blank" class="hover:underline">GPL 3.0 开源协议</a>
           </div>
         </div>
-        <div class="flex items-center gap-x-2">
+        <div class="flex items-center gap-x-2.5">
           <a
             :href="links.releases"
             target="_blank"
             rel="noreferrer"
-            class="font-mono flex items-center gap-x-1.5 border border-accent/30 px-3 py-1.5 text-xs text-accent transition-colors sm:hover:border-accent sm:hover:bg-accent/10"
+            class="flex items-center gap-x-1.5 rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-300 transition-all hover:bg-white/10 hover:text-white"
           >
             <DownloadIcon class="size-3.5" />
-            <span>Releases</span>
+            <span>发布版本</span>
           </a>
           <a
             :href="links.repo"
             target="_blank"
             rel="noreferrer"
-            class="font-mono flex items-center gap-x-1.5 border border-accent/30 px-3 py-1.5 text-xs text-accent transition-colors sm:hover:border-accent sm:hover:bg-accent/10"
+            class="flex items-center gap-x-1.5 rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-300 transition-all hover:bg-white/10 hover:text-white"
           >
             <CodeIcon class="size-3.5" />
-            <span>Source</span>
+            <span>代码仓库</span>
           </a>
         </div>
       </div>

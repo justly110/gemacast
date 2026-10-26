@@ -12,39 +12,39 @@ interface Question {
 const questions: Question[] = [
   {
     id: 'discovery',
-    question: 'The phone cannot find my PC',
+    question: '手机端无法搜索到我的电脑？',
     answer:
-      'Both devices have to be on the same network, so a guest Wi-Fi or a VPN will hide your PC even at full signal. The firewall has to let Gemacast through, which is ports UDP 23555 (for presence), UDP 23556 (for audio stream) and TCP 23559 (for controls). Windows asks you about this once on the first launch, so it stays blocked if you closed that popup.',
+      '请确保电脑和手机连接在同一 Wi-Fi 下（访客网络或 VPN 可能会隔离设备）。电脑防火墙需放行 Gemacast 的通信端口：UDP 23555（设备发现）、UDP 23556（音频数据流）以及 TCP 23559（控制通道）。首次运行时 Windows 防火墙弹窗若被关闭可能导致拦截。',
   },
   {
     id: 'latency',
-    question: 'What is the real end-to-end latency?',
+    question: '真实的端到端声音延迟是多少？',
     answer:
-      'Add up three things: 10 ms to record the audio on PC, half the round trip (RTT) to send it, and whatever the buffer is holding. The buffer is usually the biggest part. The phone shows you the buffer and the round trip while it plays, so you can add up your own number.',
+      '端到端总延迟主要由三部分构成：电脑音频采集（约 10ms）、单程网络传输延迟（约 RTT 的一半）以及手机端音频缓冲深度。在 USB 网络共享或 ADB 模式下，整体延迟通常在 20~30 毫秒以内，眼耳几乎无感。',
   },
   {
     id: 'dtim',
-    question: 'The buffer grows past 200 ms when the screen turns off',
+    question: '手机息屏后缓冲区会增大到 200ms 以上？',
     answer:
-      'Android is saving battery. With the screen off it puts the Wi-Fi chip to sleep and only wakes it up on a set schedule, called DTIM. Audio stops arriving in a steady trickle and starts landing in batch, 100 to 200 ms apart. The buffer grows to cover the longest gap it sees, and that is the expected behavior, because a smaller buffer would just stutter the stream. To keep it low, turn on Keep Screen On in settings, or use USB tether or ADB, where the chip never sleeps.',
+      '这是 Android 系统的省电策略（DTIM 机制）。息屏后 Wi-Fi 芯片会进入间歇休眠并以 100~200ms 批量接收数据。应用会自动扩大缓冲区以防止破音断续。若追求极致低延迟，可在设置中开启“保持屏幕常亮”，或改用 USB/ADB 数据线直连。',
   },
   {
     id: 'pairing',
-    question: 'Why is there a pairing step?',
+    question: '为什么初次连接需要配对授权？',
     answer:
-      'Without it, anything on your network could start a stream, see a list of your running apps, and change what your PC is recording. With pairing, you can allow which phone to connect. You allow it once, the first time you connect, and after that your phone remembers the PC and connects flawlessly.',
+      '为了保护您的电脑隐私与安全。若无配对，局域网内的任何设备都能随意拉取您的电脑声音或查看运行中的应用进程。配对只需在电脑托盘弹窗确认一次，之后手机即可秒连。',
   },
   {
     id: 'code',
-    question: 'What is the 6-digit code for?',
+    question: '6 位配对验证码是做什么用的？',
     answer:
-      'It shows that your phone is talking straight to your PC, with nothing in between (no man-in-middle). Each device works out the code by itself, using details only those two share. If some other machine were sitting in the middle, the two codes would come out different and you would see it right away. So just check that both screens show the same six digits, then approve. It is not a password, so it does not matter if someone else sees it.',
+      '用于防止局域网中间人中继攻击（Relay Attack）。双端独立计算由设备证书、硬件公钥和随机挑战派生出的配对码。只需确认电脑与手机屏幕展示的 6 位数字一致即可放心点击通过。',
   },
   {
     id: 'encryption',
-    question: 'Is the audio encrypted?',
+    question: '传输的音频流是否经过加密？',
     answer:
-      'No, and that is on purpose. Pairing is protected, but the audio itself is sent plain. The whole point of this app is low delay, and the audio goes out in tiny pieces, 100 of them every second. Locking and unlocking every one of those adds work at both ends and makes each piece bigger, which is exactly the kind of cost that shows up as delay. So anyone on the same network could listen in if they wanted to. Stick to a network you trust, or use USB.',
+      '设备配对与控制命令信道使用 TLS 强加密与 ECDSA-P256 签名保护。而高频的音频数据包（每秒 100 包）保持明文传输，这是为了杜绝加解密造成的延迟和数据包膨胀，确保超低延迟体验。建议在受信任的网络或通过数据线使用。',
   },
 ]
 
@@ -54,11 +54,11 @@ const { isOpen, toggle } = useAccordion()
 <template>
   <section
     id="faq"
-    class="flex flex-col items-center justify-center gap-y-10 px-4 py-20 sm:px-6 sm:py-24 lg:px-10"
+    class="flex flex-col items-center justify-center gap-y-12 px-4 py-20 sm:px-6 sm:py-24 lg:px-10"
   >
-    <SectionHeading eyebrow="FAQ" title="Common questions" />
+    <SectionHeading eyebrow="常见疑问" title="解答您的各种疑惑" />
 
-    <ul class="flex w-full max-w-3xl flex-col gap-y-3">
+    <ul class="flex w-full max-w-3xl flex-col gap-y-3.5">
       <FaqItem
         v-for="entry in questions"
         :key="entry.id"

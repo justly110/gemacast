@@ -28,9 +28,9 @@ describe('ForgetPcIdentity', () => {
       ]);
     render(<ForgetPcIdentity />);
 
-    expect(await screen.findByLabelText('Forget Laptop')).toBeTruthy();
-    expect(screen.getByLabelText('Forget missing-name')).toBeTruthy();
-    expect(screen.queryByLabelText('Forget Desktop PC')).toBeNull();
+    expect(await screen.findByLabelText('清除 Laptop 的配对')).toBeTruthy();
+    expect(screen.getByLabelText('清除 missing-name 的配对')).toBeTruthy();
+    expect(screen.queryByLabelText('清除 Desktop PC 的配对')).toBeNull();
   });
 
   it('wraps long PC names inside a vertically bounded list', async () => {
@@ -44,11 +44,11 @@ describe('ForgetPcIdentity', () => {
     render(<ForgetPcIdentity />);
 
     const name = await screen.findByText(longName);
-    expect(name.className).toContain('wrap-anywhere');
+    expect(name.className).toContain('overflow-wrap:anywhere');
     expect(name.className).not.toContain('truncate');
 
-    const list = screen.getByRole('list', { name: 'Paired PCs' });
-    expect(list.className).toContain('max-h-40');
+    const list = screen.getByRole('list', { name: '已配对电脑' });
+    expect(list.className).toContain('max-h-44');
     expect(list.className).toContain('overflow-y-auto');
   });
 
@@ -59,11 +59,11 @@ describe('ForgetPcIdentity', () => {
     useAppStore.getState().setDiscoveredStreamers([streamer]);
     render(<ForgetPcIdentity />);
 
-    expect(await screen.findByText('No paired PCs')).toBeTruthy();
+    expect(await screen.findByText('暂无已配对电脑')).toBeTruthy();
     pairedPcIds = ['pc-2'];
     useAppStore.getState().setConnectedStreamer(streamer);
 
-    expect(await screen.findByLabelText('Forget Laptop')).toBeTruthy();
+    expect(await screen.findByLabelText('清除 Laptop 的配对')).toBeTruthy();
   });
 
   it('removes only the selected PC after native removal succeeds', async () => {
@@ -76,15 +76,15 @@ describe('ForgetPcIdentity', () => {
       ]);
     render(<ForgetPcIdentity />);
 
-    await screen.findByLabelText('Forget Laptop');
-    fireEvent.click(screen.getByLabelText('Forget Laptop'));
-    fireEvent.click(screen.getByRole('button', { name: 'Forget', hidden: true }));
+    await screen.findByLabelText('清除 Laptop 的配对');
+    fireEvent.click(screen.getByLabelText('清除 Laptop 的配对'));
+    fireEvent.click(screen.getByRole('button', { name: '清除配对', hidden: true }));
 
     await waitFor(() =>
       expect(invokeCalls).toContainEqual({ cmd: 'forget_pc_identity', args: { pcId: 'pc-2' } }),
     );
-    await waitFor(() => expect(screen.queryByLabelText('Forget Laptop')).toBeNull());
-    expect(screen.getByLabelText('Forget Desktop PC')).toBeTruthy();
+    await waitFor(() => expect(screen.queryByLabelText('清除 Laptop 的配对')).toBeNull());
+    expect(screen.getByLabelText('清除 Desktop PC 的配对')).toBeTruthy();
     expect(invokeCalls).toContainEqual({ cmd: 'forget_pc_identity', args: { pcId: 'pc-2' } });
     expect(invokeCalls.some((call) => call.cmd === 'disconnect_from_streamer')).toBe(false);
   });
@@ -100,10 +100,10 @@ describe('ForgetPcIdentity', () => {
     });
     render(<ForgetPcIdentity />);
 
-    await screen.findByLabelText('Forget Laptop');
-    fireEvent.click(screen.getByLabelText('Forget Laptop'));
-    expect(screen.getByText('Disconnect from and forget Laptop?')).toBeTruthy();
-    fireEvent.click(screen.getByRole('button', { name: 'Forget', hidden: true }));
+    await screen.findByLabelText('清除 Laptop 的配对');
+    fireEvent.click(screen.getByLabelText('清除 Laptop 的配对'));
+    expect(screen.getByText('断开并清除 Laptop 的配对凭证？')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: '清除配对', hidden: true }));
 
     await waitFor(() =>
       expect(invokeCalls).toContainEqual({ cmd: 'forget_pc_identity', args: { pcId: 'pc-2' } }),
@@ -117,7 +117,7 @@ describe('ForgetPcIdentity', () => {
     expect(useAppStore.getState().connectedStreamer).toBeNull();
     expect(useAppStore.getState().lastConnectedStreamer).toBeNull();
     expect(useAppStore.getState().status).toBe(Status.Listening);
-    await waitFor(() => expect(screen.queryByLabelText('Forget Laptop')).toBeNull());
+    await waitFor(() => expect(screen.queryByLabelText('清除 Laptop 的配对')).toBeNull());
   });
 
   it('keeps the PC when native removal fails', async () => {
@@ -132,9 +132,9 @@ describe('ForgetPcIdentity', () => {
       .setDiscoveredStreamers([makeDiscoveredStreamer({ deviceId: 'pc-2', deviceName: 'Laptop' })]);
     render(<ForgetPcIdentity />);
 
-    await screen.findByLabelText('Forget Laptop');
-    fireEvent.click(screen.getByLabelText('Forget Laptop'));
-    fireEvent.click(screen.getByRole('button', { name: 'Forget', hidden: true }));
+    await screen.findByLabelText('清除 Laptop 的配对');
+    fireEvent.click(screen.getByLabelText('清除 Laptop 的配对'));
+    fireEvent.click(screen.getByRole('button', { name: '清除配对', hidden: true }));
 
     await waitFor(() =>
       expect(invokeCalls).toContainEqual({
@@ -142,16 +142,12 @@ describe('ForgetPcIdentity', () => {
         args: { pcId: 'pc-2' },
       }),
     );
-    expect(screen.getByLabelText('Forget Laptop')).toBeTruthy();
+    expect(screen.getByLabelText('清除 Laptop 的配对')).toBeTruthy();
   });
 
   describe('name resolution when the PC is not live', () => {
     const PC_ID = 'PC_194bf7dbba0d04b999197dc6a6a9433fe22599b9417590b490c57b9845c603e3';
 
-    // The reported bug, both halves. Wi-Fi off empties discoveredStreamers and
-    // nulls connectedStreamer/lastConnectedStreamer; switching to ADB and back
-    // empties discovery the same way. With no live streamer the list used to fall
-    // back to the raw PC_<hex> id.
     it('shows the remembered name with no live streamer at all', async () => {
       rememberPcName(PC_ID, 'DESKTOP-KJCRNVV');
       setupInvokeMock({ get_paired_pc_ids: [PC_ID] });
@@ -192,16 +188,14 @@ describe('ForgetPcIdentity', () => {
       setupInvokeMock({ get_paired_pc_ids: [PC_ID] });
       render(<ForgetPcIdentity />);
 
-      await screen.findByLabelText('Forget DESKTOP-KJCRNVV');
-      fireEvent.click(screen.getByLabelText('Forget DESKTOP-KJCRNVV'));
-      fireEvent.click(screen.getByRole('button', { name: 'Forget', hidden: true }));
+      await screen.findByLabelText('清除 DESKTOP-KJCRNVV 的配对');
+      fireEvent.click(screen.getByLabelText('清除 DESKTOP-KJCRNVV 的配对'));
+      fireEvent.click(screen.getByRole('button', { name: '清除配对', hidden: true }));
 
       await waitFor(() => expect(loadPcNames()[PC_ID]).toBeUndefined());
     });
 
     it('records the name from a discovery packet, so it survives losing the link', async () => {
-      // Exactly the Wi-Fi-off sequence: discovered while up, then everything
-      // live is cleared, and the name has to come back from the cache.
       useAppStore
         .getState()
         .updateDiscoveredStreamer(

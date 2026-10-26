@@ -17,7 +17,7 @@ describe('StreamerList', () => {
   it('shows empty state when scanning with no streamers', () => {
     useAppStore.getState().setStatus(Status.Listening);
     render(<StreamerList />);
-    expect(screen.getByText(/Scanning for PCs/i)).toBeTruthy();
+    expect(screen.getByText(/正在扫描局域网中的电脑/i)).toBeTruthy();
   });
 
   it('renders streamer cards', () => {
@@ -39,7 +39,7 @@ describe('StreamerList', () => {
         { deviceId: 'pc-1', deviceName: 'My PC', addr: '192.168.1.10:9000', isOffline: false },
       ]);
     render(<StreamerList />);
-    expect(screen.getByText('Connect')).toBeTruthy();
+    expect(screen.getByText('连接')).toBeTruthy();
   });
 
   it('shows disconnect for connected streamer', () => {
@@ -55,7 +55,7 @@ describe('StreamerList', () => {
       discoveredStreamers: [streamer],
     });
     render(<StreamerList />);
-    expect(screen.getByText('Disconnect')).toBeTruthy();
+    expect(screen.getByText('断开')).toBeTruthy();
   });
 
   it('shows ADB label for localhost streamers', () => {
@@ -66,7 +66,7 @@ describe('StreamerList', () => {
         { deviceId: 'adb-1', deviceName: 'ADB PC', addr: '127.0.0.1:9000', isOffline: false },
       ]);
     render(<StreamerList />);
-    expect(screen.getByText('ADB (USB Debug)')).toBeTruthy();
+    expect(screen.getByText('ADB (USB 调试)')).toBeTruthy();
   });
 
   it('shows Pause button when status is Playing', () => {
@@ -82,7 +82,7 @@ describe('StreamerList', () => {
       discoveredStreamers: [streamer],
     });
     render(<StreamerList />);
-    expect(screen.getByRole('button', { name: /Pause/i })).toBeTruthy();
+    expect(screen.getByRole('button', { name: /暂停/i })).toBeTruthy();
   });
 
   it('shows Resume button when status is Paused', () => {
@@ -98,15 +98,13 @@ describe('StreamerList', () => {
       discoveredStreamers: [streamer],
     });
     render(<StreamerList />);
-    expect(screen.getByRole('button', { name: /Resume/i })).toBeTruthy();
+    expect(screen.getByRole('button', { name: /继续/i })).toBeTruthy();
   });
 
   it('scrolls without a visible scrollbar', () => {
     useAppStore.getState().setStatus(Status.Listening);
     render(<StreamerList />);
-    const scroller = screen.getByLabelText('Discovered streamers').closest('.overflow-y-auto');
-    // Scrolling must survive hiding the bar — `hide-scrollbar` only suppresses
-    // the chrome, so the container has to keep `overflow-y-auto`.
+    const scroller = screen.getByLabelText('已发现的电脑设备').closest('.overflow-y-auto');
     expect(scroller).toBeTruthy();
     expect(scroller?.className).toContain('hide-scrollbar');
     expect(scroller?.className).not.toContain('custom-scrollbar');

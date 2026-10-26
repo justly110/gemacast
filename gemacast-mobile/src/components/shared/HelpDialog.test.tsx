@@ -2,7 +2,6 @@ import { describe, it, expect, beforeEach, mock } from 'bun:test';
 import { render, screen, cleanup, fireEvent, renderHook } from '@testing-library/react';
 import { HelpDialog, useHelpDialog } from './HelpDialog';
 
-// Mock the help content
 mock.module('../../core/help-content', () => ({
   HELP_CONTENT: {
     'test-key': {
@@ -35,7 +34,7 @@ describe('HelpDialog Component', () => {
   it('calls onClose when close button is clicked', () => {
     const onClose = mock();
     render(<HelpDialog activeKey="test-key" onClose={onClose} dialogRef={{ current: null }} />);
-    fireEvent.click(screen.getByLabelText('Close help'));
+    fireEvent.click(screen.getByLabelText('关闭帮助'));
     expect(onClose).toHaveBeenCalled();
   });
 });
@@ -50,9 +49,8 @@ describe('useHelpDialog Hook', () => {
     const { result } = renderHook(() => useHelpDialog());
 
     render(<>{result.current.renderHelpButton('test-key')}</>);
-    const btn = screen.getByLabelText('Help');
+    const btn = screen.getByLabelText('帮助');
 
-    // Assign a mock dialog element to the ref to test showModal
     const mockDialog = document.createElement('dialog');
     mockDialog.showModal = mock();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -61,7 +59,5 @@ describe('useHelpDialog Hook', () => {
     fireEvent.click(btn);
 
     expect(mockDialog.showModal).toHaveBeenCalled();
-    // Since we clicked it, the state updates to 'test-key', but renderHook doesn't rerender automatically in this setup without act.
-    // We can just verify the modal was called.
   });
 });

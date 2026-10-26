@@ -56,7 +56,7 @@ export function BitrateSelect() {
       />
 
       {settings.bitratePreset === 'custom' && (
-        <div className="mt-2 flex items-center gap-2 animate-[fade-in_200ms_ease-out]">
+        <div className="mt-2.5 flex items-center gap-2 rounded-2xl border border-border/70 bg-background/50 p-2 backdrop-blur-md animate-[fade-in_200ms_ease-out]">
           <input
             type="number"
             value={customKbps}
@@ -64,12 +64,12 @@ export function BitrateSelect() {
             placeholder="128"
             min={6}
             max={512}
-            className="flex-1 mr-1 rounded-sm border border-border bg-background px-2 py-1 text-left text-base text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+            className="flex-1 rounded-xl border border-border/70 bg-background/60 px-3 py-1.5 text-sm font-mono text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/25"
           />
-          <span className="text-[0.9rem] font-medium text-muted-foreground">Kbps</span>
+          <span className="text-xs font-semibold text-muted-foreground">Kbps</span>
           <button
             type="button"
-            className="rounded-md bg-primary px-[0.9rem] py-[0.45rem] text-[0.85rem] font-semibold text-primary-foreground transition-opacity hover:opacity-90 active:opacity-80 disabled:cursor-not-allowed disabled:opacity-40"
+            className="rounded-xl bg-primary px-3.5 py-1.5 text-xs font-bold text-primary-foreground shadow-sm transition-all duration-150 hover:opacity-90 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
             onClick={applyCustom}
             disabled={
               !customKbps ||

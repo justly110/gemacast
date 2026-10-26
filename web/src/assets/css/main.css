@@ -5,83 +5,140 @@ button > * {
 }
 
 @theme {
-  --color-background: #fbf1c7;
-  --color-foreground: #3c3836;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 
-  --color-card: #fbf1c7;
-  --color-card-foreground: #3c3836;
+  /* Modern Glass Cosmic Dark */
+  --color-background: #080c14;
+  --color-foreground: #f8fafc;
 
-  --color-popover: #ebdbb2;
-  --color-popover-foreground: #3c3836;
+  --color-card: rgba(15, 23, 42, 0.6);
+  --color-card-foreground: #f8fafc;
 
-  --color-primary: #3c3836;
-  --color-primary-foreground: #fbf1c7;
+  --color-popover: rgba(15, 23, 42, 0.85);
+  --color-popover-foreground: #f8fafc;
 
-  --color-secondary: #ebdbb2;
-  --color-secondary-foreground: #504945;
+  --color-primary: #38bdf8;
+  --color-primary-foreground: #080c14;
 
-  --color-muted: #ebdbb2;
-  --color-muted-foreground: #504945;
+  --color-secondary: rgba(30, 41, 59, 0.6);
+  --color-secondary-foreground: #e2e8f0;
 
-  --color-accent: #d5c4a1;
-  --color-accent-foreground: #3c3836;
+  --color-muted: rgba(30, 41, 59, 0.5);
+  --color-muted-foreground: #94a3b8;
 
-  --color-destructive: #9d0006;
-  --color-destructive-foreground: #fbf1c7;
-  --color-destructive-muted: #9d000618;
+  --color-accent: rgba(56, 189, 248, 0.15);
+  --color-accent-foreground: #38bdf8;
 
-  --color-border: #d5c4a1;
-  --color-input: #d5c4a1;
-  --color-ring: #3c3836;
+  --color-destructive: #f87171;
+  --color-destructive-foreground: #ffffff;
+  --color-destructive-muted: rgba(248, 113, 113, 0.15);
 
-  --color-status-ok: #79740e;
-  --color-status-ok-bg: #ebdbb2;
-  --color-status-ok-border: #bdae93;
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-input: rgba(15, 23, 42, 0.6);
+  --color-ring: #38bdf8;
 
-  --color-status-warn: #b57614;
-  --color-status-warn-bg: #ebdbb2;
-  --color-status-warn-border: #bdae93;
+  --color-status-ok: #34d399;
+  --color-status-ok-bg: rgba(52, 211, 153, 0.12);
+  --color-status-ok-border: rgba(52, 211, 153, 0.28);
 
-  --color-status-lost: #9d0006;
-  --color-status-lost-bg: #ebdbb2;
-  --color-status-lost-border: #bdae93;
+  --color-status-warn: #fbbf24;
+  --color-status-warn-bg: rgba(251, 191, 36, 0.12);
+  --color-status-warn-border: rgba(251, 191, 36, 0.28);
 
-  --color-status-connecting: #076678;
-  --color-status-connecting-bg: #ebdbb2;
-  --color-status-connecting-border: #bdae93;
+  --color-status-lost: #f87171;
+  --color-status-lost-bg: rgba(248, 113, 113, 0.12);
+  --color-status-lost-border: rgba(248, 113, 113, 0.28);
 
-  --color-accent-red: #9d0006;
-  --color-accent-green: #79740e;
-  --color-accent-yellow: #b57614;
-  --color-accent-blue: #076678;
-  --color-accent-aqua: #427b58;
-  --color-accent-orange: #af3a03;
+  --color-status-connecting: #38bdf8;
+  --color-status-connecting-bg: rgba(56, 189, 248, 0.12);
+  --color-status-connecting-border: rgba(56, 189, 248, 0.28);
+
+  --color-accent-red: #f87171;
+  --color-accent-green: #34d399;
+  --color-accent-yellow: #fbbf24;
+  --color-accent-blue: #38bdf8;
+  --color-accent-aqua: #22d3ee;
+  --color-accent-orange: #fb923c;
+}
+
+:root {
+  font-family: var(--font-sans);
+  color-scheme: dark;
+
+  /* Glass tokens */
+  --glass-bg: rgba(15, 23, 42, 0.55);
+  --glass-bg-hover: rgba(30, 41, 59, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.5), inset 0 1px 1px 0 rgba(255, 255, 255, 0.12);
+  --glass-shadow-lg: 0 24px 60px -12px rgba(0, 0, 0, 0.65), inset 0 1px 2px 0 rgba(255, 255, 255, 0.16);
 }
 
 html {
   scroll-behavior: smooth;
-}
-
-section,
-main {
-  min-height: 100dvh;
-  min-height: 100vh;
-  border-bottom: 1px solid var(--color-primary);
-  scroll-margin-top: max(72px, 10vh);
+  background-color: var(--color-background);
 }
 
 body {
   background-color: var(--color-background);
+  color: var(--color-foreground);
+  overflow-x: hidden;
+  margin: 0;
+}
+
+section {
+  scroll-margin-top: 80px;
+}
+
+/* 现代磨砂玻璃工具类 */
+@utility glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+@utility glass-panel {
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow-lg);
+}
+
+@utility glass-btn {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: var(--color-foreground);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @utility offset-shadow {
-  box-shadow: 4px 4px 0 0 var(--color-primary);
+  box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.4), inset 0 1px 1px 0 rgba(255, 255, 255, 0.12);
 }
 
 @utility offset-shadow-sm {
-  box-shadow: 2px 2px 0 0 var(--color-primary);
+  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.3), inset 0 1px 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 @utility offset-shadow-none {
-  box-shadow: 0 0 0 0 var(--color-primary);
+  box-shadow: none;
+}
+
+/* 极光背景流光 */
+@keyframes aurora-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(6%, 8%) scale(1.1); }
+}
+
+@keyframes aurora-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-8%, -5%) scale(1.12); }
+}
+
+@keyframes aurora-3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(4%, -6%) scale(1.08); }
 }

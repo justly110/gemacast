@@ -35,7 +35,7 @@ beforeEach(() => {
 describe('BufferPresetSelect', () => {
   it('renders correctly with current preset', () => {
     render(<BufferPresetSelect />);
-    expect(screen.getByText('Auto')).toBeTruthy();
+    expect(screen.getByText('自动')).toBeTruthy();
   });
 
   it('renders all presets including saved ones when opened', () => {
@@ -44,8 +44,8 @@ describe('BufferPresetSelect', () => {
     fireEvent.click(trigger);
 
     // Built-in presets
-    expect(screen.getByText('Wired')).toBeTruthy();
-    expect(screen.getByText('Custom')).toBeTruthy();
+    expect(screen.getByText('有线模式')).toBeTruthy();
+    expect(screen.getByText('自定义')).toBeTruthy();
     // Saved preset
     expect(screen.getByText('My Preset')).toBeTruthy();
   });
@@ -55,7 +55,7 @@ describe('BufferPresetSelect', () => {
     const trigger = screen.getAllByRole('button')[0];
     fireEvent.click(trigger);
 
-    fireEvent.click(screen.getByText('Wired'));
+    fireEvent.click(screen.getByText('有线模式'));
 
     expect(useAppStore.getState().settings.bufferPreset).toBe('wired');
   });
@@ -65,7 +65,7 @@ describe('BufferPresetSelect', () => {
     const trigger = screen.getAllByRole('button')[0];
     fireEvent.click(trigger);
 
-    fireEvent.click(screen.getByText('Custom'));
+    fireEvent.click(screen.getByText('自定义'));
 
     expect(useAppStore.getState().settings.bufferPreset).toBe('custom');
   });

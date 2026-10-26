@@ -34,8 +34,6 @@ export function ForgetPcIdentity() {
       .then((ids) => {
         if (active) {
           setPairedPcIds([...new Set(ids)]);
-          // Read the cache alongside the trust store rather than during render,
-          // so the two always describe the same moment.
           setRememberedNames(loadPcNames());
         }
       })
@@ -50,9 +48,6 @@ export function ForgetPcIdentity() {
   }, [connectedStreamerId]);
 
   const streamers = (() => {
-    // Cached names first, then live state on top: a PC that is currently
-    // discovered or connected has the freshest name, but the cache is the only
-    // source that survives Wi-Fi dropping or a switch through ADB.
     const byId = new Map<string, string>(Object.entries(rememberedNames));
     for (const streamer of [...discoveredStreamers, lastConnectedStreamer, connectedStreamer]) {
       if (streamer?.deviceName) byId.set(streamer.deviceId, streamer.deviceName);
@@ -89,30 +84,32 @@ export function ForgetPcIdentity() {
   return (
     <div className="space-y-2">
       {streamers.length === 0 ? (
-        <p className="text-xs text-muted-foreground/70">暂无已配对电脑</p>
+        <div className="rounded-2xl border border-border/50 bg-background/40 p-4 text-center">
+          <p className="text-xs font-medium text-muted-foreground/70">暂无已配对电脑</p>
+        </div>
       ) : (
         <div
-          className="max-h-40 space-y-1 overflow-y-auto overscroll-contain pr-1"
+          className="max-h-44 space-y-1.5 overflow-y-auto overscroll-contain pr-1 hide-scrollbar"
           role="list"
           aria-label="已配对电脑"
         >
           {streamers.map((streamer) => (
             <div
               key={streamer.deviceId}
-              className="flex items-start justify-between gap-3 text-sm"
+              className="flex items-center justify-between gap-3 rounded-xl border border-border/60 bg-background/50 px-3.5 py-2 text-sm backdrop-blur-md transition-colors hover:border-primary/40"
               role="listitem"
             >
-              <span className="min-w-0 flex-1 wrap-anywhere leading-snug">
+              <span className="min-w-0 flex-1 [overflow-wrap:anywhere] leading-snug font-medium text-foreground">
                 {streamer.deviceName}
               </span>
               <button
                 type="button"
-                className="shrink-0 rounded-default p-2 text-muted-foreground hover:bg-muted hover:text-status-lost"
+                className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-all duration-150 hover:bg-destructive/15 hover:text-destructive active:scale-90"
                 title={`清除 ${streamer.deviceName} 的配对`}
                 aria-label={`清除 ${streamer.deviceName} 的配对`}
                 onClick={() => setSelectedPc(streamer)}
               >
-                <Trash2 className="h-4 w-4" />
+                <Trash2 className="h-3.5 w-3.5" />
               </button>
             </div>
           ))}
@@ -123,8 +120,8 @@ export function ForgetPcIdentity() {
         message={
           selectedPc
             ? selectedPc.deviceId === connectedStreamerId
-              ? `Disconnect from and forget ${selectedPc.deviceName}?`
-              : `Forget the saved identity for ${selectedPc.deviceName}?`
+              ? `断开并清除 ${selectedPc.deviceName} 的配对凭证？`
+              : `确定要清除电脑 ${selectedPc.deviceName} 的信任身份吗？`
             : ''
         }
         confirmLabel="清除配对"

@@ -49,29 +49,29 @@ describe('StreamerCard', () => {
 
   it('shows Connect when not connected', () => {
     render(<StreamerCard {...defaultProps()} />);
-    expect(screen.getByText('Connect')).toBeTruthy();
+    expect(screen.getByText('连接')).toBeTruthy();
   });
 
   it('shows Disconnect when connected', () => {
     render(<StreamerCard {...defaultProps()} isConnected />);
-    expect(screen.getByText('Disconnect')).toBeTruthy();
+    expect(screen.getByText('断开')).toBeTruthy();
   });
 
   it('shows spinner when loading and connected', () => {
     render(<StreamerCard {...defaultProps()} isConnected isLoading />);
-    const btn = screen.getByRole('button', { name: /Disconnect/i });
+    const btn = screen.getByRole('button', { name: /断开/i });
     expect(btn.querySelector('span:first-child')?.className).toContain('opacity-0');
   });
 
   it('shows ADB icon for localhost streamers', () => {
     const streamer = makeStreamer({ addr: '127.0.0.1:9000' });
     render(<StreamerCard {...defaultProps()} streamer={streamer} />);
-    expect(screen.getByText('ADB (USB Debug)')).toBeTruthy();
+    expect(screen.getByText('ADB (USB 调试)')).toBeTruthy();
   });
 
   it('disables button when isDisabled', () => {
     render(<StreamerCard {...defaultProps()} isDisabled />);
-    const btn = screen.getByRole('button', { name: /Connect to/i });
+    const btn = screen.getByRole('button', { name: /连接至/i });
     expect(btn.hasAttribute('disabled')).toBe(true);
   });
 
@@ -90,19 +90,19 @@ describe('StreamerCard', () => {
 
   it('does not show play/pause button when not connected', () => {
     render(<StreamerCard {...defaultProps()} />);
-    expect(screen.queryByRole('button', { name: /Pause/i })).toBeNull();
-    expect(screen.queryByRole('button', { name: /Resume/i })).toBeNull();
+    expect(screen.queryByRole('button', { name: /暂停/i })).toBeNull();
+    expect(screen.queryByRole('button', { name: /继续/i })).toBeNull();
   });
 
   it('shows Pause button when connected and playing', () => {
     render(<StreamerCard {...defaultProps()} isConnected isPlaying />);
-    const btn = screen.getByRole('button', { name: /Pause/i });
+    const btn = screen.getByRole('button', { name: /暂停/i });
     expect(btn).toBeTruthy();
   });
 
   it('shows Play button when connected and paused', () => {
     render(<StreamerCard {...defaultProps()} isConnected isPlaying={false} />);
-    const btn = screen.getByRole('button', { name: /Resume/i });
+    const btn = screen.getByRole('button', { name: /继续/i });
     expect(btn).toBeTruthy();
   });
 
@@ -112,7 +112,7 @@ describe('StreamerCard', () => {
       called = true;
     };
     render(<StreamerCard {...defaultProps()} isConnected isPlaying onPlayPause={onPlayPause} />);
-    const btn = screen.getByRole('button', { name: /Pause/i });
+    const btn = screen.getByRole('button', { name: /暂停/i });
     fireEvent.click(btn);
     expect(called).toBe(true);
   });

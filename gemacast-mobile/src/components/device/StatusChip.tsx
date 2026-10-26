@@ -1,31 +1,68 @@
 import { useAppStore } from '../../stores/app-store';
 import { Status } from '../../core/types';
 
-/**
- * Status label presentation.
- *
- * There is deliberately no indicator dot. The metrics row beside it already
- * encodes health in the tinted values, so a dot was a second encoding of the
- * same fact — and its glow + breathing ring were the loudest thing in a panel
- * whose job is to be read, not watched.
- *
- * `tone` spends colour only where it carries information: the ordinary states
- * are neutral, and only paused/reconnecting tint. A green "Connected" next to
- * three green numbers says nothing the numbers do not already say.
- */
-const STATUS_CONFIG: Record<
-  Status,
-  { tone: string; label: string } | ((attempts: number) => { tone: string; label: string })
-> = {
-  [Status.Idle]: { tone: 'text-muted-foreground', label: '空闲' },
-  [Status.Listening]: { tone: 'text-muted-foreground', label: '扫描中…' },
-  [Status.Connecting]: { tone: 'text-muted-foreground', label: '连接中…' },
-  [Status.Connected]: { tone: 'text-foreground', label: '已连接' },
-  [Status.Playing]: { tone: 'text-foreground', label: '播放中' },
-  [Status.Paused]: { tone: 'text-status-warn', label: '已暂停' },
+type StatusDisplay = {
+  tone: string;
+  dotBg: string;
+  dotPulse?: boolean;
+  label: string;
+  glow: string;
+  badgeBg: string;
+};
+
+const STATUS_CONFIG: Record<Status, StatusDisplay | ((attempts: number) => StatusDisplay)> = {
+  [Status.Idle]: {
+    tone: 'text-muted-foreground',
+    dotBg: 'bg-muted-foreground/60',
+    label: '空闲',
+    glow: 'transparent',
+    badgeBg: 'bg-muted/40 border-border/50',
+  },
+  [Status.Listening]: {
+    tone: 'text-primary font-medium',
+    dotBg: 'bg-primary',
+    dotPulse: true,
+    label: '扫描中…',
+    glow: 'shadow-[0_0_8px_var(--color-primary)]',
+    badgeBg: 'bg-primary/10 border-primary/25',
+  },
+  [Status.Connecting]: {
+    tone: 'text-status-connecting font-medium',
+    dotBg: 'bg-status-connecting',
+    dotPulse: true,
+    label: '连接中…',
+    glow: 'shadow-[0_0_8px_var(--color-status-connecting)]',
+    badgeBg: 'bg-status-connecting-bg border-status-connecting-border',
+  },
+  [Status.Connected]: {
+    tone: 'text-status-ok font-semibold',
+    dotBg: 'bg-status-ok',
+    label: '已连接',
+    glow: 'shadow-[0_0_8px_var(--color-status-ok)]',
+    badgeBg: 'bg-status-ok-bg border-status-ok-border',
+  },
+  [Status.Playing]: {
+    tone: 'text-status-ok font-semibold',
+    dotBg: 'bg-status-ok',
+    dotPulse: true,
+    label: '播放中',
+    glow: 'shadow-[0_0_10px_var(--color-status-ok)]',
+    badgeBg: 'bg-status-ok-bg border-status-ok-border',
+  },
+  [Status.Paused]: {
+    tone: 'text-status-warn font-semibold',
+    dotBg: 'bg-status-warn',
+    label: '已暂停',
+    glow: 'shadow-[0_0_8px_var(--color-status-warn)]',
+    badgeBg: 'bg-status-warn-bg border-status-warn-border',
+  },
   [Status.Reconnecting]: (attempts) => ({
-    tone: 'text-status-warn',
+    tone: 'text-status-warn font-semibold',
+    dotBg: 'bg-status-warn',
+    dotPulse: true,
     label: attempts > 0 ? `重连中 (${attempts}/5)…` : '重连中…',
+    glow: 'shadow-[0_0_8px_var(--color-status-warn)]',
+    badgeBg: 'bg-status-warn-bg border-status-warn-border',
   }),
 };
 
@@ -40,9 +77,23 @@ export function StatusChip() {
     <span
       role="status"
       aria-live="polite"
-      className={`text-xs font-medium tracking-wide whitespace-nowrap transition-colors duration-300 ${config.tone}`}
+      className={`
+        inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium tracking-wide
+        whitespace-nowrap transition-all duration-300 backdrop-blur-md
+        ${config.badgeBg} ${config.tone}
+      `}
     >
-      {config.label}
+      <span className="relative flex h-2 w-2">
+        {config.dotPulse && (
+          <span
+            className={`absolute inline-flex h-full w-full rounded-full opacity-75 animate-ping ${config.dotBg}`}
+          />
+        )}
+        <span
+          className={`relative inline-flex h-2 w-2 rounded-full ${config.dotBg} ${config.glow}`}
+        />
+      </span>
+      <span>{config.label}</span>
     </span>
   );
 }

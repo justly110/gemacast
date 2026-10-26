@@ -3,7 +3,7 @@ import { render, screen, cleanup, act, fireEvent } from '@testing-library/react'
 import { useAppStore } from '../../stores/app-store';
 import { SettingsDrawer } from './SettingsDrawer';
 
-const panel = () => document.querySelector('[role="dialog"][aria-label="Settings"]')!;
+const panel = () => document.querySelector('[role="dialog"][aria-label="设置"]')!;
 
 beforeEach(() => {
   cleanup();
@@ -23,27 +23,27 @@ describe('SettingsDrawer', () => {
 
   it('renders Buffer Preset label', () => {
     render(<SettingsDrawer />);
-    expect(screen.getAllByText('Buffer Preset').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText('缓冲预设').length).toBeGreaterThanOrEqual(1);
   });
 
   it('renders Audio Bitrate label', () => {
     render(<SettingsDrawer />);
-    expect(screen.getAllByText('Audio Bitrate Quality').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText('音频码率质量').length).toBeGreaterThanOrEqual(1);
   });
 
   it('renders Mode label', () => {
     render(<SettingsDrawer />);
-    expect(screen.getAllByText('Mode').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText('连接模式').length).toBeGreaterThanOrEqual(1);
   });
 
   it('renders Match Volume With PC label', () => {
     render(<SettingsDrawer />);
-    expect(screen.getAllByText('Match Volume With PC').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText('与电脑音量同步').length).toBeGreaterThanOrEqual(1);
   });
 
   it('explains an unreported volume level while the PC cannot sync it', () => {
     render(<SettingsDrawer />);
-    expect(screen.getAllByText('Not reported by this PC').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText('当前电脑未上报音量').length).toBeGreaterThanOrEqual(1);
   });
 
   it('drops the hint once the PC reports volume sync support', () => {
@@ -52,7 +52,7 @@ describe('SettingsDrawer', () => {
       supportsVolumeSync: true,
     });
     render(<SettingsDrawer />);
-    expect(screen.queryByText('Not reported by this PC')).toBeNull();
+    expect(screen.queryByText('当前电脑未上报音量')).toBeNull();
   });
 
   describe('sliding', () => {

@@ -185,17 +185,17 @@ fn handle_tray_event(
             response_tx,
         } => {
             let title = if replaces_existing_identity {
-                "Gemacast Device Identity Changed"
+                "Gemacast 设备身份已变更"
             } else {
-                "Gemacast Connection Request"
+                "Gemacast 连接配对请求"
             };
             let identity_warning = if replaces_existing_identity {
-                "\n\nThe saved key for this device changed, usually after reinstalling or resetting the phone. Approving will replace the old key."
+                "\n\n该设备保存的密钥发生变化，通常发生于手机重装系统或重置应用后。点击允许将替换旧的信任密钥。"
             } else {
                 ""
             };
             let description = format!(
-                "Allow {name} ({}) to receive and control this PC's audio?{identity_warning}\n\nConfirm that the phone shows this same code:\n\n{pairing_code}\n\nDevice key: {}\nRequest: {request_id}",
+                "允许设备 {name} ({}) 接收并控制此电脑的音频？{identity_warning}\n\n请确认手机屏幕上展示了相同的 6 位验证码：\n\n{pairing_code}\n\n设备公钥指纹: {}\n请求 ID: {request_id}",
                 addr.ip(),
                 &key_fingerprint[..key_fingerprint.len().min(16)]
             );
@@ -274,7 +274,7 @@ fn handle_tray_event(
             // here would freeze the tray until the user dismisses it.
             std::thread::spawn(move || {
                 crate::dialog::MessageDialog::new()
-                    .set_title("Gemacast Firewall Warning")
+                    .set_title("Gemacast 防火墙提示")
                     .set_description(message)
                     .set_level(crate::dialog::MessageLevel::Warning)
                     .set_buttons(crate::dialog::MessageButtons::Ok)
@@ -306,10 +306,10 @@ fn handle_menu_event(
     {
         if let Some(installer_path) = pending_installer.as_ref() {
             let confirmed = rfd::MessageDialog::new()
-                .set_title("Gemacast Update")
+                .set_title("Gemacast 软件更新")
                 .set_description(
-                    "A new version of Gemacast has been downloaded.\n\n\
-                     Click OK to install the update now.",
+                    "新版本 Gemacast 已下载完成。\n\n\
+                     点击“确定”立即退出并安装更新。",
                 )
                 .set_level(rfd::MessageLevel::Info)
                 .set_buttons(rfd::MessageButtons::OkCancel)
@@ -331,8 +331,8 @@ fn handle_menu_event(
                     }
                     Err(e) => {
                         rfd::MessageDialog::new()
-                            .set_title("Update Failed")
-                            .set_description(format!("Failed to launch installer: {e}"))
+                            .set_title("更新失败")
+                            .set_description(format!("启动安装程序失败: {e}"))
                             .set_level(rfd::MessageLevel::Error)
                             .show();
                     }
@@ -375,7 +375,8 @@ fn handle_menu_event(
 
     // --- Broadcast toggle ---
     if *menu_event == tray.broadcast_toggle_item.id() {
-        let currently_broadcasting = tray.broadcast_toggle_item.text().contains("Stop");
+        let text = tray.broadcast_toggle_item.text();
+        let currently_broadcasting = text.contains("Stop") || text.contains("停止");
 
         let command = if currently_broadcasting {
             AppCommand::StopBroadcasting
@@ -384,11 +385,11 @@ fn handle_menu_event(
         };
 
         if let Err(e) = command_tx.try_send(command) {
-            display_error_dialog(format!("Failed to toggle streaming: {e}"));
+            display_error_dialog(format!("切换推流状态失败: {e}"));
         } else if currently_broadcasting {
-            tray.broadcast_toggle_item.set_text("Start Stream");
+            tray.broadcast_toggle_item.set_text("启动串流");
         } else {
-            tray.broadcast_toggle_item.set_text("Stop Stream");
+            tray.broadcast_toggle_item.set_text("停止串流");
         }
         return;
     }

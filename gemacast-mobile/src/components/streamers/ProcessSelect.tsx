@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Monitor, Volume2, Settings, ChevronDown } from 'lucide-react';
+import { Monitor, Volume2, Settings, ChevronDown, RefreshCw } from 'lucide-react';
 import type { AudioSource, ProcessInfo, DiscoveredStreamer } from '../../core/types';
 import { useConnection } from '../../hooks/use-connection';
 import { PULL_REFRESH_IGNORE_ATTR } from '../../hooks/use-pull-to-refresh';
@@ -54,19 +54,19 @@ export function ProcessSelect({
     if (currentSource.type === 'desktop') {
       return (
         <div className="flex min-w-0 items-center gap-1.5">
-          <Monitor className="h-3.5 w-3.5 shrink-0" />
-          <span className="truncate">Desktop Audio</span>
+          <Monitor className="h-3.5 w-3.5 shrink-0 text-primary" />
+          <span className="truncate font-medium">Desktop Audio</span>
         </div>
       );
     }
     return (
       <div className="flex min-w-0 items-center gap-1.5">
         {currentSource.hasAudioSession ? (
-          <Volume2 className="h-3.5 w-3.5 shrink-0" />
+          <Volume2 className="h-3.5 w-3.5 shrink-0 text-accent-green" />
         ) : (
-          <Settings className="h-3.5 w-3.5 shrink-0" />
+          <Settings className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
         )}
-        <span className="truncate">
+        <span className="truncate font-medium">
           {currentSource.name} (PID: {currentSource.pid})
         </span>
       </div>
@@ -81,51 +81,53 @@ export function ProcessSelect({
   const hasDesktop = audioSources.some((s) => s.type === 'desktop');
 
   return (
-    <div className="relative flex w-full items-center gap-2 pt-2">
-      <span className="shrink-0 whitespace-nowrap text-[0.7rem] font-medium text-muted-foreground">
+    <div className="relative flex w-full items-center gap-2 pt-2.5 mt-2 border-t border-border/50">
+      <span className="shrink-0 whitespace-nowrap text-xs font-semibold text-muted-foreground/80">
         音源:
       </span>
       <button
         type="button"
         className={`
-          flex min-w-0 flex-1 items-center gap-1.5 rounded-[calc(var(--radius-default)-0.2rem)]
-          border border-border bg-background px-2 py-1 text-[0.7rem] font-medium text-foreground
-          transition-colors hover:border-primary focus-visible:border-primary focus-visible:shadow-[0_0_0_1px_var(--color-primary)] focus-visible:outline-none
+          flex min-w-0 flex-1 items-center justify-between gap-2 rounded-xl
+          border border-border/70 bg-background/50 px-3 py-1.5 text-xs text-foreground
+          backdrop-blur-md transition-all duration-200 hover:border-primary/50 hover:bg-background/80
+          focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/25 focus-visible:outline-none
         `}
         onClick={() => (open ? startClosing() : setOpen(true))}
       >
         <div className="flex min-w-0 flex-1 items-center gap-1.5">{currentLabel}</div>
-        <span
-          className={`shrink-0 text-muted-foreground transition-transform duration-200 ${open && !closing ? 'rotate-180' : ''}`}
-        >
-          <ChevronDown className="h-2.5 w-2.5" />
-        </span>
+        <ChevronDown
+          className={`h-3 w-3 shrink-0 text-muted-foreground transition-transform duration-200 ${open && !closing ? 'rotate-180 text-foreground' : ''}`}
+        />
       </button>
 
       {(open || closing) && (
         <div
-          // Scrolls its own process list; the streamer list's pull-to-refresh must
-          // not claim drags that start in here.
           {...{ [PULL_REFRESH_IGNORE_ATTR]: '' }}
-          className={`absolute left-0 right-0 top-full z-50 mt-1 overflow-hidden rounded-default border border-border bg-popover shadow-[0_8px_24px_rgba(0,0,0,0.12),0_2px_8px_rgba(0,0,0,0.08)] ${closing ? 'animate-[fade-out_150ms_ease-in_forwards]' : 'animate-[fade-in_150ms_ease-out]'}`}
+          className={`
+            absolute left-0 right-0 top-full z-50 mt-1.5 overflow-hidden rounded-2xl
+            border border-border/80 bg-popover/90 shadow-[0_16px_40px_rgba(0,0,0,0.25)]
+            backdrop-blur-2xl
+            ${closing ? 'animate-[fade-out_150ms_ease-in_forwards]' : 'animate-[fade-in_150ms_ease-out]'}
+          `}
         >
-          <div className="flex items-stretch border-b border-border">
+          <div className="flex items-stretch border-b border-border/60 bg-muted/20">
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="搜索进程..."
               className={`
-                flex-1 min-w-0 border-none bg-card px-[0.6rem] py-2 text-[0.7rem]
-                text-card-foreground outline-none focus:bg-secondary
+                flex-1 min-w-0 border-none bg-transparent px-3 py-2 text-xs
+                text-foreground outline-none placeholder:text-muted-foreground/60
               `}
             />
             <button
               type="button"
               aria-label="刷新进程列表"
               className={`
-                flex w-8 shrink-0 items-center justify-center border-l border-border bg-transparent
-                p-[0.4rem] text-muted-foreground transition-colors hover:bg-accent hover:text-card-foreground
+                flex w-9 shrink-0 items-center justify-center border-l border-border/60 bg-transparent
+                p-1 text-muted-foreground transition-colors hover:bg-white/10 hover:text-foreground
               `}
               onClick={async (e) => {
                 e.stopPropagation();
@@ -141,31 +143,17 @@ export function ProcessSelect({
                 }
               }}
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className={isRefreshing ? 'animate-spin' : ''}
-              >
-                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-                <path d="M3 3v5h5" />
-              </svg>
+              <RefreshCw className={`h-3.5 w-3.5 ${isRefreshing ? 'animate-spin text-primary' : ''}`} />
             </button>
           </div>
 
-          <div className="max-h-64 min-h-32 overflow-y-auto py-1">
+          <div className="max-h-60 min-h-28 overflow-y-auto p-1.5 hide-scrollbar">
             {hasDesktop && (
               <button
                 type="button"
                 className={`
-                  flex w-full items-center px-3 py-2 text-left text-xs transition-colors
-                  ${currentSource.type === 'desktop' ? 'bg-accent text-accent-foreground' : 'hover:bg-secondary'}
+                  flex w-full items-center rounded-xl px-3 py-2 text-left text-xs font-medium transition-all duration-150
+                  ${currentSource.type === 'desktop' ? 'bg-primary text-primary-foreground shadow-sm' : 'hover:bg-muted/60 text-foreground'}
                 `}
                 onClick={() => handleSelect({ type: 'desktop' })}
               >
@@ -187,9 +175,9 @@ export function ProcessSelect({
                       : undefined
                   }
                   className={`
-                    flex w-full items-center gap-2 px-3 py-2 text-left text-xs transition-colors
+                    flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-xs font-medium transition-all duration-150
                     ${isProcessDisabled ? 'cursor-not-allowed opacity-40' : ''}
-                    ${isSelected && !isProcessDisabled ? 'bg-accent text-accent-foreground' : isProcessDisabled ? '' : 'hover:bg-secondary'}
+                    ${isSelected && !isProcessDisabled ? 'bg-primary text-primary-foreground shadow-sm' : isProcessDisabled ? '' : 'hover:bg-muted/60 text-foreground'}
                   `}
                   onClick={() =>
                     handleSelect({
@@ -200,15 +188,15 @@ export function ProcessSelect({
                     })
                   }
                 >
-                  <span className="w-5 shrink-0">
+                  <span className="w-4.5 shrink-0">
                     {proc.hasAudioSession ? (
-                      <Volume2 className="h-3.5 w-3.5" />
+                      <Volume2 className={`h-3.5 w-3.5 ${isSelected ? 'text-primary-foreground' : 'text-accent-green'}`} />
                     ) : (
-                      <Settings className="h-3.5 w-3.5 text-muted-foreground" />
+                      <Settings className="h-3.5 w-3.5 opacity-60" />
                     )}
                   </span>
                   <span className="truncate">{proc.name}</span>
-                  <span className="ml-auto shrink-0 text-[10px] text-muted-foreground">
+                  <span className="ml-auto shrink-0 text-[10px] opacity-70 font-mono">
                     PID: {proc.pid}
                   </span>
                 </button>
@@ -216,13 +204,13 @@ export function ProcessSelect({
             })}
 
             {!supportsProcessCapture && filteredProcesses.length > 0 && (
-              <p className="border-t border-border px-3 py-2 text-[10px] text-muted-foreground">
+              <p className="border-t border-border/40 px-3 py-2 text-[10px] text-muted-foreground text-center">
                 此电脑不支持按进程捕获音频
               </p>
             )}
 
             {filteredProcesses.length === 0 && (
-              <p className="px-3 py-2 text-xs text-muted-foreground">未找到相关进程</p>
+              <p className="px-3 py-3 text-xs text-muted-foreground text-center">未找到相关进程</p>
             )}
           </div>
         </div>

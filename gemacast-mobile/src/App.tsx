@@ -110,8 +110,10 @@ export function App() {
 
   if (!ready) {
     return (
-      <div className="flex min-h-dvh items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+      <div className="flex min-h-dvh items-center justify-center bg-background">
+        <div className="flex h-16 w-16 items-center justify-center rounded-3xl border border-border/80 bg-background/50 backdrop-blur-2xl shadow-xl">
+          <div className="h-7 w-7 animate-spin rounded-full border-2 border-primary border-t-transparent shadow-[0_0_12px_var(--color-primary)]" />
+        </div>
       </div>
     );
   }

@@ -50,10 +50,10 @@ describe('connectToStreamer', () => {
 
   it('maps pairing decisions to concise warnings', () => {
     expect(getPairingDecisionWarning('streamer rejected the request (pairing_rejected)')).toBe(
-      'Pairing request rejected on the PC',
+      '电脑端拒绝了配对请求',
     );
     expect(getPairingDecisionWarning(new Error('pairing was cancelled on the phone'))).toBe(
-      'Pairing cancelled',
+      '配对已取消',
     );
     expect(getPairingDecisionWarning('HTTP request failed')).toBeNull();
   });

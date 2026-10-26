@@ -33,8 +33,8 @@ describe('CustomJitterConfig', () => {
       },
     });
     render(<CustomJitterConfig renderHelpButton={mockRenderHelpButton} />);
-    expect(screen.getByText('Buffer Depth')).toBeTruthy();
-    expect(screen.getByText('Preset Name')).toBeTruthy();
+    expect(screen.getByText('缓冲深度')).toBeTruthy();
+    expect(screen.getByText('预设名称')).toBeTruthy();
   });
 
   it('does not show adaptive fields (Buffer Mode, Min Depth, Comfort Cap)', () => {
@@ -66,7 +66,7 @@ describe('CustomJitterConfig', () => {
       },
     });
     render(<CustomJitterConfig renderHelpButton={mockRenderHelpButton} />);
-    const saveBtn = screen.getByText('Save Preset');
+    const saveBtn = screen.getByText('保存预设');
     expect(saveBtn.hasAttribute('disabled')).toBe(true);
   });
 
@@ -82,7 +82,7 @@ describe('CustomJitterConfig', () => {
       },
     });
     render(<CustomJitterConfig renderHelpButton={mockRenderHelpButton} />);
-    expect(screen.queryByText('Delete Preset')).toBeNull();
+    expect(screen.queryByText('删除预设')).toBeNull();
   });
 
   it('shows Delete Preset when editing a saved preset', () => {
@@ -99,6 +99,6 @@ describe('CustomJitterConfig', () => {
       savedPresets: [{ name: 'My Preset', config }],
     });
     render(<CustomJitterConfig renderHelpButton={mockRenderHelpButton} />);
-    expect(screen.getByText('Delete Preset')).toBeTruthy();
+    expect(screen.getByText('删除预设')).toBeTruthy();
   });
 });

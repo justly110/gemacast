@@ -1,65 +1,66 @@
 @import 'tailwindcss';
 
 @theme {
-  --font-sans: 'Inter', 'Avenir', 'Helvetica', 'Arial', sans-serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 
-  /* Gruvbox Light (default) */
-  --color-background: #fbf1c7;
-  --color-foreground: #3c3836;
+  /* Modern Glass Light (default) */
+  --color-background: #f4f6fb;
+  --color-foreground: #0f172a;
 
-  --color-card: #fbf1c7;
-  --color-card-foreground: #3c3836;
+  --color-card: rgba(255, 255, 255, 0.72);
+  --color-card-foreground: #0f172a;
 
-  --color-popover: #ebdbb2;
-  --color-popover-foreground: #3c3836;
+  --color-popover: rgba(255, 255, 255, 0.88);
+  --color-popover-foreground: #0f172a;
 
-  --color-primary: #3c3836;
-  --color-primary-foreground: #fbf1c7;
+  --color-primary: #0284c7;
+  --color-primary-foreground: #ffffff;
 
-  --color-secondary: #ebdbb2;
-  --color-secondary-foreground: #504945;
+  --color-secondary: rgba(241, 245, 249, 0.75);
+  --color-secondary-foreground: #1e293b;
 
-  --color-muted: #ebdbb2;
-  --color-muted-foreground: #7c6f64;
+  --color-muted: rgba(241, 245, 249, 0.65);
+  --color-muted-foreground: #64748b;
 
-  --color-accent: #d5c4a1;
-  --color-accent-foreground: #3c3836;
+  --color-accent: rgba(224, 242, 254, 0.7);
+  --color-accent-foreground: #0369a1;
 
-  --color-destructive: #9d0006;
-  --color-destructive-foreground: #fbf1c7;
-  --color-destructive-muted: #9d000618;
+  --color-destructive: #ef4444;
+  --color-destructive-foreground: #ffffff;
+  --color-destructive-muted: rgba(239, 68, 68, 0.12);
 
-  --color-border: #d5c4a1;
-  --color-input: #d5c4a1;
-  --color-ring: #3c3836;
+  --color-border: rgba(203, 213, 225, 0.7);
+  --color-input: rgba(255, 255, 255, 0.8);
+  --color-ring: #0284c7;
 
-  --color-status-ok: #79740e;
-  --color-status-ok-bg: #ebdbb2;
-  --color-status-ok-border: #bdae93;
+  --color-status-ok: #10b981;
+  --color-status-ok-bg: rgba(16, 185, 129, 0.12);
+  --color-status-ok-border: rgba(16, 185, 129, 0.25);
 
-  --color-status-warn: #b57614;
-  --color-status-warn-bg: #ebdbb2;
-  --color-status-warn-border: #bdae93;
+  --color-status-warn: #f59e0b;
+  --color-status-warn-bg: rgba(245, 158, 11, 0.12);
+  --color-status-warn-border: rgba(245, 158, 11, 0.25);
 
-  --color-status-lost: #9d0006;
-  --color-status-lost-bg: #ebdbb2;
-  --color-status-lost-border: #bdae93;
+  --color-status-lost: #ef4444;
+  --color-status-lost-bg: rgba(239, 68, 68, 0.12);
+  --color-status-lost-border: rgba(239, 68, 68, 0.25);
 
-  --color-status-connecting: #076678;
-  --color-status-connecting-bg: #ebdbb2;
-  --color-status-connecting-border: #bdae93;
+  --color-status-connecting: #0284c7;
+  --color-status-connecting-bg: rgba(2, 132, 199, 0.12);
+  --color-status-connecting-border: rgba(2, 132, 199, 0.25);
 
-  /* Gruvbox accent colors (faded for light mode) */
-  --color-accent-red: #9d0006;
-  --color-accent-green: #79740e;
-  --color-accent-yellow: #b57614;
-  --color-accent-blue: #076678;
-  --color-accent-aqua: #427b58;
-  --color-accent-orange: #af3a03;
+  /* Modern Vibrant Accent Colors */
+  --color-accent-red: #ef4444;
+  --color-accent-green: #10b981;
+  --color-accent-yellow: #f59e0b;
+  --color-accent-blue: #0284c7;
+  --color-accent-aqua: #06b6d4;
+  --color-accent-orange: #f97316;
 
-  --radius-default: 0.5rem;
-  --radius-lg: 0.75rem;
-  --radius-xl: 1rem;
+  --radius-default: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+  --radius-2xl: 1.5rem;
 }
 
 @layer base {
@@ -73,117 +74,142 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     -webkit-text-size-adjust: 100%;
+
+    /* Glass Tokens - Light */
+    --glass-bg: rgba(255, 255, 255, 0.68);
+    --glass-bg-hover: rgba(255, 255, 255, 0.82);
+    --glass-bg-active: rgba(255, 255, 255, 0.9);
+    --glass-border: rgba(255, 255, 255, 0.7);
+    --glass-border-subtle: rgba(226, 232, 240, 0.6);
+    --glass-shadow: 0 8px 32px 0 rgba(148, 163, 184, 0.15), inset 0 1px 1px 0 rgba(255, 255, 255, 0.9);
+    --glass-shadow-lg: 0 16px 48px 0 rgba(148, 163, 184, 0.22), inset 0 1px 2px 0 rgba(255, 255, 255, 0.95);
   }
 
   .dark {
-    /* Gruvbox Dark */
-    --color-background: #282828;
-    --color-foreground: #ebdbb2;
+    /* Modern Glass Dark (Deep Space Cyber) */
+    --color-background: #080c14;
+    --color-foreground: #f1f5f9;
 
-    --color-card: #282828;
-    --color-card-foreground: #ebdbb2;
+    --color-card: rgba(15, 23, 42, 0.58);
+    --color-card-foreground: #f1f5f9;
 
-    --color-popover: #3c3836;
-    --color-popover-foreground: #ebdbb2;
+    --color-popover: rgba(15, 23, 42, 0.85);
+    --color-popover-foreground: #f1f5f9;
 
-    --color-primary: #ebdbb2;
-    --color-primary-foreground: #282828;
+    --color-primary: #38bdf8;
+    --color-primary-foreground: #080c14;
 
-    --color-secondary: #3c3836;
-    --color-secondary-foreground: #d5c4a1;
+    --color-secondary: rgba(30, 41, 59, 0.65);
+    --color-secondary-foreground: #e2e8f0;
 
-    --color-muted: #3c3836;
-    --color-muted-foreground: #a89984;
+    --color-muted: rgba(30, 41, 59, 0.5);
+    --color-muted-foreground: #94a3b8;
 
-    --color-accent: #504945;
-    --color-accent-foreground: #ebdbb2;
+    --color-accent: rgba(56, 189, 248, 0.15);
+    --color-accent-foreground: #38bdf8;
 
-    --color-destructive: #fb4934;
-    --color-destructive-foreground: #ebdbb2;
-    --color-destructive-muted: #fb493426;
+    --color-destructive: #f87171;
+    --color-destructive-foreground: #ffffff;
+    --color-destructive-muted: rgba(248, 113, 113, 0.15);
 
-    --color-border: #504945;
-    --color-input: #504945;
-    --color-ring: #fe8019;
+    --color-border: rgba(255, 255, 255, 0.08);
+    --color-input: rgba(15, 23, 42, 0.6);
+    --color-ring: #38bdf8;
 
-    --color-status-ok: #b8bb26;
-    --color-status-ok-bg: #3c3836;
-    --color-status-ok-border: #504945;
+    --color-status-ok: #34d399;
+    --color-status-ok-bg: rgba(52, 211, 153, 0.12);
+    --color-status-ok-border: rgba(52, 211, 153, 0.28);
 
-    --color-status-warn: #fabd2f;
-    --color-status-warn-bg: #3c3836;
-    --color-status-warn-border: #504945;
+    --color-status-warn: #fbbf24;
+    --color-status-warn-bg: rgba(251, 191, 36, 0.12);
+    --color-status-warn-border: rgba(251, 191, 36, 0.28);
 
-    --color-status-lost: #fb4934;
-    --color-status-lost-bg: #3c3836;
-    --color-status-lost-border: #504945;
+    --color-status-lost: #f87171;
+    --color-status-lost-bg: rgba(248, 113, 113, 0.12);
+    --color-status-lost-border: rgba(248, 113, 113, 0.28);
 
-    --color-status-connecting: #83a598;
-    --color-status-connecting-bg: #3c3836;
-    --color-status-connecting-border: #504945;
+    --color-status-connecting: #38bdf8;
+    --color-status-connecting-bg: rgba(56, 189, 248, 0.12);
+    --color-status-connecting-border: rgba(56, 189, 248, 0.28);
 
-    /* Gruvbox accent colors (bright for dark mode) */
-    --color-accent-red: #fb4934;
-    --color-accent-green: #b8bb26;
-    --color-accent-yellow: #fabd2f;
-    --color-accent-blue: #83a598;
-    --color-accent-aqua: #8ec07c;
-    --color-accent-orange: #fe8019;
+    --color-accent-red: #f87171;
+    --color-accent-green: #34d399;
+    --color-accent-yellow: #fbbf24;
+    --color-accent-blue: #38bdf8;
+    --color-accent-aqua: #22d3ee;
+    --color-accent-orange: #fb923c;
+
+    /* Glass Tokens - Dark */
+    --glass-bg: rgba(15, 23, 42, 0.52);
+    --glass-bg-hover: rgba(30, 41, 59, 0.68);
+    --glass-bg-active: rgba(30, 41, 59, 0.85);
+    --glass-border: rgba(255, 255, 255, 0.12);
+    --glass-border-subtle: rgba(255, 255, 255, 0.06);
+    --glass-shadow: 0 12px 36px 0 rgba(0, 0, 0, 0.45), inset 0 1px 1px 0 rgba(255, 255, 255, 0.12);
+    --glass-shadow-lg: 0 20px 50px 0 rgba(0, 0, 0, 0.6), inset 0 1px 2px 0 rgba(255, 255, 255, 0.18);
   }
 
   @media (prefers-color-scheme: dark) {
     :root:not(.light) {
-      --color-background: #282828;
-      --color-foreground: #ebdbb2;
+      --color-background: #080c14;
+      --color-foreground: #f1f5f9;
 
-      --color-card: #282828;
-      --color-card-foreground: #ebdbb2;
+      --color-card: rgba(15, 23, 42, 0.58);
+      --color-card-foreground: #f1f5f9;
 
-      --color-popover: #3c3836;
-      --color-popover-foreground: #ebdbb2;
+      --color-popover: rgba(15, 23, 42, 0.85);
+      --color-popover-foreground: #f1f5f9;
 
-      --color-primary: #ebdbb2;
-      --color-primary-foreground: #282828;
+      --color-primary: #38bdf8;
+      --color-primary-foreground: #080c14;
 
-      --color-secondary: #3c3836;
-      --color-secondary-foreground: #d5c4a1;
+      --color-secondary: rgba(30, 41, 59, 0.65);
+      --color-secondary-foreground: #e2e8f0;
 
-      --color-muted: #3c3836;
-      --color-muted-foreground: #a89984;
+      --color-muted: rgba(30, 41, 59, 0.5);
+      --color-muted-foreground: #94a3b8;
 
-      --color-accent: #504945;
-      --color-accent-foreground: #ebdbb2;
+      --color-accent: rgba(56, 189, 248, 0.15);
+      --color-accent-foreground: #38bdf8;
 
-      --color-destructive: #fb4934;
-      --color-destructive-foreground: #ebdbb2;
-      --color-destructive-muted: #fb493426;
+      --color-destructive: #f87171;
+      --color-destructive-foreground: #ffffff;
+      --color-destructive-muted: rgba(248, 113, 113, 0.15);
 
-      --color-border: #504945;
-      --color-input: #504945;
-      --color-ring: #fe8019;
+      --color-border: rgba(255, 255, 255, 0.08);
+      --color-input: rgba(15, 23, 42, 0.6);
+      --color-ring: #38bdf8;
 
-      --color-status-ok: #b8bb26;
-      --color-status-ok-bg: #3c3836;
-      --color-status-ok-border: #504945;
+      --color-status-ok: #34d399;
+      --color-status-ok-bg: rgba(52, 211, 153, 0.12);
+      --color-status-ok-border: rgba(52, 211, 153, 0.28);
 
-      --color-status-warn: #fabd2f;
-      --color-status-warn-bg: #3c3836;
-      --color-status-warn-border: #504945;
+      --color-status-warn: #fbbf24;
+      --color-status-warn-bg: rgba(251, 191, 36, 0.12);
+      --color-status-warn-border: rgba(251, 191, 36, 0.28);
 
-      --color-status-lost: #fb4934;
-      --color-status-lost-bg: #3c3836;
-      --color-status-lost-border: #504945;
+      --color-status-lost: #f87171;
+      --color-status-lost-bg: rgba(248, 113, 113, 0.12);
+      --color-status-lost-border: rgba(248, 113, 113, 0.28);
 
-      --color-status-connecting: #83a598;
-      --color-status-connecting-bg: #3c3836;
-      --color-status-connecting-border: #504945;
+      --color-status-connecting: #38bdf8;
+      --color-status-connecting-bg: rgba(56, 189, 248, 0.12);
+      --color-status-connecting-border: rgba(56, 189, 248, 0.28);
 
-      --color-accent-red: #fb4934;
-      --color-accent-green: #b8bb26;
-      --color-accent-yellow: #fabd2f;
-      --color-accent-blue: #83a598;
-      --color-accent-aqua: #8ec07c;
-      --color-accent-orange: #fe8019;
+      --color-accent-red: #f87171;
+      --color-accent-green: #34d399;
+      --color-accent-yellow: #fbbf24;
+      --color-accent-blue: #38bdf8;
+      --color-accent-aqua: #22d3ee;
+      --color-accent-orange: #fb923c;
+
+      --glass-bg: rgba(15, 23, 42, 0.52);
+      --glass-bg-hover: rgba(30, 41, 59, 0.68);
+      --glass-bg-active: rgba(30, 41, 59, 0.85);
+      --glass-border: rgba(255, 255, 255, 0.12);
+      --glass-border-subtle: rgba(255, 255, 255, 0.06);
+      --glass-shadow: 0 12px 36px 0 rgba(0, 0, 0, 0.45), inset 0 1px 1px 0 rgba(255, 255, 255, 0.12);
+      --glass-shadow-lg: 0 20px 50px 0 rgba(0, 0, 0, 0.6), inset 0 1px 2px 0 rgba(255, 255, 255, 0.18);
     }
   }
 
@@ -193,9 +219,6 @@
     height: 100%;
   }
 
-  /* No zoom. `user-scalable=no` in the viewport meta stops pinch-zoom;
-     `touch-action: pan-x pan-y` is what stops double-tap-to-zoom, while
-     still allowing scroll. */
   html {
     touch-action: pan-x pan-y;
   }
@@ -205,6 +228,7 @@
     color: var(--color-foreground);
     margin: 0;
     min-height: 100vh;
+    overflow-x: hidden;
   }
 
   *,
@@ -216,52 +240,86 @@
 }
 
 @layer components {
+  /*
+   * 现代透明玻璃卡片基础类 (Glass Surface)
+   * 晶莹半透、多重高斯模糊、边缘纳米微光内阴影与柔和弥散阴影
+   */
+  .surface-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+  }
+
+  .surface-card:hover {
+    background: var(--glass-bg-hover);
+  }
+
+  /* 极致高光玻璃浮层（用于抽屉、弹窗、气泡提示等） */
+  .surface-glass-floating {
+    background: var(--glass-bg);
+    backdrop-filter: blur(28px) saturate(180%);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow-lg);
+  }
+
+  /* 玻璃胶囊按钮基类 */
+  .btn-glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    color: var(--color-foreground);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .btn-glass:hover {
+    background: var(--glass-bg-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.08);
+  }
+  .btn-glass:active {
+    transform: translateY(0);
+  }
+
   .btn {
-    @apply inline-flex items-center justify-center rounded-default px-4 py-2 text-sm font-medium transition-colors duration-150;
+    @apply inline-flex items-center justify-center rounded-default px-4 py-2 text-sm font-semibold transition-all duration-200;
     @apply focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring;
     @apply disabled:pointer-events-none disabled:opacity-50;
   }
 
   .btn-primary {
-    @apply bg-primary text-primary-foreground hover:opacity-90 active:opacity-80;
+    @apply bg-primary text-primary-foreground shadow-sm hover:opacity-95 active:scale-[0.98];
   }
 
   .btn-secondary {
-    @apply bg-secondary text-secondary-foreground hover:opacity-80;
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    @apply text-foreground hover:bg-secondary active:scale-[0.98];
   }
 
   .btn-destructive {
-    @apply bg-destructive text-destructive-foreground hover:opacity-90;
+    @apply bg-destructive text-destructive-foreground hover:opacity-90 active:scale-[0.98];
   }
 
   .btn-ghost {
-    @apply bg-transparent hover:bg-accent hover:text-accent-foreground;
-  }
-}
-
-@layer components {
-  /*
-   * The one card surface for the main screen — connection readout, manual
-   * connect, streamer cards. Matte and opaque by design (no backdrop-filter): a
-   * warm fill one step off the background, which is what makes a card read as a
-   * card without a shadow doing the work.
-   *
-   * `--color-muted` is the Gruvbox step adjacent to the background on both
-   * themes (#ebdbb2 light / #3c3836 dark). Note it is byte-identical to
-   * `--color-secondary`, so controls *inside* a card cannot use `bg-secondary`
-   * to look raised — they use `bg-background` and read as inset instead.
-   */
-  .surface-card {
-    @apply border border-border bg-muted;
+    @apply bg-transparent hover:bg-accent hover:text-accent-foreground active:scale-[0.98];
   }
 
   /*
-   * Hairline column rule inside the readout. `--color-border` at 60% keeps the
-   * divider subordinate to the card's own outline, so the three columns group
-   * without the rules competing with the numbers.
+   * 仪表盘微细分界线：在玻璃质感下使用柔和的半透明渐变
    */
   .readout-divider {
-    background: color-mix(in srgb, var(--color-border) 60%, transparent);
+    background: linear-gradient(
+      to bottom,
+      transparent,
+      var(--glass-border) 20%,
+      var(--glass-border) 80%,
+      transparent
+    );
   }
 }
 
@@ -279,7 +337,7 @@
 @keyframes fade-in {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -294,7 +352,7 @@
   }
   to {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(10px);
   }
 }
 
@@ -324,34 +382,66 @@
 
 @keyframes toast-slide-in {
   from {
-    transform: translateX(100%);
+    transform: translateY(-16px) scale(0.95);
     opacity: 0;
   }
   to {
-    transform: translateX(0);
+    transform: translateY(0) scale(1);
     opacity: 1;
   }
 }
 
 @keyframes toast-slide-out {
   from {
-    transform: translateX(0);
+    transform: translateY(0) scale(1);
     opacity: 1;
   }
   to {
-    transform: translateX(100%);
+    transform: translateY(-16px) scale(0.95);
+    opacity: 0;
+  }
+}
+
+/* 极光流体呼吸动画 */
+@keyframes aurora-flow-1 {
+  0%, 100% {
+    transform: translate(0%, 0%) scale(1);
+  }
+  50% {
+    transform: translate(8%, 10%) scale(1.12);
+  }
+}
+
+@keyframes aurora-flow-2 {
+  0%, 100% {
+    transform: translate(0%, 0%) scale(1);
+  }
+  50% {
+    transform: translate(-10%, -6%) scale(1.08);
+  }
+}
+
+@keyframes aurora-flow-3 {
+  0%, 100% {
+    transform: translate(0%, 0%) scale(1);
+  }
+  50% {
+    transform: translate(6%, -8%) scale(1.15);
+  }
+}
+
+@keyframes scan-radar {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(2.4);
     opacity: 0;
   }
 }
 
 @layer utilities {
-  /*
-   * Scrollable, with no visible scrollbar. The streamer list is a touch surface —
-   * the bar was a pointer affordance that only ever appeared mid-fling, and it
-   * reserved a gutter that pushed the cards out of alignment with the ones above.
-   * `scrollbar-width` covers Firefox and Chromium 121+; the `::-webkit` rule
-   * covers the Android WebView.
-   */
   .hide-scrollbar {
     scrollbar-width: none;
   }
@@ -360,50 +450,47 @@
   }
 }
 
-/* Gain Slider */
+/* 增益调节滑块 - 现代高透玻璃声学滑轨 */
 .gain-slider {
   -webkit-appearance: none;
   appearance: none;
-  height: 6px;
+  height: 8px;
   border-radius: 9999px;
   outline: none;
   background: linear-gradient(
     to right,
-    color-mix(in srgb, var(--color-accent-aqua) 40%, transparent) 0%,
-    color-mix(in srgb, var(--color-accent-aqua) 40%, transparent) var(--zero-pos),
-    var(--color-border) var(--zero-pos),
-    var(--color-border) 100%
+    rgba(6, 182, 212, 0.45) 0%,
+    rgba(6, 182, 212, 0.45) var(--zero-pos),
+    rgba(148, 163, 184, 0.25) var(--zero-pos),
+    rgba(148, 163, 184, 0.25) 100%
   );
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.15);
 }
 
 .gain-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
-  background: var(--color-primary);
-  border: 2px solid var(--color-background);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  background: #ffffff;
+  border: 2.5px solid var(--color-primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.8);
   cursor: pointer;
-  transition: transform 0.15s ease;
+  transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s ease;
+}
+
+.dark .gain-slider::-webkit-slider-thumb {
+  background: #0f172a;
+  border: 2.5px solid var(--color-primary);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.6), 0 0 12px rgba(56, 189, 248, 0.4);
 }
 
 .gain-slider::-webkit-slider-thumb:active {
-  transform: scale(1.15);
+  transform: scale(1.2);
+  box-shadow: 0 0 16px var(--color-primary);
 }
 
-/*
- * Honour the OS "reduce motion" preference (Android maps its accessibility
- * "Remove animations" toggle here, and battery-saver can force it). This stops
- * the always-on `infinite` loop in EmptyState from keeping the GPU compositor
- * awake for users who opted out, while leaving one-shot enter/exit transitions
- * effectively instant. (StatusChip's status-breathe loop was removed along with
- * its indicator dot.)
- *
- * No visibility-pause is needed: a hidden WebView document skips the rendering
- * step, so these compositor animations already idle when the app is backgrounded.
- */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

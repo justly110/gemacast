@@ -15,27 +15,26 @@ beforeEach(() => {
 
 function expandAndRender() {
   render(<ManualConnect />);
-  // Expand the collapsible to reveal the input + connect button
-  fireEvent.click(screen.getByText('Connect by Address'));
+  fireEvent.click(screen.getByText('通过 IP 地址连接'));
 }
 
 describe('ManualConnect', () => {
   it('renders collapsed header', () => {
     render(<ManualConnect />);
-    expect(screen.getByText('Connect by Address')).toBeTruthy();
+    expect(screen.getByText('通过 IP 地址连接')).toBeTruthy();
   });
 
   it('renders input and connect button when expanded', () => {
     expandAndRender();
     expect(screen.getByPlaceholderText('192.xx.xx.xx')).toBeTruthy();
-    expect(screen.getByText('Connect')).toBeTruthy();
+    expect(screen.getByText('连接')).toBeTruthy();
   });
 
   it('disables connect button when input is empty', () => {
     expandAndRender();
     const buttons = screen
       .getAllByRole('button')
-      .filter((b) => b.textContent?.trim() === 'Connect');
+      .filter((b) => b.textContent?.trim() === '连接');
     expect(buttons[0].hasAttribute('disabled')).toBe(true);
   });
 
@@ -45,7 +44,7 @@ describe('ManualConnect', () => {
     fireEvent.change(input, { target: { value: '10.0.0.1' } });
     const buttons = screen
       .getAllByRole('button')
-      .filter((b) => b.textContent?.trim() === 'Connect');
+      .filter((b) => b.textContent?.trim() === '连接');
     expect(buttons[0].hasAttribute('disabled')).toBe(false);
   });
 
@@ -57,9 +56,6 @@ describe('ManualConnect', () => {
   });
 
   describe('visibility', () => {
-    // The card is a way to reach a PC discovery missed, so it is dead weight
-    // once a stream is running — but it must stay up through every state where
-    // the user might still need to reach something.
     it.each([
       ['Connected', Status.Connected],
       ['Playing', Status.Playing],
@@ -78,7 +74,7 @@ describe('ManualConnect', () => {
     ])('stays visible when %s', (_name, status) => {
       useAppStore.getState().setStatus(status);
       render(<ManualConnect />);
-      expect(screen.getByText('Connect by Address')).toBeTruthy();
+      expect(screen.getByText('通过 IP 地址连接')).toBeTruthy();
     });
 
     it('comes back after disconnecting', () => {
@@ -88,7 +84,7 @@ describe('ManualConnect', () => {
 
       useAppStore.getState().setStatus(Status.Listening);
       rerender(<ManualConnect />);
-      expect(screen.getByText('Connect by Address')).toBeTruthy();
+      expect(screen.getByText('通过 IP 地址连接')).toBeTruthy();
     });
   });
 });

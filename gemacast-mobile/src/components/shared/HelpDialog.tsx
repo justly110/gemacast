@@ -16,51 +16,60 @@ export function HelpDialog({
   return (
     <dialog
       ref={dialogRef}
-      className="fixed inset-0 z-50 m-auto max-h-[70vh] w-[min(90vw,360px)] overflow-y-auto rounded-lg border border-border bg-popover p-5 text-popover-foreground shadow-xl backdrop:bg-black/50"
-      onClose={onClose}
+      className="fixed inset-0 z-10000 m-auto w-[min(90vw,460px)] rounded-3xl border border-border/80 bg-popover/90 p-6 text-popover-foreground shadow-[0_24px_60px_rgba(0,0,0,0.35)] backdrop-blur-2xl backdrop:bg-black/60 backdrop:backdrop-blur-sm"
+      onClick={(e) => {
+        if (e.target === dialogRef.current) onClose();
+      }}
     >
       {content && (
         <>
-          <div className="mb-2 flex items-center justify-between">
-            <h2 className="text-base font-semibold">{content.title}</h2>
+          <div className="flex items-center justify-between pb-3.5 border-b border-border/50">
+            <h3 className="text-base font-bold tracking-tight text-foreground">{content.title}</h3>
             <button
               type="button"
-              className="text-muted-foreground hover:text-foreground transition-colors"
+              className="flex h-7 w-7 items-center justify-center rounded-full bg-muted/40 text-muted-foreground transition-all duration-150 hover:bg-muted hover:text-foreground active:scale-90"
               onClick={onClose}
               aria-label="关闭帮助"
             >
               <X className="h-4 w-4" />
             </button>
           </div>
-          <p className="text-sm text-muted-foreground whitespace-pre-line">{content.body}</p>
+          <div className="py-4 text-xs font-normal leading-relaxed text-muted-foreground whitespace-pre-line max-h-[60vh] overflow-y-auto hide-scrollbar">
+            {content.body}
+          </div>
+          <div className="flex justify-end pt-2">
+            <button
+              type="button"
+              className="rounded-xl border border-border/70 bg-primary px-4 py-2 text-xs font-bold text-primary-foreground shadow-sm transition-all duration-150 hover:opacity-90 active:scale-95"
+              onClick={onClose}
+            >
+              我知道了
+            </button>
+          </div>
         </>
       )}
     </dialog>
   );
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 export function useHelpDialog() {
-  const [activeHelp, setActiveHelp] = useState<string | null>(null);
-  const helpDialogRef = useRef<HTMLDialogElement>(null);
+  const [activeKey, setActiveKey] = useState<string | null>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
 
   const openHelp = (key: string) => {
-    setActiveHelp(key);
-    // showModal() throws on an already-open dialog, and the throw escapes the
-    // click handler - tapping a second "?" while one is up would take the whole
-    // screen down with it.
-    if (!helpDialogRef.current?.open) helpDialogRef.current?.showModal();
+    setActiveKey(key);
+    dialogRef.current?.showModal();
   };
 
   const closeHelp = () => {
-    helpDialogRef.current?.close();
-    setActiveHelp(null);
+    dialogRef.current?.close();
+    setActiveKey(null);
   };
 
   const renderHelpButton = (helpKey: string) => (
     <button
       type="button"
-      className="ml-1 inline-flex h-5 w-5 items-center justify-center rounded-full border border-border bg-background text-[0.7rem] font-bold text-muted-foreground hover:border-primary hover:bg-primary hover:text-primary-foreground transition-colors"
+      className="flex h-4.5 w-4.5 items-center justify-center rounded-full border border-border/60 bg-muted/40 text-[10px] font-bold text-muted-foreground backdrop-blur-sm transition-all duration-150 hover:border-primary/50 hover:bg-primary/10 hover:text-primary active:scale-90"
       onClick={(e) => {
         e.stopPropagation();
         openHelp(helpKey);
@@ -71,10 +80,5 @@ export function useHelpDialog() {
     </button>
   );
 
-  return {
-    activeKey: activeHelp,
-    dialogRef: helpDialogRef,
-    closeHelp,
-    renderHelpButton,
-  };
+  return { activeKey, openHelp, closeHelp, renderHelpButton, dialogRef };
 }

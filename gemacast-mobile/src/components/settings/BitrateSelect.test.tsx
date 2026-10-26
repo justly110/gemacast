@@ -18,6 +18,6 @@ describe('BitrateSelect', () => {
   it('does not show custom input by default', () => {
     useAppStore.getState().updateSettings({ bitratePreset: '128' });
     render(<BitrateSelect />);
-    expect(screen.queryByText('Apply')).toBeNull();
+    expect(screen.queryByText('应用')).toBeNull();
   });
 });

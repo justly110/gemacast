@@ -6,7 +6,6 @@ import { Toast } from './Toast';
 beforeEach(() => {
   cleanup();
   useToastStore.setState({ toasts: [] });
-  // Mock dialog methods
   HTMLDialogElement.prototype.showModal = mock();
   HTMLDialogElement.prototype.close = mock();
 });
@@ -16,7 +15,7 @@ describe('Toast', () => {
     const toast = { id: '1', type: 'info' as const, message: 'Just info' };
     render(<Toast toast={toast} />);
     expect(screen.getByText('Just info')).toBeTruthy();
-    expect(screen.queryByText('Click for details')).toBeNull();
+    expect(screen.queryByText('点击查看详情')).toBeNull();
   });
 
   it('calls dismiss on close button click', () => {
@@ -25,7 +24,7 @@ describe('Toast', () => {
     useToastStore.setState({ dismiss: dismissSpy, toasts: [toast] });
 
     render(<Toast toast={toast} />);
-    const closeBtn = screen.getByLabelText('Close toast');
+    const closeBtn = screen.getByLabelText('关闭提示');
     fireEvent.click(closeBtn);
 
     expect(dismissSpy).toHaveBeenCalledWith('1');
@@ -35,7 +34,7 @@ describe('Toast', () => {
     const toast = { id: '1', type: 'error' as const, message: 'Failed' };
     render(<Toast toast={toast} />);
     expect(screen.getByText('Failed')).toBeTruthy();
-    expect(screen.queryByText('Click for details')).toBeNull();
+    expect(screen.queryByText('点击查看详情')).toBeNull();
   });
 
   it('renders error toast with fullLog correctly', () => {
@@ -48,10 +47,9 @@ describe('Toast', () => {
     render(<Toast toast={toast} />);
 
     expect(screen.getByText('Failed')).toBeTruthy();
-    const detailsBtn = screen.getByText('Click for details');
+    const detailsBtn = screen.getByText('点击查看详情');
     expect(detailsBtn).toBeTruthy();
 
-    // The dialog should also be rendered with the log
     expect(screen.getByText('Stack trace here')).toBeTruthy();
   });
 
@@ -59,7 +57,7 @@ describe('Toast', () => {
     const toast = { id: '1', type: 'error' as const, message: 'Failed', fullLog: 'Log text' };
     render(<Toast toast={toast} />);
 
-    const detailsBtn = screen.getByText('Click for details');
+    const detailsBtn = screen.getByText('点击查看详情');
     fireEvent.click(detailsBtn);
 
     expect(HTMLDialogElement.prototype.showModal).toHaveBeenCalled();
@@ -69,7 +67,7 @@ describe('Toast', () => {
     const toast = { id: '1', type: 'error' as const, message: 'Failed', fullLog: 'Log text' };
     render(<Toast toast={toast} />);
 
-    const closeBtn = screen.getByRole('button', { name: 'Close', hidden: true });
+    const closeBtn = screen.getByRole('button', { name: '关闭', hidden: true });
     fireEvent.click(closeBtn);
 
     expect(HTMLDialogElement.prototype.close).toHaveBeenCalled();

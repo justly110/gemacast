@@ -7,6 +7,7 @@ on:
     paths:
       - 'gemacast-core/**'
       - 'gemacast-mobile/**'
+      - 'Cargo.toml'
 
 jobs:
   build-apk:
@@ -63,6 +64,10 @@ jobs:
         working-directory: ./gemacast-mobile
         run: bun install --frozen-lockfile
 
+      - name: Run Frontend Tests
+        working-directory: ./gemacast-mobile
+        run: bun test
+
       - name: Sync package.json and tauri.conf.json version with Cargo.toml
         working-directory: ./gemacast-mobile
         run: |
@@ -77,12 +82,28 @@ jobs:
         run: |
           bunx tauri android build --apk --target aarch64
 
-      - name: Sign APK with Debug Keystore
+      - name: Sign APK (Release / Debug Keystore)
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASS: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASS: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
-          keytool -genkey -v -keystore debug.keystore -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000 -storepass android -keypass android -dname "CN=Android Debug,O=Android,C=US"
           APK_FILE=$(find gemacast-mobile/src-tauri/gen/android/app/build/outputs/apk -name "*.apk" | head -n 1)
           echo "Found APK: $APK_FILE"
-          $ANDROID_HOME/build-tools/34.0.0/apksigner sign --ks debug.keystore --ks-pass pass:android --key-pass pass:android --out gemacast-mobile-arm64.apk "$APK_FILE"
+
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "Using configured GitHub Secret Keystore for signing..."
+            echo "$KEYSTORE_BASE64" | base64 -d > release.keystore
+            KS_PASS="${KEYSTORE_PASS:-android}"
+            K_ALIAS="${KEY_ALIAS:-gemacast}"
+            K_PASS="${KEY_PASS:-android}"
+            $ANDROID_HOME/build-tools/34.0.0/apksigner sign --ks release.keystore --ks-pass pass:"$KS_PASS" --ks-key-alias "$K_ALIAS" --key-pass pass:"$K_PASS" --out gemacast-mobile-arm64.apk "$APK_FILE"
+          else
+            echo "No Secret Keystore found, generating standard debug keystore..."
+            keytool -genkey -v -keystore debug.keystore -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000 -storepass android -keypass android -dname "CN=Gemacast Debug,O=Gemacast,C=CN"
+            $ANDROID_HOME/build-tools/34.0.0/apksigner sign --ks debug.keystore --ks-pass pass:android --key-pass pass:android --out gemacast-mobile-arm64.apk "$APK_FILE"
+          fi
           echo "Signed successfully: gemacast-mobile-arm64.apk"
 
       - name: Upload APK Artifact

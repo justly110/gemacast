@@ -5,7 +5,7 @@ import NavMenu from './NavMenu.vue'
 
 <template>
   <header
-    class="z-50 bg-foreground min-h-[max(50px,10vh)] sticky flex justify-between pl-5 pr-7 py-1 items-center top-0"
+    class="sticky top-0 z-50 flex h-18 w-full items-center justify-between border-b border-white/10 bg-[#080c14]/75 px-6 lg:px-12 backdrop-blur-2xl transition-all duration-300 shadow-[0_4px_30px_rgba(0,0,0,0.5)]"
   >
     <GemacastIcon />
     <NavMenu />

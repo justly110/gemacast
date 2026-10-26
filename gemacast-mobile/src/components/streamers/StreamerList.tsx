@@ -86,7 +86,7 @@ export function StreamerList() {
         >
           {isEmpty && <EmptyState />}
 
-          <ul className="flex flex-col gap-2 pb-2 min-h-80" aria-label="已发现的电脑设备">
+          <ul className="flex flex-col gap-3 pb-6 min-h-80" aria-label="已发现的电脑设备">
             {streamers.map((streamer) => {
               const isConnected = connectedStreamer?.deviceId === streamer.deviceId;
               const isConnecting =
