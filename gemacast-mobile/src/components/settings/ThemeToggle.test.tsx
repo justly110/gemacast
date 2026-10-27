@@ -12,7 +12,7 @@ beforeEach(() => {
 describe('ThemeToggle', () => {
   it('renders a toggle button', () => {
     render(<ThemeToggle />);
-    expect(screen.getByRole('button', { name: 'Toggle Theme' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: '切换主题' })).toBeTruthy();
   });
 
   it('updates store and document class when toggled', () => {

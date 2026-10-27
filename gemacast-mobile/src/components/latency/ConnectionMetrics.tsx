@@ -64,7 +64,7 @@ export function ConnectionMetrics({ renderHelpButton }: ConnectionMetricsProps =
       role="group"
       aria-label="连接指标"
     >
-      <span aria-hidden="true" className={renderHelpButton ? 'w-5' : ''} />
+      <span aria-hidden="true" className={renderHelpButton ? 'w-6' : ''} />
       <Metric label="缓冲" ms={metrics.bufferMs} tone={bandColor(metrics.bufferMs, 30, 60)} />
       <span aria-hidden="true" className="readout-divider h-8 w-px self-center" />
       <Metric

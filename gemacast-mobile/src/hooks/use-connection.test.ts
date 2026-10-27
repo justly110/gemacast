@@ -120,7 +120,7 @@ describe('connectToStreamer', () => {
     expect(useToastStore.getState().toasts).toHaveLength(1);
     expect(useToastStore.getState().toasts[0]).toMatchObject({
       type: 'warning',
-      message: 'Pairing request rejected on the PC',
+      message: '电脑端拒绝了配对请求',
     });
   });
 
@@ -138,7 +138,7 @@ describe('connectToStreamer', () => {
     expect(useToastStore.getState().toasts).toHaveLength(1);
     expect(useToastStore.getState().toasts[0]).toMatchObject({
       type: 'warning',
-      message: 'Pairing cancelled',
+      message: '配对已取消',
     });
   });
 

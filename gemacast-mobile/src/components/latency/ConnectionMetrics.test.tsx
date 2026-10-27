@@ -106,6 +106,6 @@ describe('ConnectionMetrics', () => {
 
     cleanup();
     render(<ConnectionMetrics renderHelpButton={() => <button aria-label="Help">?</button>} />);
-    expect(screen.getByLabelText('Connection metrics').firstElementChild?.className).toBe('w-6');
+    expect(screen.getByLabelText('连接指标').firstElementChild?.className).toBe('w-6');
   });
 });

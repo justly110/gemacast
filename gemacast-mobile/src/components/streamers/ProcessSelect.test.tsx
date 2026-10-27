@@ -55,7 +55,7 @@ describe('ProcessSelect', () => {
     fireEvent.click(trigger);
 
     // Dropdown should be open
-    expect(screen.getByPlaceholderText('Search process...')).toBeTruthy();
+    expect(screen.getByPlaceholderText('搜索进程...')).toBeTruthy();
     expect(screen.getByText('Spotify.exe')).toBeTruthy();
   });
 
@@ -63,7 +63,7 @@ describe('ProcessSelect', () => {
     render(<ProcessSelect {...defaultProps} />);
     fireEvent.click(screen.getByRole('button'));
 
-    const input = screen.getByPlaceholderText('Search process...');
+    const input = screen.getByPlaceholderText('搜索进程...');
     fireEvent.change(input, { target: { value: 'note' } });
 
     expect(screen.getByText('Notepad.exe')).toBeTruthy();
@@ -89,7 +89,7 @@ describe('ProcessSelect', () => {
     render(<ProcessSelect {...defaultProps} />);
     fireEvent.click(screen.getByRole('button'));
 
-    const refreshBtn = screen.getByLabelText('Refresh process list');
+    const refreshBtn = screen.getByLabelText('刷新进程列表');
     fireEvent.click(refreshBtn);
 
     expect(mockFetchProcessList).toHaveBeenCalledWith(defaultProps.streamer);

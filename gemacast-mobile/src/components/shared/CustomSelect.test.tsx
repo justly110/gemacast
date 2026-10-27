@@ -26,7 +26,7 @@ describe('CustomSelect', () => {
 
   it('renders fallback when value not found', () => {
     render(<CustomSelect id="test" options={options} value="99" onChange={mock()} />);
-    expect(screen.getByText('Select...')).toBeTruthy();
+    expect(screen.getByText('请选择…')).toBeTruthy();
   });
 
   it('opens and shows options when clicked', () => {
