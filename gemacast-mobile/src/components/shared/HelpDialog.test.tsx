@@ -1,9 +1,11 @@
 import { describe, it, expect, beforeEach, mock } from 'bun:test';
 import { render, screen, cleanup, fireEvent, renderHook } from '@testing-library/react';
 import { HelpDialog, useHelpDialog } from './HelpDialog';
+import { HELP_CONTENT as actualHelpContent } from '../../core/help-content';
 
 mock.module('../../core/help-content', () => ({
   HELP_CONTENT: {
+    ...actualHelpContent,
     'test-key': {
       title: 'Test Title',
       body: 'Test Body',

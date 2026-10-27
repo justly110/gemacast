@@ -100,10 +100,10 @@ describe('ConnectionReadout', () => {
     useAppStore.getState().setStatus(Status.Connected);
     render(<ConnectionReadout />);
 
-    expect(screen.queryByText('连接指标 (Connection Metrics)')).toBeNull();
+    expect(screen.queryByText(/Connection Metrics/)).toBeNull();
 
     fireEvent.click(screen.getByLabelText('帮助'));
-    expect(screen.getByText('连接指标 (Connection Metrics)')).toBeTruthy();
+    expect(screen.getByText(/Connection Metrics/)).toBeTruthy();
     expect(screen.getByText(/在 ADB 模式下显示为 n\/a/)).toBeTruthy();
   });
 
