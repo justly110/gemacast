@@ -81,7 +81,9 @@ export function ProcessSelect({
   const hasDesktop = audioSources.some((s) => s.type === 'desktop');
 
   return (
-    <div className="relative flex w-full items-center gap-2 pt-2.5 mt-2 border-t border-border/50">
+    <div
+      className={`relative flex w-full items-center gap-2 pt-2.5 mt-2 border-t border-border/50 ${open ? 'z-50' : 'z-auto'}`}
+    >
       <span className="shrink-0 whitespace-nowrap text-xs font-semibold text-muted-foreground/80">
         音源:
       </span>

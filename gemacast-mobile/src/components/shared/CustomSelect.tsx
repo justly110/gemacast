@@ -52,7 +52,12 @@ export function CustomSelect<T extends string = string>({
   };
 
   return (
-    <div id={id} ref={containerRef} className="relative w-full" onBlur={handleBlur}>
+    <div
+      id={id}
+      ref={containerRef}
+      className={`relative w-full transition-[z-index] ${open ? 'z-50' : 'z-auto'}`}
+      onBlur={handleBlur}
+    >
       <button
         type="button"
         className={`

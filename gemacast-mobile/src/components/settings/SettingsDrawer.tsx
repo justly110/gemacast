@@ -61,10 +61,9 @@ export function SettingsDrawer() {
         inert={!open}
         className={`
           fixed top-0 left-0 z-50 flex h-dvh w-screen max-w-md flex-col overflow-hidden
-          border-r border-border/80 bg-background/92 text-foreground
-          shadow-[16px_0_60px_rgba(0,0,0,0.35)] backdrop-blur-2xl
-          transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]
-          ${open ? 'translate-x-0' : '-translate-x-full'}
+          border-r border-border/80 bg-background/95 text-foreground backdrop-blur-2xl
+          transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]
+          ${open ? 'translate-x-0 shadow-[16px_0_60px_rgba(0,0,0,0.35)]' : '-translate-x-full shadow-none pointer-events-none'}
         `}
         style={{
           paddingBottom: 'calc(1.25rem + env(safe-area-inset-bottom, 0px))',
@@ -95,8 +94,8 @@ export function SettingsDrawer() {
         <div className="flex-1 space-y-5 overflow-y-auto px-6 py-5 hide-scrollbar">
           <UpdateBanner />
 
-          {/* 缓冲预设 */}
-          <div className="rounded-2xl border border-border/60 bg-muted/25 p-4 backdrop-blur-md">
+          {/* 缓冲预设 - 保持高层叠级别，避免下拉菜单被下方卡片遮挡 */}
+          <div className="relative z-30 rounded-2xl border border-border/60 bg-muted/30 p-4">
             <SectionLabel helpButton={help.renderHelpButton('buffer-preset')}>
               缓冲预设
             </SectionLabel>
@@ -107,7 +106,7 @@ export function SettingsDrawer() {
           <SectionDivider />
 
           {/* 音频码率质量 */}
-          <div className="rounded-2xl border border-border/60 bg-muted/25 p-4 backdrop-blur-md">
+          <div className="relative z-20 rounded-2xl border border-border/60 bg-muted/30 p-4">
             <SectionLabel helpButton={help.renderHelpButton('audio-bitrate')}>
               音频码率质量
             </SectionLabel>
@@ -117,7 +116,7 @@ export function SettingsDrawer() {
           <SectionDivider />
 
           {/* 音频增益 */}
-          <div className="rounded-2xl border border-border/60 bg-muted/25 p-4 backdrop-blur-md">
+          <div className="relative z-10 rounded-2xl border border-border/60 bg-muted/30 p-4">
             <SectionLabel helpButton={help.renderHelpButton('audio-gain')}>音频增益</SectionLabel>
             <GainSlider />
           </div>
@@ -125,7 +124,7 @@ export function SettingsDrawer() {
           <SectionDivider />
 
           {/* 功能开关组 */}
-          <div className="rounded-2xl border border-border/60 bg-muted/25 p-4 backdrop-blur-md space-y-4">
+          <div className="relative z-0 rounded-2xl border border-border/60 bg-muted/30 p-4 space-y-4">
             <div className="flex items-center justify-between gap-3">
               <div>
                 <SectionLabel helpButton={help.renderHelpButton('exclusive-mode')}>

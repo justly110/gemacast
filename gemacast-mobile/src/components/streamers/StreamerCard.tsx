@@ -50,8 +50,8 @@ export function StreamerCard({
         ${hasSource ? 'flex-wrap' : ''}
         ${
           isConnected
-            ? 'border-primary/50 shadow-[0_8px_32px_rgba(2,132,199,0.18)] dark:shadow-[0_8px_36px_rgba(56,189,248,0.22)]'
-            : 'hover:border-primary/40'
+            ? 'z-10 border-primary/50 shadow-[0_8px_32px_rgba(2,132,199,0.18)] dark:shadow-[0_8px_36px_rgba(56,189,248,0.22)]'
+            : 'z-0 hover:border-primary/40'
         }
       `}
     >
