@@ -1,36 +1,16 @@
-import { useEffect, useRef, useState } from 'react';
 import { Check } from 'lucide-react';
-import { hasSeenNoBufferWarning, markNoBufferWarningSeen } from '../../core/persistence';
 
 export function NoBufferWarningDialog({
-  open,
-  onConfirm,
+  dialogRef,
+  dontShowAgain,
+  setDontShowAgain,
+  handleOk,
 }: {
-  open: boolean;
-  onConfirm: () => void;
+  dialogRef: React.RefObject<HTMLDialogElement | null>;
+  dontShowAgain: boolean;
+  setDontShowAgain: (v: boolean) => void;
+  handleOk: () => void;
 }) {
-  const dialogRef = useRef<HTMLDialogElement>(null);
-  const [dontShowAgain, setDontShowAgain] = useState(false);
-
-  useEffect(() => {
-    const dialog = dialogRef.current;
-    if (!dialog) return;
-
-    if (open && !dialog.open && !hasSeenNoBufferWarning()) {
-      dialog.showModal();
-    } else if (!open && dialog.open) {
-      dialog.close();
-    }
-  }, [open]);
-
-  const handleOk = () => {
-    if (dontShowAgain) {
-      markNoBufferWarningSeen();
-    }
-    dialogRef.current?.close();
-    onConfirm();
-  };
-
   return (
     <dialog
       ref={dialogRef}
