@@ -1,5 +1,8 @@
 name: Build Android APK (arm64-v8a)
 
+permissions:
+  contents: write
+
 on:
   workflow_dispatch:
   push:
@@ -8,6 +11,7 @@ on:
       - 'gemacast-core/**'
       - 'gemacast-mobile/**'
       - 'Cargo.toml'
+      - 'version.txt'
 
 jobs:
   build-apk:
@@ -112,3 +116,41 @@ jobs:
           name: gemacast-mobile-arm64
           path: gemacast-mobile-arm64.apk
           retention-days: 7
+
+      - name: Publish APK to GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION=$(cat version.txt | tr -d '[:space:]')
+          TAG="v$VERSION"
+          APK="gemacast-mobile-arm64.apk"
+          SHA256=$(sha256sum "$APK" | cut -d' ' -f1)
+          PUB_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+          echo "Preparing Release $TAG with APK $APK (sha256: $SHA256)"
+
+          if ! gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Release $TAG does not exist. Creating..."
+            gh release create "$TAG" --title "Gemacast $TAG" --notes "Release $TAG" --latest
+          fi
+
+          gh release upload "$TAG" "$APK" --clobber
+
+          UPDATER_FILE="updater.json"
+          if gh release download "$TAG" -p "$UPDATER_FILE" 2>/dev/null; then
+            echo "Downloaded existing updater.json"
+          else
+            echo "Initializing new updater.json"
+            echo '{"version":"'"$VERSION"'","pub_date":"'"$PUB_DATE"'","platforms":{}}' > "$UPDATER_FILE"
+          fi
+
+          ANDROID_URL="https://github.com/${{ github.repository }}/releases/download/${TAG}/${APK}"
+          jq --arg ver "$VERSION" \
+             --arg date "$PUB_DATE" \
+             --arg url "$ANDROID_URL" \
+             --arg hash "$SHA256" \
+             '.version = $ver | .pub_date = $date | .platforms.android = { url: $url, sha256: $hash }' \
+             "$UPDATER_FILE" > updater.tmp.json && mv updater.tmp.json "$UPDATER_FILE"
+
+          gh release upload "$TAG" "$UPDATER_FILE" --clobber
+          echo "Successfully published APK and updater.json to release $TAG!"

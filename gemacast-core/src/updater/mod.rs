@@ -90,7 +90,7 @@ pub struct UpdateInfo {
 
 /// The URL that always resolves to the latest release's updater manifest.
 pub const UPDATER_URL: &str =
-    "https://github.com/apirJS/gemacast/releases/latest/download/updater.json";
+    "https://github.com/justly110/gemacast/releases/latest/download/updater.json";
 
 /// Check whether an update is available for the given platform key by fetching the remote manifest.
 ///

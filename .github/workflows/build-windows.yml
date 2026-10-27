@@ -1,5 +1,8 @@
 name: Build Windows 64-bit Client
 
+permissions:
+  contents: write
+
 on:
   workflow_dispatch:
   push:
@@ -9,6 +12,7 @@ on:
       - 'gemacast-pc/**'
       - 'wix/**'
       - 'Cargo.toml'
+      - 'version.txt'
       - 'rust-toolchain.toml'
       - '.github/workflows/build-windows.yml'
 
@@ -107,3 +111,65 @@ jobs:
             gemacast-pc-x86_64-windows-portable.zip
             gemacast-pc-x86_64-windows-installer.msi
           retention-days: 7
+
+      - name: Publish Windows Assets to GitHub Release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $version = if (Test-Path version.txt) { (Get-Content version.txt).Trim() } else { "6.6.6" }
+          $tag = "v$version"
+          $msiFile = "gemacast-pc-x86_64-windows-installer.msi"
+          $zipFile = "gemacast-pc-x86_64-windows-portable.zip"
+          $pubDate = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+          $msiHash = (Get-FileHash -Path $msiFile -Algorithm SHA256).Hash.ToLower()
+
+          Write-Host "Publishing Windows assets to Release $tag..."
+
+          $releaseExists = $false
+          try {
+            gh release view $tag 2>$null
+            if ($LASTEXITCODE -eq 0) { $releaseExists = $true }
+          } catch {}
+
+          if (-not $releaseExists) {
+            Write-Host "Creating release $tag..."
+            gh release create $tag --title "Gemacast $tag" --notes "Release $tag" --latest
+          }
+
+          gh release upload $tag $msiFile $zipFile --clobber
+
+          $updaterFile = "updater.json"
+          try {
+            gh release download $tag -p $updaterFile 2>$null
+          } catch {}
+
+          $updaterObj = $null
+          if (Test-Path $updaterFile) {
+            try { $updaterObj = Get-Content $updaterFile -Raw | ConvertFrom-Json } catch {}
+          }
+          if (-not $updaterObj) {
+            $updaterObj = [PSCustomObject]@{
+              version = $version
+              pub_date = $pubDate
+              platforms = [PSCustomObject]@{}
+            }
+          }
+
+          $msiUrl = "https://github.com/${{ github.repository }}/releases/download/$tag/$msiFile"
+          if (-not $updaterObj.platforms) {
+            $updaterObj | Add-Member -MemberType NoteProperty -Name "platforms" -Value ([PSCustomObject]@{})
+          }
+          $updaterObj.version = $version
+          $updaterObj.pub_date = $pubDate
+
+          $updaterObj.platforms | Add-Member -MemberType NoteProperty -Name "windows-x86_64" -Value ([PSCustomObject]@{
+            url = $msiUrl
+            sha256 = $msiHash
+          }) -Force
+
+          $updaterJson = $updaterObj | ConvertTo-Json -Depth 5
+          [System.IO.File]::WriteAllText((Resolve-Path .).Path + "\updater.json", $updaterJson)
+
+          gh release upload $tag updater.json --clobber
+          Write-Host "Published Windows release artifacts and updater.json successfully!"

@@ -6,40 +6,18 @@ use tokio::task::JoinSet;
 /// How often to re-check for updates (4 hours).
 const RECHECK_INTERVAL: tokio::time::Duration = tokio::time::Duration::from_secs(4 * 60 * 60);
 
-/// Spawns the background update checker.
+/// Spawns the background update task.
 ///
-/// 1. Cleans up stale update files from previous sessions.
-/// 2. Waits 3 seconds at startup, then checks for a new release.
-/// 3. If one exists, downloads it silently in the background and notifies the tray.
-/// 4. Re-checks periodically every [`RECHECK_INTERVAL`].
-pub fn spawn_update_checker(set: &mut JoinSet<()>, tray: Arc<dyn TrayNotifier>) {
+/// Cleans up stale update files from previous sessions.
+/// Automatic background polling is disabled; users trigger update checks manually from the tray.
+pub fn spawn_update_checker(set: &mut JoinSet<()>, _tray: Arc<dyn TrayNotifier>) {
     set.spawn(async move {
         // Clean up stale update files from previous sessions.
         let dir = std::env::temp_dir().join("gemacast-update");
         gemacast_core::updater::cleanup_stale_updates(&dir);
 
-        // Small delay so the tray is fully initialised before we touch it.
-        tokio::time::sleep(tokio::time::Duration::from_secs(3)).await;
-
-        let current_version = env!("CARGO_PKG_VERSION");
-        let key = match platform_key() {
-            Some(k) => k,
-            None => {
-                tracing::info!(
-                    "Auto-updates are not supported on this platform/architecture triple."
-                );
-                return;
-            }
-        };
-
-        loop {
-            check_and_download(current_version, key, &tray).await;
-
-            // Wait before the next check. If the download succeeded the tray
-            // already has the "Install Update" item, so subsequent checks are
-            // no-ops (the version will still be newer until the user installs).
-            tokio::time::sleep(RECHECK_INTERVAL).await;
-        }
+        // Background auto-polling is intentionally disabled.
+        // Update checks run on-demand when the user clicks "检查更新" in the tray.
     });
 }
 
