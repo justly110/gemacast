@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { ChevronDown } from 'lucide-react';
 
 export type SelectOption<T extends string = string> = {
@@ -32,7 +32,7 @@ export function CustomSelect<T extends string = string>({
   const selectedOption = options.find((o) => o.value === value);
 
   const startClosing = () => {
-    if (closing) return;
+    if (!open || closing) return;
     setClosing(true);
     setTimeout(() => {
       setOpen(false);
@@ -46,10 +46,27 @@ export function CustomSelect<T extends string = string>({
   };
 
   const handleBlur = (e: React.FocusEvent) => {
+    if (!open || closing) return;
     if (!containerRef.current?.contains(e.relatedTarget as Node)) {
       startClosing();
     }
   };
+
+  // 点击外部区域时收起下拉菜单
+  useEffect(() => {
+    if (!open) return;
+
+    const handlePointerDown = (e: MouseEvent | TouchEvent) => {
+      if (!containerRef.current?.contains(e.target as Node)) {
+        startClosing();
+      }
+    };
+
+    document.addEventListener('pointerdown', handlePointerDown);
+    return () => {
+      document.removeEventListener('pointerdown', handlePointerDown);
+    };
+  }, [open, closing]);
 
   return (
     <div

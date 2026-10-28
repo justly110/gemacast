@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Monitor, Volume2, Settings, ChevronDown, RefreshCw } from 'lucide-react';
 import type { AudioSource, ProcessInfo, DiscoveredStreamer } from '../../core/types';
 import { useConnection } from '../../hooks/use-connection';
@@ -25,10 +25,11 @@ export function ProcessSelect({
   const [closing, setClosing] = useState(false);
   const [search, setSearch] = useState('');
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
   const { fetchProcessList } = useConnection();
 
   const startClosing = () => {
-    if (closing) return;
+    if (!open || closing) return;
     setClosing(true);
     setTimeout(() => {
       setOpen(false);
@@ -36,6 +37,22 @@ export function ProcessSelect({
       setSearch('');
     }, 150);
   };
+
+  // 点击外部区域时收起
+  useEffect(() => {
+    if (!open) return;
+
+    const handlePointerDown = (e: MouseEvent | TouchEvent) => {
+      if (!containerRef.current?.contains(e.target as Node)) {
+        startClosing();
+      }
+    };
+
+    document.addEventListener('pointerdown', handlePointerDown);
+    return () => {
+      document.removeEventListener('pointerdown', handlePointerDown);
+    };
+  }, [open, closing]);
 
   const sortedProcesses = [...processList].sort((a, b) => {
     if (a.hasAudioSession !== b.hasAudioSession) {
@@ -82,6 +99,7 @@ export function ProcessSelect({
 
   return (
     <div
+      ref={containerRef}
       className={`relative flex w-full items-center gap-2 pt-2.5 mt-2 border-t border-border/50 ${open ? 'z-50' : 'z-auto'}`}
     >
       <span className="shrink-0 whitespace-nowrap text-xs font-semibold text-muted-foreground/80">

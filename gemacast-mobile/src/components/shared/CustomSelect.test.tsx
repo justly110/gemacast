@@ -69,4 +69,19 @@ describe('CustomSelect', () => {
     await waitForClose();
     expect(screen.queryByRole('listbox')).toBeNull();
   });
+
+  it('does not flash closing animation or reopen when blurred while already closed', () => {
+    render(
+      <div>
+        <CustomSelect id="test" options={options} value="1" onChange={mock()} />
+        <button data-testid="outside">Outside</button>
+      </div>,
+    );
+    const trigger = screen.getByRole('button', { name: /Option 1/ });
+    expect(screen.queryByRole('listbox')).toBeNull();
+
+    // Trigger blur while closed
+    fireEvent.blur(trigger.parentElement!, { relatedTarget: screen.getByTestId('outside') });
+    expect(screen.queryByRole('listbox')).toBeNull();
+  });
 });
