@@ -110,15 +110,23 @@ export function BufferPresetSelect() {
         options={options}
         value={selectedValue}
         onChange={handleChange}
-        renderOption={(option) => (
+        renderOption={(option, isSelected) => (
           <>
             <span
-              className={`font-medium ${option.value === 'nobuffer' ? 'text-destructive' : ''}`}
+              className={`font-semibold text-sm tracking-tight ${
+                option.value === 'nobuffer' && !isSelected ? 'text-destructive' : ''
+              }`}
             >
               {option.label}
             </span>
             {option.description && (
-              <span className="mt-0.5 text-xs text-muted-foreground">{option.description}</span>
+              <span
+                className={`mt-0.5 text-xs ${
+                  isSelected ? 'text-primary-foreground/80' : 'text-muted-foreground'
+                }`}
+              >
+                {option.description}
+              </span>
             )}
           </>
         )}
