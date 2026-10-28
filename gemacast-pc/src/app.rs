@@ -362,6 +362,51 @@ fn handle_menu_event(
         return;
     }
 
+    // --- Update proxy settings ---
+    if *menu_event == tray.proxy_direct_item.id() {
+        let mut cfg = crate::config::load_config();
+        cfg.update_proxy.clear();
+        if let Err(e) = crate::config::save_config(&cfg) {
+            tracing::warn!("Failed to save config: {}", e);
+        }
+        tray.update_proxy_status("");
+        return;
+    }
+
+    if *menu_event == tray.proxy_clash_item.id() {
+        let mut cfg = crate::config::load_config();
+        cfg.update_proxy = "http://127.0.0.1:7890".to_string();
+        if let Err(e) = crate::config::save_config(&cfg) {
+            tracing::warn!("Failed to save config: {}", e);
+        }
+        tray.update_proxy_status(&cfg.update_proxy);
+        return;
+    }
+
+    if *menu_event == tray.proxy_socks5_item.id() {
+        let mut cfg = crate::config::load_config();
+        cfg.update_proxy = "socks5://127.0.0.1:10808".to_string();
+        if let Err(e) = crate::config::save_config(&cfg) {
+            tracing::warn!("Failed to save config: {}", e);
+        }
+        tray.update_proxy_status(&cfg.update_proxy);
+        return;
+    }
+
+    if *menu_event == tray.proxy_custom_item.id() {
+        let current_val = crate::config::load_config().update_proxy;
+        if let Some(new_proxy) = prompt_custom_proxy(&current_val) {
+            let trimmed = new_proxy.trim().to_string();
+            let mut cfg = crate::config::load_config();
+            cfg.update_proxy = trimmed;
+            if let Err(e) = crate::config::save_config(&cfg) {
+                tracing::warn!("Failed to save config: {}", e);
+            }
+            tray.update_proxy_status(&cfg.update_proxy);
+        }
+        return;
+    }
+
     // --- Device click (to kick it) ---
     if let Some(device_id) = tray.find_device_by_menu_id(menu_event) {
         if let Err(e) = command_tx.try_send(AppCommand::KickDevice(device_id.clone())) {
@@ -415,5 +460,34 @@ fn handle_menu_event(
     // --- Quit ---
     if *menu_event == tray.quit_menu_item.id() {
         let _ = command_tx.try_send(AppCommand::ExitApp);
+    }
+}
+
+/// Prompt the user for a custom proxy string using a lightweight input dialog on Windows.
+fn prompt_custom_proxy(current: &str) -> Option<String> {
+    #[cfg(windows)]
+    {
+        use std::os::windows::process::CommandExt;
+        const CREATE_NO_WINDOW: u32 = 0x08000000;
+        let script = format!(
+            r#"[void][System.Reflection.Assembly]::LoadWithPartialName('Microsoft.VisualBasic'); [Microsoft.VisualBasic.Interaction]::InputBox('请输入更新代理地址 (例如 http://127.0.0.1:7890 或 socks5://127.0.0.1:10808)，留空表示直连:', 'Gemacast 更新代理设置', '{}')"#,
+            current.replace('\'', "''")
+        );
+        let output = std::process::Command::new("powershell")
+            .args(["-NoProfile", "-Command", &script])
+            .creation_flags(CREATE_NO_WINDOW)
+            .output()
+            .ok()?;
+        if output.status.success() {
+            let res = String::from_utf8_lossy(&output.stdout).trim().to_string();
+            Some(res)
+        } else {
+            None
+        }
+    }
+    #[cfg(not(windows))]
+    {
+        let _ = current;
+        None
     }
 }

@@ -7,9 +7,17 @@ use tokio::sync::mpsc;
 /// Returns `Some(UpdateInfo)` when a newer version exists, or `None` when
 /// the app is already up-to-date.
 #[tauri::command]
-pub async fn check_for_update(app: tauri::AppHandle) -> Result<Option<UpdateInfo>, String> {
+pub async fn check_for_update(
+    app: tauri::AppHandle,
+    proxy: Option<String>,
+) -> Result<Option<UpdateInfo>, String> {
     let current_version = app.config().version.clone().unwrap_or_default();
-    gemacast_core::updater::check_for_update(&current_version, "android").await
+    gemacast_core::updater::check_for_update_with_proxy(
+        &current_version,
+        "android",
+        proxy.as_deref(),
+    )
+    .await
 }
 
 /// Download the update APK to the app's cache directory.
@@ -23,6 +31,7 @@ pub async fn download_update(
     app: tauri::AppHandle,
     url: String,
     sha256: String,
+    proxy: Option<String>,
 ) -> Result<String, String> {
     let cache_dir = app
         .path()
@@ -44,7 +53,14 @@ pub async fn download_update(
         }
     });
 
-    gemacast_core::updater::download_update(&url, &file_path, Some(progress_tx), &sha256).await?;
+    gemacast_core::updater::download_update_with_proxy(
+        &url,
+        &file_path,
+        Some(progress_tx),
+        &sha256,
+        proxy.as_deref(),
+    )
+    .await?;
 
     file_path
         .to_str()

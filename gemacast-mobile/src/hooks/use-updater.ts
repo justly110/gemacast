@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { listen } from '@tauri-apps/api/event';
 import { tauriBridge } from '../core/tauri-bridge';
+import { useAppStore } from '../stores/app-store';
 import { useToastStore } from '../stores/toast-store';
 import { useUpdateStore } from '../stores/update-store';
 
@@ -27,7 +28,8 @@ export function useUpdater() {
     }
 
     try {
-      const result = await tauriBridge.checkForUpdate();
+      const proxy = useAppStore.getState().settings.updateProxy?.trim() || undefined;
+      const result = await tauriBridge.checkForUpdate({ proxy });
       if (result) {
         useUpdateStore.getState().setAvailable(result.version, result.downloadUrl, result.sha256);
       } else {
@@ -67,9 +69,11 @@ export function useUpdater() {
     useUpdateStore.getState().setDownloading(0);
 
     try {
+      const proxy = useAppStore.getState().settings.updateProxy?.trim() || undefined;
       const apkPath = await tauriBridge.downloadUpdate({
         url: downloadUrl,
         sha256,
+        proxy,
       });
       useUpdateStore.getState().setReady(version, apkPath);
     } catch (e) {

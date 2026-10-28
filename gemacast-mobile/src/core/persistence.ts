@@ -30,6 +30,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   customBitrateKbps: 128,
   gainDb: 0,
   matchPcVolume: false,
+  updateProxy: '',
 };
 
 function sanitizeJitterConfig(value: unknown, fallback: JitterConfig): JitterConfig {
@@ -62,12 +63,15 @@ function sanitizeSettings(value: unknown): AppSettings {
           config: sanitizeJitterConfig(preset.config, DEFAULT_AUTO_CONFIG),
         }))
     : [];
+  const updateProxy =
+    typeof incoming.updateProxy === 'string' ? incoming.updateProxy.trim() : DEFAULT_SETTINGS.updateProxy;
   return {
     ...DEFAULT_SETTINGS,
     ...incoming,
     customBitrateKbps,
     customJitterConfig: sanitizeJitterConfig(incoming.customJitterConfig, DEFAULT_AUTO_CONFIG),
     savedPresets,
+    updateProxy,
   };
 }
 

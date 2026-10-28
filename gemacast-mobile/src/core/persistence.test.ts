@@ -60,6 +60,7 @@ describe('settings persistence', () => {
     expect(loaded.theme).toBe('light');
     expect(loaded.mode).toBe(DEFAULT_SETTINGS.mode);
     expect(loaded.exclusiveMode).toBe(DEFAULT_SETTINGS.exclusiveMode);
+    expect(loaded.updateProxy).toBe(DEFAULT_SETTINGS.updateProxy);
   });
 
   it('loadSettings returns defaults when empty', () => {

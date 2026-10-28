@@ -27,7 +27,20 @@ async fn check_and_download(
     platform_key: &str,
     tray: &Arc<dyn TrayNotifier>,
 ) {
-    let info = match gemacast_core::updater::check_for_update(current_version, platform_key).await {
+    let proxy = crate::config::load_config().update_proxy;
+    let proxy_opt = if proxy.trim().is_empty() {
+        None
+    } else {
+        Some(proxy.as_str())
+    };
+
+    let info = match gemacast_core::updater::check_for_update_with_proxy(
+        current_version,
+        platform_key,
+        proxy_opt,
+    )
+    .await
+    {
         Ok(Some(info)) => info,
         Ok(None) => return,
         Err(e) => {
@@ -60,11 +73,12 @@ async fn check_and_download(
         return;
     }
 
-    match gemacast_core::updater::download_update(
+    match gemacast_core::updater::download_update_with_proxy(
         &info.download_url,
         &file_path,
         None,
         &info.sha256,
+        proxy_opt,
     )
     .await
     {

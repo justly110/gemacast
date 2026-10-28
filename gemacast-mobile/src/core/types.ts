@@ -107,6 +107,7 @@ export type AppSettings = {
   customBitrateKbps: number;
   gainDb: number;
   matchPcVolume: boolean;
+  updateProxy: string;
 };
 
 export type AudioSource =

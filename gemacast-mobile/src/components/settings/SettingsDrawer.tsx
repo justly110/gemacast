@@ -10,6 +10,7 @@ import { KeepScreenOnToggle } from './KeepScreenOnToggle';
 import { AutoReconnectToggle } from './AutoReconnectToggle';
 import { ModeSelector } from './ModeSelector';
 import { UpdateBanner } from './UpdateBanner';
+import { UpdateProxyInput } from './UpdateProxyInput';
 import { ForgetPcIdentity } from './ForgetPcIdentity';
 import { HelpDialog, useHelpDialog } from '../shared/HelpDialog';
 import { useAppStore } from '../../stores/app-store';
@@ -93,6 +94,7 @@ export function SettingsDrawer() {
 
         <div className="flex-1 space-y-5 overflow-y-auto px-6 py-5 hide-scrollbar">
           <UpdateBanner />
+          <UpdateProxyInput />
 
           {/* 缓冲预设 - 保持高层叠级别，避免下拉菜单被下方卡片遮挡 */}
           <div className="relative z-30 rounded-2xl border border-border/60 bg-muted/30 p-4">

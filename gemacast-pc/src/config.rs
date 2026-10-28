@@ -24,6 +24,10 @@ pub struct UserConfig {
     /// Whether the one-time "running in background" welcome dialog has been shown.
     #[serde(default)]
     pub welcome_dialog_shown: bool,
+
+    /// Optional proxy for updates only (e.g. "http://127.0.0.1:7890" or "socks5://127.0.0.1:10808").
+    #[serde(default)]
+    pub update_proxy: String,
 }
 
 fn default_true() -> bool {
@@ -35,6 +39,7 @@ impl Default for UserConfig {
         Self {
             launch_on_startup: true,
             welcome_dialog_shown: false,
+            update_proxy: String::new(),
         }
     }
 }
@@ -124,11 +129,13 @@ mod tests {
         let original = UserConfig {
             launch_on_startup: false,
             welcome_dialog_shown: true,
+            update_proxy: "socks5://127.0.0.1:10808".to_string(),
         };
         let json = serde_json::to_string(&original).unwrap();
         let restored: UserConfig = serde_json::from_str(&json).unwrap();
         assert_eq!(original.launch_on_startup, restored.launch_on_startup);
         assert_eq!(original.welcome_dialog_shown, restored.welcome_dialog_shown);
+        assert_eq!(original.update_proxy, restored.update_proxy);
     }
 
     #[test]

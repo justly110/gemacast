@@ -41,11 +41,18 @@ fn load_icon() -> Result<Icon, Box<dyn std::error::Error>> {
 pub struct TrayManager {
     _tray_icon: TrayIcon,
     tray_menu: Menu,
+    pub version_item: MenuItem,
     pub device_menu_items: HashMap<DeviceId, CheckMenuItem>,
     pub connected_devices_submenu: Submenu,
     pub no_devices_placeholder: MenuItem,
     pub broadcast_toggle_item: MenuItem,
     pub quit_menu_item: MenuItem,
+    pub update_proxy_submenu: Submenu,
+    pub proxy_status_item: MenuItem,
+    pub proxy_direct_item: MenuItem,
+    pub proxy_clash_item: MenuItem,
+    pub proxy_socks5_item: MenuItem,
+    pub proxy_custom_item: MenuItem,
     /// Manual "Check for Updates" menu item (always visible).
     pub check_update_menu_item: MenuItem,
     /// Toggle for launching the app automatically on system startup.
@@ -59,11 +66,11 @@ pub struct TrayManager {
     /// Separator placed after the failed item.
     update_failed_separator: Option<PredefinedMenuItem>,
     /// "Checking for updates..." item (shown while a manual check is running).
-    update_checking_menu_item: Option<MenuItem>,
+    pub update_checking_menu_item: Option<MenuItem>,
     /// Separator after the checking item.
     update_checking_separator: Option<PredefinedMenuItem>,
     /// "✓ App is up to date" item (shown temporarily after a manual check).
-    update_up_to_date_menu_item: Option<MenuItem>,
+    pub update_up_to_date_menu_item: Option<MenuItem>,
     /// Separator after the up-to-date item.
     update_up_to_date_separator: Option<PredefinedMenuItem>,
 }
@@ -72,9 +79,33 @@ impl TrayManager {
     /// Create the tray icon and initial menu.
     pub fn new() -> Result<Self, tray_icon::Error> {
         let tray_menu = Menu::new();
+        let version_str = env!("CARGO_PKG_VERSION");
+        let version_item = MenuItem::new(format!("Gemacast v{version_str}"), false, None);
+
         let broadcast_toggle_item = MenuItem::new("停止串流", true, None);
         let connected_devices_submenu = Submenu::new("已连接的手机", true);
         let no_devices_placeholder = MenuItem::new("暂无已连接设备", false, None);
+
+        let update_proxy_submenu = Submenu::new("更新代理", true);
+        let current_cfg = crate::config::load_config();
+        let proxy_status_text = if current_cfg.update_proxy.trim().is_empty() {
+            "当前: 直连 (无代理)".to_string()
+        } else {
+            format!("当前: {}", current_cfg.update_proxy.trim())
+        };
+        let proxy_status_item = MenuItem::new(proxy_status_text, false, None);
+        let proxy_direct_item = MenuItem::new("直连 (不使用代理)", true, None);
+        let proxy_clash_item = MenuItem::new("本地 HTTP (http://127.0.0.1:7890)", true, None);
+        let proxy_socks5_item = MenuItem::new("本地 SOCKS5 (socks5://127.0.0.1:10808)", true, None);
+        let proxy_custom_item = MenuItem::new("自定义代理地址…", true, None);
+
+        let _ = update_proxy_submenu.append(&proxy_status_item);
+        let _ = update_proxy_submenu.append(&PredefinedMenuItem::separator());
+        let _ = update_proxy_submenu.append(&proxy_direct_item);
+        let _ = update_proxy_submenu.append(&proxy_clash_item);
+        let _ = update_proxy_submenu.append(&proxy_socks5_item);
+        let _ = update_proxy_submenu.append(&proxy_custom_item);
+
         let check_update_menu_item = MenuItem::new("检查更新", true, None);
         let launch_on_startup_item = CheckMenuItem::new(
             "开机自启动",
@@ -86,17 +117,21 @@ impl TrayManager {
 
         let _ = connected_devices_submenu.append(&no_devices_placeholder);
 
+        let _ = tray_menu.append(&version_item);
+        let _ = tray_menu.append(&PredefinedMenuItem::separator());
         let _ = tray_menu.append(&broadcast_toggle_item);
         let _ = tray_menu.append(&PredefinedMenuItem::separator());
         let _ = tray_menu.append(&connected_devices_submenu);
         let _ = tray_menu.append(&PredefinedMenuItem::separator());
         let _ = tray_menu.append(&check_update_menu_item);
+        let _ = tray_menu.append(&update_proxy_submenu);
         let _ = tray_menu.append(&launch_on_startup_item);
         let _ = tray_menu.append(&quit_menu_item);
 
+        let tooltip = format!("Gemacast v{version_str}");
         let mut builder = TrayIconBuilder::new()
             .with_menu(Box::new(tray_menu.clone()))
-            .with_tooltip("Gemacast");
+            .with_tooltip(&tooltip);
 
         let icon = load_icon().map_err(|e| {
             tray_icon::Error::OsError(std::io::Error::other(format!("Icon load failed: {e}")))
@@ -108,11 +143,18 @@ impl TrayManager {
         Ok(Self {
             _tray_icon: tray_icon,
             tray_menu,
+            version_item,
             device_menu_items: HashMap::new(),
             no_devices_placeholder,
             connected_devices_submenu,
             broadcast_toggle_item,
             quit_menu_item,
+            update_proxy_submenu,
+            proxy_status_item,
+            proxy_direct_item,
+            proxy_clash_item,
+            proxy_socks5_item,
+            proxy_custom_item,
             check_update_menu_item,
             launch_on_startup_item,
             update_menu_item: None,
@@ -124,6 +166,16 @@ impl TrayManager {
             update_up_to_date_menu_item: None,
             update_up_to_date_separator: None,
         })
+    }
+
+    /// Update the text of the proxy status item in the tray menu.
+    pub fn update_proxy_status(&self, proxy: &str) {
+        let text = if proxy.trim().is_empty() {
+            "当前: 直连 (无代理)".to_string()
+        } else {
+            format!("当前: {}", proxy.trim())
+        };
+        self.proxy_status_item.set_text(text);
     }
 
     /// Add or update a device in the "Connected Phones" submenu.

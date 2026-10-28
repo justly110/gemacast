@@ -92,36 +92,72 @@ pub struct UpdateInfo {
 pub const UPDATER_URL: &str =
     "https://github.com/justly110/gemacast/releases/latest/download/updater.json";
 
+/// Helper function to build a reqwest client configured with an optional proxy.
+///
+/// Supports HTTP, HTTPS, SOCKS5 (e.g. `socks5://127.0.0.1:1080`), and SOCKS5h.
+/// If the scheme is omitted (e.g. `127.0.0.1:7890`), `http://` is assumed.
+fn build_client(proxy: Option<&str>) -> Result<reqwest::Client, String> {
+    let mut builder = reqwest::Client::builder();
+    if let Some(p) = proxy {
+        let p_trimmed = p.trim();
+        if !p_trimmed.is_empty() {
+            let proxy_str = if !p_trimmed.contains("://") {
+                format!("http://{p_trimmed}")
+            } else {
+                p_trimmed.to_string()
+            };
+            let reqwest_proxy = reqwest::Proxy::all(&proxy_str)
+                .map_err(|e| format!("无效的代理地址 '{proxy_str}': {e}"))?;
+            builder = builder.proxy(reqwest_proxy);
+        }
+    }
+    builder
+        .build()
+        .map_err(|e| format!("创建 HTTP 客户端失败: {e}"))
+}
+
 /// Check whether an update is available for the given platform key by fetching the remote manifest.
 ///
 /// Returns `Ok(Some(info))` when a newer version exists, `Ok(None)` when the
 /// app is already up-to-date, or `Err` on network / parse failures.
-///
-/// Retries transient network failures up to [`MAX_RETRIES`] times with
-/// exponential backoff.
 pub async fn check_for_update(
     current_version: &str,
     platform_key: &str,
 ) -> Result<Option<UpdateInfo>, String> {
+    check_for_update_with_proxy(current_version, platform_key, None).await
+}
+
+/// Check whether an update is available using an optional proxy for update checking.
+pub async fn check_for_update_with_proxy(
+    current_version: &str,
+    platform_key: &str,
+    proxy: Option<&str>,
+) -> Result<Option<UpdateInfo>, String> {
     let current = semver::Version::parse(current_version)
         .map_err(|e| format!("Bad current version '{current_version}': {e}"))?;
 
-    tracing::info!("Checking for updates (current: v{current})...");
+    tracing::info!("Checking for updates (current: v{current}, proxy: {proxy:?})...");
 
-    let body = retry_async(MAX_RETRIES, INITIAL_BACKOFF_MS, || async {
-        let resp = reqwest::get(UPDATER_URL)
-            .await
-            .map_err(|e| format!("Failed to fetch updater manifest: {e}"))?
-            .error_for_status()
-            .map_err(|e| {
-                format!(
-                    "Updater manifest request failed (HTTP {}): {e}",
-                    e.status().map_or("unknown".to_string(), |s| s.to_string())
-                )
-            })?;
-        resp.text()
-            .await
-            .map_err(|e| format!("Failed to read updater manifest body: {e}"))
+    let client = build_client(proxy)?;
+
+    let body = retry_async(MAX_RETRIES, INITIAL_BACKOFF_MS, || {
+        let client = client.clone();
+        async move {
+            let resp = client
+                .get(UPDATER_URL)
+                .await
+                .map_err(|e| format!("Failed to fetch updater manifest: {e}"))?
+                .error_for_status()
+                .map_err(|e| {
+                    format!(
+                        "Updater manifest request failed (HTTP {}): {e}",
+                        e.status().map_or("unknown".to_string(), |s| s.to_string())
+                    )
+                })?;
+            resp.text()
+                .await
+                .map_err(|e| format!("Failed to read updater manifest body: {e}"))
+        }
     })
     .await?;
 
@@ -152,26 +188,30 @@ pub async fn check_for_update(
 
 /// Download an update to the given file path, optionally reporting progress (0-100)
 /// via the provided `progress_tx` channel.
-///
-/// The download is always verified against `expected_sha256`, and a mismatch both
-/// errors and deletes the file. The digest is not optional: taking `&str` rather
-/// than `Option<&str>` is what makes "install without verifying" impossible to
-/// express at this call site, including from the Tauri command surface, where the
-/// digest would otherwise round-trip through JavaScript as a nullable value.
-///
-/// Retries the initial HTTP request up to [`MAX_RETRIES`] times with exponential
-/// backoff. Once the stream starts, individual chunk errors are not retried (the
-/// download must be restarted).
 pub async fn download_update(
     url: &str,
     file_path: &Path,
     progress_tx: Option<mpsc::Sender<u8>>,
     expected_sha256: &str,
 ) -> Result<(), String> {
+    download_update_with_proxy(url, file_path, progress_tx, expected_sha256, None).await
+}
+
+/// Download an update to the given file path using an optional proxy.
+pub async fn download_update_with_proxy(
+    url: &str,
+    file_path: &Path,
+    progress_tx: Option<mpsc::Sender<u8>>,
+    expected_sha256: &str,
+    proxy: Option<&str>,
+) -> Result<(), String> {
+    let client = build_client(proxy)?;
     let response = retry_async(MAX_RETRIES, INITIAL_BACKOFF_MS, || {
+        let client = client.clone();
         let url = url.to_string();
         async move {
-            reqwest::get(&url)
+            client
+                .get(&url)
                 .await
                 .map_err(|e| format!("Download request failed: {e}"))?
                 .error_for_status()
