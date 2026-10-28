@@ -145,6 +145,7 @@ pub async fn check_for_update_with_proxy(
         async move {
             let resp = client
                 .get(UPDATER_URL)
+                .send()
                 .await
                 .map_err(|e| format!("Failed to fetch updater manifest: {e}"))?
                 .error_for_status()
@@ -212,6 +213,7 @@ pub async fn download_update_with_proxy(
         async move {
             client
                 .get(&url)
+                .send()
                 .await
                 .map_err(|e| format!("Download request failed: {e}"))?
                 .error_for_status()
@@ -467,5 +469,15 @@ mod tests {
         assert!(result.is_err());
         // 1 initial + 2 retries = 3 total attempts
         assert_eq!(counter.load(std::sync::atomic::Ordering::SeqCst), 3);
+    }
+
+    #[test]
+    fn test_build_client_with_various_proxies() {
+        assert!(build_client(None).is_ok());
+        assert!(build_client(Some("")).is_ok());
+        assert!(build_client(Some("   ")).is_ok());
+        assert!(build_client(Some("http://127.0.0.1:7890")).is_ok());
+        assert!(build_client(Some("socks5://127.0.0.1:10808")).is_ok());
+        assert!(build_client(Some("127.0.0.1:7890")).is_ok());
     }
 }
