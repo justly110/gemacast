@@ -96,7 +96,7 @@ impl TrayManager {
         let proxy_status_item = MenuItem::new(proxy_status_text, false, None);
         let proxy_direct_item = MenuItem::new("直连 (不使用代理)", true, None);
         let proxy_clash_item = MenuItem::new("本地 HTTP (http://127.0.0.1:7890)", true, None);
-        let proxy_socks5_item = MenuItem::new("本地 SOCKS5 (socks5://127.0.0.1:10808)", true, None);
+        let proxy_socks5_item = MenuItem::new("本地 SOCKS5 (socks5://127.0.0.1:7890)", true, None);
         let proxy_custom_item = MenuItem::new("自定义代理地址…", true, None);
 
         let _ = update_proxy_submenu.append(&proxy_status_item);

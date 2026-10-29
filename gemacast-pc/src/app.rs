@@ -235,12 +235,37 @@ fn handle_tray_event(
         TrayEvent::UpdateFailed(msg) => {
             tracing::warn!("Update failed: {}", msg);
             tray.show_update_failed();
+
+            let proxy_str = crate::config::load_config().update_proxy;
+            let proxy_info = if proxy_str.trim().is_empty() {
+                "直连 (未启用代理)".to_string()
+            } else {
+                proxy_str
+            };
+            let err_detail = msg.clone();
+            std::thread::spawn(move || {
+                crate::dialog::MessageDialog::new()
+                    .set_title("Gemacast 检查更新失败")
+                    .set_description(format!(
+                        "连接更新服务器失败！\n\n当前使用的代理：{proxy_info}\n\n详细错误：\n{err_detail}\n\n排查建议：\n1. 若使用代理软件 (如 FLClash/Clash)，请确认代理端口 (默认 7890) 是否正确且代理服务处于运行状态；\n2. 可在托盘菜单的“更新代理”中切换为本地 HTTP 或 SOCKS5 代理再次重试。"
+                    ))
+                    .set_level(crate::dialog::MessageLevel::Warning)
+                    .show();
+            });
         }
         TrayEvent::UpdateChecking => {
             tray.show_update_checking();
         }
         TrayEvent::UpdateUpToDate => {
             tray.show_update_up_to_date();
+            let current_v = env!("CARGO_PKG_VERSION");
+            std::thread::spawn(move || {
+                crate::dialog::MessageDialog::new()
+                    .set_title("Gemacast 检查更新")
+                    .set_description(format!("当前已是最新版本 (v{current_v})，无需更新。"))
+                    .set_level(crate::dialog::MessageLevel::Info)
+                    .show();
+            });
             // Auto-remove the "up to date" item after 5 seconds so it
             // doesn't linger in the menu forever.
             let proxy = proxy.clone();
@@ -370,6 +395,13 @@ fn handle_menu_event(
             tracing::warn!("Failed to save config: {}", e);
         }
         tray.update_proxy_status("");
+        std::thread::spawn(|| {
+            crate::dialog::MessageDialog::new()
+                .set_title("更新代理设置")
+                .set_description("已切换为直连 (不使用代理)。")
+                .set_level(crate::dialog::MessageLevel::Info)
+                .show();
+        });
         return;
     }
 
@@ -380,16 +412,30 @@ fn handle_menu_event(
             tracing::warn!("Failed to save config: {}", e);
         }
         tray.update_proxy_status(&cfg.update_proxy);
+        std::thread::spawn(|| {
+            crate::dialog::MessageDialog::new()
+                .set_title("更新代理设置")
+                .set_description("已设置为本地 HTTP 代理: http://127.0.0.1:7890\n仅在检查更新和下载时生效。")
+                .set_level(crate::dialog::MessageLevel::Info)
+                .show();
+        });
         return;
     }
 
     if *menu_event == tray.proxy_socks5_item.id() {
         let mut cfg = crate::config::load_config();
-        cfg.update_proxy = "socks5://127.0.0.1:10808".to_string();
+        cfg.update_proxy = "socks5://127.0.0.1:7890".to_string();
         if let Err(e) = crate::config::save_config(&cfg) {
             tracing::warn!("Failed to save config: {}", e);
         }
         tray.update_proxy_status(&cfg.update_proxy);
+        std::thread::spawn(|| {
+            crate::dialog::MessageDialog::new()
+                .set_title("更新代理设置")
+                .set_description("已设置为本地 SOCKS5 代理: socks5://127.0.0.1:7890\n仅在检查更新和下载时生效。")
+                .set_level(crate::dialog::MessageLevel::Info)
+                .show();
+        });
         return;
     }
 
@@ -403,6 +449,18 @@ fn handle_menu_event(
                 tracing::warn!("Failed to save config: {}", e);
             }
             tray.update_proxy_status(&cfg.update_proxy);
+            let msg = if cfg.update_proxy.is_empty() {
+                "已切换为直连 (不使用代理)。".to_string()
+            } else {
+                format!("更新代理已设置为: {}\n仅在检查更新和下载时生效。", cfg.update_proxy)
+            };
+            std::thread::spawn(move || {
+                crate::dialog::MessageDialog::new()
+                    .set_title("更新代理设置")
+                    .set_description(msg)
+                    .set_level(crate::dialog::MessageLevel::Info)
+                    .show();
+            });
         }
         return;
     }

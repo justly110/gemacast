@@ -27,6 +27,7 @@ pub struct PlatformEntry {
     /// download out of band. In-app integrity rests entirely on [`Self::sha256`]
     /// plus the fact that the manifest itself is fetched over HTTPS, so do not
     /// read the presence of this field as an integrity guarantee.
+    #[serde(default)]
     pub signature: String,
     /// SHA-256 hex digest of the downloadable artifact.
     ///
@@ -94,18 +95,30 @@ pub const UPDATER_URL: &str =
 
 /// Helper function to build a reqwest client configured with an optional proxy.
 ///
-/// Supports HTTP, HTTPS, SOCKS5 (e.g. `socks5://127.0.0.1:1080`), and SOCKS5h.
+/// Supports HTTP, HTTPS, SOCKS5 (e.g. `socks5://127.0.0.1:7890`), and SOCKS5h.
 /// If the scheme is omitted (e.g. `127.0.0.1:7890`), `http://` is assumed.
+/// SOCKS5 proxies are automatically upgraded to `socks5h://` so domain names
+/// (like github.com) are resolved remotely by the proxy, preventing local DNS poisoning.
 fn build_client(proxy: Option<&str>) -> Result<reqwest::Client, String> {
-    let mut builder = reqwest::Client::builder();
+    let mut builder = reqwest::Client::builder()
+        .user_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gemacast/Updater")
+        .connect_timeout(std::time::Duration::from_secs(10))
+        .timeout(std::time::Duration::from_secs(30));
+
     if let Some(p) = proxy {
         let p_trimmed = p.trim();
         if !p_trimmed.is_empty() {
-            let proxy_str = if !p_trimmed.contains("://") {
+            let mut proxy_str = if !p_trimmed.contains("://") {
                 format!("http://{p_trimmed}")
             } else {
                 p_trimmed.to_string()
             };
+
+            // 升级 socks5:// 到 socks5h://，确保由代理服务器进行远程 DNS 解析
+            if proxy_str.starts_with("socks5://") {
+                proxy_str = proxy_str.replacen("socks5://", "socks5h://", 1);
+            }
+
             let reqwest_proxy = reqwest::Proxy::all(&proxy_str)
                 .map_err(|e| format!("无效的代理地址 '{proxy_str}': {e}"))?;
             builder = builder.proxy(reqwest_proxy);
@@ -384,6 +397,31 @@ mod tests {
         let manifest = manifest_with_sha256(&format!(r#", "sha256": "{VALID_DIGEST}""#));
         assert_eq!(manifest.version, "0.3.0");
         assert!(manifest.platforms.contains_key("windows-x86_64"));
+        assert_eq!(
+            manifest.platforms["windows-x86_64"]
+                .verified_sha256("windows-x86_64")
+                .unwrap(),
+            VALID_DIGEST
+        );
+    }
+
+    #[test]
+    fn parse_updater_json_without_signature() {
+        let json = format!(
+            r#"{{
+                "version": "6.6.9",
+                "pub_date": "2026-10-29T00:00:00Z",
+                "platforms": {{
+                    "windows-x86_64": {{
+                        "url": "https://example.com/installer.msi",
+                        "sha256": "{VALID_DIGEST}"
+                    }}
+                }}
+            }}"#
+        );
+        let manifest: UpdateManifest = serde_json::from_str(&json).unwrap();
+        assert_eq!(manifest.version, "6.6.9");
+        assert_eq!(manifest.platforms["windows-x86_64"].signature, "");
         assert_eq!(
             manifest.platforms["windows-x86_64"]
                 .verified_sha256("windows-x86_64")

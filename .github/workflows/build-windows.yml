@@ -165,6 +165,7 @@ jobs:
 
           $updaterObj.platforms | Add-Member -MemberType NoteProperty -Name "windows-x86_64" -Value ([PSCustomObject]@{
             url = $msiUrl
+            signature = ""
             sha256 = $msiHash
           }) -Force
 

@@ -149,7 +149,7 @@ jobs:
              --arg date "$PUB_DATE" \
              --arg url "$ANDROID_URL" \
              --arg hash "$SHA256" \
-             '.version = $ver | .pub_date = $date | .platforms.android = { url: $url, sha256: $hash }' \
+             '.version = $ver | .pub_date = $date | .platforms.android = { url: $url, signature: "", sha256: $hash }' \
              "$UPDATER_FILE" > updater.tmp.json && mv updater.tmp.json "$UPDATER_FILE"
 
           gh release upload "$TAG" "$UPDATER_FILE" --clobber
