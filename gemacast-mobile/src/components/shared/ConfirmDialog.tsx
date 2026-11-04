@@ -33,6 +33,10 @@ export function ConfirmDialog({
   return (
     <dialog
       ref={dialogRef}
+      onCancel={(e) => {
+        e.preventDefault();
+        onCancel();
+      }}
       className="fixed inset-0 z-50 m-auto w-[min(90vw,380px)] rounded-3xl border border-border/80 bg-popover/90 p-6 text-popover-foreground shadow-[0_24px_60px_rgba(0,0,0,0.35)] backdrop-blur-2xl backdrop:bg-black/60 backdrop:backdrop-blur-sm"
     >
       <p className="mb-6 text-sm font-medium leading-relaxed text-foreground overflow-y-auto max-h-40 [overflow-wrap:anywhere]">

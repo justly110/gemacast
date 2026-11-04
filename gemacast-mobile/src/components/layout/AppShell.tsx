@@ -14,19 +14,19 @@ export function AppShell() {
   useWakeLock(keepScreenOn);
 
   const [activeTab, setActiveTab] = useState<TabId>(() => {
-    return window.location.hash === '#settings' ? 'settings' : 'home';
+    return window.location.hash.startsWith('#settings') ? 'settings' : 'home';
   });
 
   const handleTabChange = useCallback((tab: TabId) => {
     if (tab === 'settings') {
-      if (window.location.hash !== '#settings') {
+      if (!window.location.hash.startsWith('#settings')) {
         window.history.pushState({ tab: 'settings' }, '', '#settings');
       }
       setActiveTab('settings');
     } else {
-      if (window.location.hash === '#settings') {
+      if (window.location.hash.startsWith('#settings')) {
         window.history.back();
-      } else if (window.location.hash !== '#root') {
+      } else if (!window.location.hash.startsWith('#root')) {
         window.history.pushState(null, '', '#root');
       }
       setActiveTab('home');
@@ -35,11 +35,20 @@ export function AppShell() {
 
   useEffect(() => {
     const handlePopState = () => {
-      setActiveTab(window.location.hash === '#settings' ? 'settings' : 'home');
+      setActiveTab(window.location.hash.startsWith('#settings') ? 'settings' : 'home');
     };
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
+
+  useEffect(() => {
+    // Whenever activeTab changes, close any lingering open modal dialogs to prevent document inert lock
+    document.querySelectorAll('dialog[open]').forEach((el) => {
+      try {
+        (el as HTMLDialogElement).close();
+      } catch {}
+    });
+  }, [activeTab]);
 
   return (
     <div className="relative min-h-dvh w-full overflow-hidden bg-background">

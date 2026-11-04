@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, mock } from 'bun:test';
-import { render, screen, cleanup, fireEvent, renderHook } from '@testing-library/react';
+import { render, screen, cleanup, fireEvent, renderHook, act } from '@testing-library/react';
 import { HelpDialog, useHelpDialog } from './HelpDialog';
 import { HELP_CONTENT as actualHelpContent } from '../../core/help-content';
 
@@ -61,5 +61,26 @@ describe('useHelpDialog Hook', () => {
     fireEvent.click(btn);
 
     expect(mockDialog.showModal).toHaveBeenCalled();
+  });
+
+  it('closes dialog and clears activeKey on popstate event', () => {
+    const { result } = renderHook(() => useHelpDialog());
+    const mockDialog = document.createElement('dialog');
+    mockDialog.showModal = mock();
+    mockDialog.close = mock();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (result.current.dialogRef as any).current = mockDialog;
+
+    act(() => {
+      result.current.openHelp('test-key');
+    });
+    expect(result.current.activeKey).toBe('test-key');
+
+    act(() => {
+      window.dispatchEvent(new Event('popstate'));
+    });
+
+    expect(result.current.activeKey).toBeNull();
+    expect(mockDialog.close).toHaveBeenCalled();
   });
 });

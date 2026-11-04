@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useCallback, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { HELP_CONTENT } from '../../core/help-content';
 
@@ -16,6 +16,10 @@ export function HelpDialog({
   return (
     <dialog
       ref={dialogRef}
+      onCancel={(e) => {
+        e.preventDefault();
+        onClose();
+      }}
       className="fixed inset-0 z-10000 m-auto w-[min(90vw,460px)] rounded-3xl border border-border/80 bg-popover/90 p-6 text-popover-foreground shadow-[0_24px_60px_rgba(0,0,0,0.35)] backdrop-blur-2xl backdrop:bg-black/60 backdrop:backdrop-blur-sm"
       onClick={(e) => {
         if (e.target === dialogRef.current) onClose();
@@ -55,16 +59,49 @@ export function HelpDialog({
 export function useHelpDialog() {
   const [activeKey, setActiveKey] = useState<string | null>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const hasHistoryRef = useRef(false);
 
-  const openHelp = (key: string) => {
+  const closeHelp = useCallback(() => {
+    try {
+      dialogRef.current?.close();
+    } catch {}
+    setActiveKey(null);
+    if (hasHistoryRef.current) {
+      hasHistoryRef.current = false;
+      if (typeof window !== 'undefined' && window.location.hash.includes('+help')) {
+        window.history.back();
+      }
+    }
+  }, []);
+
+  const openHelp = useCallback((key: string) => {
     setActiveKey(key);
     dialogRef.current?.showModal();
-  };
+    if (!hasHistoryRef.current && typeof window !== 'undefined') {
+      hasHistoryRef.current = true;
+      const currentHash = window.location.hash || '#root';
+      window.history.pushState({ modal: 'help' }, '', `${currentHash}+help`);
+    }
+  }, []);
 
-  const closeHelp = () => {
-    dialogRef.current?.close();
-    setActiveKey(null);
-  };
+  useEffect(() => {
+    const handlePopState = () => {
+      if (hasHistoryRef.current) {
+        hasHistoryRef.current = false;
+        try {
+          dialogRef.current?.close();
+        } catch {}
+        setActiveKey(null);
+      }
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+      try {
+        dialogRef.current?.close();
+      } catch {}
+    };
+  }, []);
 
   const renderHelpButton = (helpKey: string) => (
     <button

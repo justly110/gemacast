@@ -74,4 +74,28 @@ describe('AppShell tabs', () => {
     expect(homeView.classList.contains('hidden')).toBe(false);
     expect(settingsView.classList.contains('hidden')).toBe(true);
   });
+
+  it('keeps settings view active when back navigation comes from #settings+help to #settings', () => {
+    render(<AppShell />);
+
+    fireEvent.click(screen.getByRole('tab', { name: '设置' }));
+    expect(window.location.hash).toBe('#settings');
+
+    act(() => {
+      window.location.hash = '#settings+help';
+      window.dispatchEvent(new Event('popstate'));
+    });
+
+    const settingsView = screen.getByTestId('settings-view').parentElement!;
+    expect(settingsView.classList.contains('flex')).toBe(true);
+    expect(settingsView.classList.contains('hidden')).toBe(false);
+
+    act(() => {
+      window.location.hash = '#settings';
+      window.dispatchEvent(new Event('popstate'));
+    });
+
+    expect(settingsView.classList.contains('flex')).toBe(true);
+    expect(settingsView.classList.contains('hidden')).toBe(false);
+  });
 });
