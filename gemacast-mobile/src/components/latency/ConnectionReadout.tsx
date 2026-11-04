@@ -1,9 +1,11 @@
 import { useAppStore } from '../../stores/app-store';
-import { hasLiveSession } from '../../core/types';
+import { hasLiveSession, Status } from '../../core/types';
 import { StatusChip } from '../device/StatusChip';
 import { HelpDialog, useHelpDialog } from '../shared/HelpDialog';
 import { ConnectionMetrics } from './ConnectionMetrics';
 import { NetworkLinkBadge } from './NetworkLinkBadge';
+import { AudioVisualizer } from './AudioVisualizer';
+import { QuickAudioControl } from './QuickAudioControl';
 
 export function ConnectionReadout() {
   const status = useAppStore((s) => s.status);
@@ -24,9 +26,11 @@ export function ConnectionReadout() {
           <StatusChip />
           <NetworkLinkBadge withLeadingSeparator />
         </div>
+        <AudioVisualizer />
       </div>
 
       <ConnectionMetrics renderHelpButton={help.renderHelpButton} />
+      {status !== Status.Reconnecting && <QuickAudioControl />}
       <HelpDialog activeKey={help.activeKey} onClose={help.closeHelp} dialogRef={help.dialogRef} />
     </section>
   );

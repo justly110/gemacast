@@ -1,4 +1,5 @@
 import { Radio, SlidersHorizontal } from 'lucide-react';
+import { triggerHaptic } from '../../core/haptics';
 
 export type TabId = 'home' | 'settings';
 
@@ -8,6 +9,11 @@ interface BottomNavProps {
 }
 
 export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
+  const handleTab = (tab: TabId) => {
+    triggerHaptic('light');
+    onTabChange(tab);
+  };
+
   return (
     <nav
       className="fixed bottom-0 left-0 right-0 z-40 border-t border-border/60 bg-background/85 backdrop-blur-xl"
@@ -19,7 +25,7 @@ export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
       <div className="mx-auto flex h-14 max-w-lg items-center justify-around px-8" role="tablist">
         <button
           type="button"
-          onClick={() => onTabChange('home')}
+          onClick={() => handleTab('home')}
           className={`relative flex flex-1 flex-col items-center justify-center gap-1 py-1 transition-all duration-200 active:scale-95 ${
             activeTab === 'home'
               ? 'text-primary'
@@ -44,7 +50,7 @@ export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
 
         <button
           type="button"
-          onClick={() => onTabChange('settings')}
+          onClick={() => handleTab('settings')}
           className={`relative flex flex-1 flex-col items-center justify-center gap-1 py-1 transition-all duration-200 active:scale-95 ${
             activeTab === 'settings'
               ? 'text-primary'

@@ -9,6 +9,7 @@ import { useNetworkMonitor } from './hooks/use-network-monitor';
 import { reconnectOnAppOpen } from './hooks/use-connection';
 import { startListening } from './hooks/use-discovery';
 import { AppShell } from './components/layout/AppShell';
+import { applyTheme } from './components/settings/ThemeToggle';
 
 function AppInner() {
   useTauriEvents();
@@ -43,9 +44,19 @@ function AppInner() {
 
     window.addEventListener('popstate', handlePopState);
     document.addEventListener('visibilitychange', handleVisibility);
+
+    const handleThemeChange = () => {
+      if (useAppStore.getState().settings.theme === 'system') {
+        applyTheme('system');
+      }
+    };
+    const media = window.matchMedia('(prefers-color-scheme: dark)');
+    media.addEventListener('change', handleThemeChange);
+
     return () => {
       window.removeEventListener('popstate', handlePopState);
       document.removeEventListener('visibilitychange', handleVisibility);
+      media.removeEventListener('change', handleThemeChange);
     };
   }, []);
 
@@ -99,8 +110,7 @@ export function App() {
       }
 
       const theme = useAppStore.getState().settings.theme;
-      document.documentElement.classList.toggle('dark', theme === 'dark');
-      document.documentElement.classList.toggle('light', theme === 'light');
+      applyTheme(theme);
 
       await reconnectOnAppOpen().catch(console.warn);
 

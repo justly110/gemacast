@@ -95,7 +95,7 @@ export type BitratePreset =
   '10' | '24' | '32' | '64' | '96' | '128' | '256' | '450' | '512' | 'raw' | 'custom';
 
 export type AppSettings = {
-  theme: 'light' | 'dark';
+  theme: 'light' | 'dark' | 'system';
   mode: ConnectionMode;
   exclusiveMode: boolean;
   keepScreenOn: boolean;

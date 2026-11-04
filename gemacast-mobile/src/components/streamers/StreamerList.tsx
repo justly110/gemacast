@@ -33,6 +33,14 @@ export function StreamerList() {
 
   const isEmpty = streamers.length === 0 && isListening;
 
+  const sortedStreamers = [...streamers].sort((a, b) => {
+    const aConnected = connectedStreamer?.deviceId === a.deviceId;
+    const bConnected = connectedStreamer?.deviceId === b.deviceId;
+    if (aConnected && !bConnected) return -1;
+    if (!aConnected && bConnected) return 1;
+    return 0;
+  });
+
   const handleToggle = async (streamer: DiscoveredStreamer, isConnected: boolean) => {
     if (isConnected) {
       await disconnect();
@@ -87,7 +95,7 @@ export function StreamerList() {
           {isEmpty && <EmptyState />}
 
           <ul className="flex flex-col gap-3 pb-6 min-h-80" aria-label="已发现的电脑设备">
-            {streamers.map((streamer) => {
+            {sortedStreamers.map((streamer) => {
               const isConnected = connectedStreamer?.deviceId === streamer.deviceId;
               const isConnecting =
                 status === Status.Connecting && connectingStreamerId === streamer.deviceId;

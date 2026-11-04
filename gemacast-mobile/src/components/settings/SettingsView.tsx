@@ -1,5 +1,5 @@
-import { SlidersHorizontal } from 'lucide-react';
-import { ThemeToggle } from './ThemeToggle';
+import { SlidersHorizontal, Sun, Moon, Laptop } from 'lucide-react';
+import { ThemeToggle, applyTheme } from './ThemeToggle';
 import { BufferPresetSelect } from './BufferPresetSelect';
 import { CustomJitterConfig } from './CustomJitterConfig';
 import { BitrateSelect } from './BitrateSelect';
@@ -14,6 +14,8 @@ import { UpdateProxyInput } from './UpdateProxyInput';
 import { ForgetPcIdentity } from './ForgetPcIdentity';
 import { HelpDialog, useHelpDialog } from '../shared/HelpDialog';
 import { useAppStore } from '../../stores/app-store';
+import { useSettings } from '../../hooks/use-settings';
+import { triggerHaptic } from '../../core/haptics';
 import packageJson from '../../../package.json';
 
 function SectionLabel({
@@ -39,10 +41,18 @@ function SectionDivider() {
 
 export function SettingsView() {
   const help = useHelpDialog();
+  const { settings, update } = useSettings();
   const exclusiveSupported = useAppStore((s) => s.exclusiveSupported);
   const volumeSyncSupported = useAppStore(
     (s) => s.streamerCapabilities?.supportsVolumeSync ?? false,
   );
+  const currentTheme = settings.theme;
+
+  const handleThemeChange = (next: 'light' | 'dark' | 'system') => {
+    triggerHaptic('light');
+    update({ theme: next });
+    applyTheme(next);
+  };
 
   return (
     <div className="flex h-full w-full flex-col overflow-hidden" data-testid="settings-view">
@@ -71,6 +81,51 @@ export function SettingsView() {
       >
         <UpdateBanner />
         <UpdateProxyInput />
+
+        {/* 外观主题 */}
+        <div className="rounded-2xl border border-border/60 bg-muted/25 p-4 backdrop-blur-md">
+          <SectionLabel>外观主题</SectionLabel>
+          <div className="grid grid-cols-3 gap-2">
+            <button
+              type="button"
+              onClick={() => handleThemeChange('system')}
+              className={`flex items-center justify-center gap-1.5 rounded-xl border py-2 text-xs font-medium transition-all active:scale-95 ${
+                currentTheme === 'system'
+                  ? 'border-primary/50 bg-primary/15 text-primary shadow-xs font-semibold'
+                  : 'border-border/60 bg-background/50 text-muted-foreground hover:bg-background/80 hover:text-foreground'
+              }`}
+            >
+              <Laptop className="h-3.5 w-3.5" />
+              <span>跟随系统</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => handleThemeChange('light')}
+              className={`flex items-center justify-center gap-1.5 rounded-xl border py-2 text-xs font-medium transition-all active:scale-95 ${
+                currentTheme === 'light'
+                  ? 'border-primary/50 bg-primary/15 text-primary shadow-xs font-semibold'
+                  : 'border-border/60 bg-background/50 text-muted-foreground hover:bg-background/80 hover:text-foreground'
+              }`}
+            >
+              <Sun className="h-3.5 w-3.5" />
+              <span>浅色</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => handleThemeChange('dark')}
+              className={`flex items-center justify-center gap-1.5 rounded-xl border py-2 text-xs font-medium transition-all active:scale-95 ${
+                currentTheme === 'dark'
+                  ? 'border-primary/50 bg-primary/15 text-primary shadow-xs font-semibold'
+                  : 'border-border/60 bg-background/50 text-muted-foreground hover:bg-background/80 hover:text-foreground'
+              }`}
+            >
+              <Moon className="h-3.5 w-3.5" />
+              <span>深色</span>
+            </button>
+          </div>
+        </div>
+
+        <SectionDivider />
 
         {/* 缓冲预设 */}
         <div className="relative z-30 rounded-2xl border border-border/60 bg-muted/30 p-4 backdrop-blur-md">

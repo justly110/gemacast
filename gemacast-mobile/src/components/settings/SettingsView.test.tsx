@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'bun:test';
-import { render, screen, cleanup } from '@testing-library/react';
+import { render, screen, cleanup, fireEvent } from '@testing-library/react';
 import { useAppStore } from '../../stores/app-store';
 import { SettingsView } from './SettingsView';
 
@@ -50,5 +50,11 @@ describe('SettingsView', () => {
     });
     render(<SettingsView />);
     expect(screen.queryByText('当前电脑未上报音量')).toBeNull();
+  });
+
+  it('updates theme to system when clicking 跟随系统', () => {
+    render(<SettingsView />);
+    fireEvent.click(screen.getByRole('button', { name: /跟随系统/ }));
+    expect(useAppStore.getState().settings.theme).toBe('system');
   });
 });

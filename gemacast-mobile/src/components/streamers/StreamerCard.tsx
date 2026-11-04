@@ -1,4 +1,5 @@
 import { Monitor, Usb, Play, Pause } from 'lucide-react';
+import { triggerHaptic } from '../../core/haptics';
 import type {
   AudioSource,
   DiscoveredStreamer,
@@ -81,9 +82,17 @@ export function StreamerCard({
         </div>
 
         <div className="flex min-w-0 flex-col gap-0.5">
-          <p className="truncate text-[15px] font-bold tracking-tight text-foreground">
-            {streamer.deviceName}
-          </p>
+          <div className="flex items-center gap-1.5 overflow-hidden">
+            <p className="truncate text-[15px] font-bold tracking-tight text-foreground">
+              {streamer.deviceName}
+            </p>
+            {isConnected && (
+              <span className="relative flex h-2 w-2 shrink-0" title="已连接此电脑">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-status-ok opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-status-ok" />
+              </span>
+            )}
+          </div>
           <div className="flex items-center gap-1.5">
             <span
               className={`h-1.5 w-1.5 rounded-full ${
@@ -113,7 +122,10 @@ export function StreamerCard({
                 : 'border-border/80 bg-background/60 text-foreground backdrop-blur-md hover:border-primary/50 hover:bg-primary hover:text-primary-foreground shadow-sm'
             }
           `}
-          onClick={onToggle}
+          onClick={() => {
+            triggerHaptic('medium');
+            onToggle();
+          }}
           aria-label={`${isConnected ? '断开与' : '连接至'} ${streamer.deviceName}`}
         >
           <span
@@ -131,7 +143,10 @@ export function StreamerCard({
             type="button"
             disabled={isDisabled}
             className="inline-flex shrink-0 items-center justify-center rounded-xl border border-primary/30 bg-primary/15 p-2 text-primary backdrop-blur-md transition-all duration-200 hover:bg-primary hover:text-primary-foreground active:scale-[0.95] shadow-[0_2px_12px_rgba(2,132,199,0.2)]"
-            onClick={onPlayPause}
+            onClick={() => {
+              triggerHaptic('light');
+              onPlayPause();
+            }}
             aria-label={
               isPlaying ? `暂停 ${streamer.deviceName}` : `继续 ${streamer.deviceName}`
             }

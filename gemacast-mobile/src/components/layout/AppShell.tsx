@@ -81,7 +81,7 @@ export function AppShell() {
       {/* 首页视图 */}
       <main
         className={`relative z-10 mx-auto h-dvh max-w-lg flex-col gap-5 px-5 overflow-hidden ${
-          activeTab === 'home' ? 'flex' : 'hidden'
+          activeTab === 'home' ? 'flex animate-[fade-in_200ms_ease-out]' : 'hidden'
         }`}
         style={{
           paddingTop: 'calc(1.5rem + env(safe-area-inset-top, 0px))',
@@ -100,7 +100,7 @@ export function AppShell() {
       {/* 设置视图 */}
       <div
         className={`relative z-10 mx-auto h-dvh max-w-lg flex-col overflow-hidden ${
-          activeTab === 'settings' ? 'flex' : 'hidden'
+          activeTab === 'settings' ? 'flex animate-[fade-in_200ms_ease-out]' : 'hidden'
         }`}
       >
         <SettingsView />

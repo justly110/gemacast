@@ -205,6 +205,7 @@ impl TrayManager {
 
         if let Some(existing) = self.device_menu_items.get(&device_id) {
             existing.set_text(&display_text);
+            self.update_connected_devices_ui();
             return;
         }
 
@@ -217,6 +218,7 @@ impl TrayManager {
         let new_device_item = CheckMenuItem::new(display_text, true, false, None);
         let _ = self.connected_devices_submenu.append(&new_device_item);
         self.device_menu_items.insert(device_id, new_device_item);
+        self.update_connected_devices_ui();
     }
 
     /// Update the check mark for a device (checked = connected).
@@ -236,6 +238,27 @@ impl TrayManager {
             let _ = self
                 .connected_devices_submenu
                 .append(&self.no_devices_placeholder);
+        }
+        self.update_connected_devices_ui();
+    }
+
+    /// Update tray tooltip and submenu header with connected device count & info.
+    fn update_connected_devices_ui(&self) {
+        let version_str = env!("CARGO_PKG_VERSION");
+        let count = self.device_menu_items.len();
+        if count == 0 {
+            self.connected_devices_submenu.set_text("已连接的手机");
+            let _ = self
+                ._tray_icon
+                .set_tooltip(Some(format!("Gemacast v{version_str}")));
+        } else {
+            self.connected_devices_submenu
+                .set_text(format!("已连接的手机 ({count})"));
+            let names: Vec<String> = self.device_menu_items.values().map(|item| item.text()).collect();
+            let _ = self._tray_icon.set_tooltip(Some(format!(
+                "Gemacast v{version_str}\n已连接: {}",
+                names.join(", ")
+            )));
         }
     }
 
