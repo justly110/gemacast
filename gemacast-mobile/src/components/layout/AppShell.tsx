@@ -1,15 +1,45 @@
+import { useState, useCallback, useEffect } from 'react';
 import { DeviceInfo } from '../device/DeviceInfo';
 import { StreamerList } from '../streamers/StreamerList';
 import { ManualConnect } from '../streamers/ManualConnect';
 import { ConnectionReadout } from '../latency/ConnectionReadout';
 import { ToastContainer } from '../feedback/ToastContainer';
-import { SettingsDrawer } from '../settings/SettingsDrawer';
+import { SettingsView } from '../settings/SettingsView';
+import { BottomNav, type TabId } from './BottomNav';
 import { useWakeLock } from '../../hooks/use-wake-lock';
 import { useAppStore } from '../../stores/app-store';
 
 export function AppShell() {
   const keepScreenOn = useAppStore((s) => s.settings.keepScreenOn);
   useWakeLock(keepScreenOn);
+
+  const [activeTab, setActiveTab] = useState<TabId>(() => {
+    return window.location.hash === '#settings' ? 'settings' : 'home';
+  });
+
+  const handleTabChange = useCallback((tab: TabId) => {
+    if (tab === 'settings') {
+      if (window.location.hash !== '#settings') {
+        window.history.pushState({ tab: 'settings' }, '', '#settings');
+      }
+      setActiveTab('settings');
+    } else {
+      if (window.location.hash === '#settings') {
+        window.history.back();
+      } else if (window.location.hash !== '#root') {
+        window.history.pushState(null, '', '#root');
+      }
+      setActiveTab('home');
+    }
+  }, []);
+
+  useEffect(() => {
+    const handlePopState = () => {
+      setActiveTab(window.location.hash === '#settings' ? 'settings' : 'home');
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
   return (
     <div className="relative min-h-dvh w-full overflow-hidden bg-background">
@@ -47,13 +77,15 @@ export function AppShell() {
       </div>
 
       <ToastContainer />
-      <SettingsDrawer />
 
+      {/* 首页视图 */}
       <main
-        className="relative z-10 mx-auto flex h-dvh max-w-lg flex-col gap-5 px-5 overflow-hidden"
+        className={`relative z-10 mx-auto h-dvh max-w-lg flex-col gap-5 px-5 overflow-hidden ${
+          activeTab === 'home' ? 'flex' : 'hidden'
+        }`}
         style={{
-          paddingTop: 'calc(3.75rem + env(safe-area-inset-top, 0px))',
-          paddingBottom: 'calc(1.75rem + env(safe-area-inset-bottom, 0px))',
+          paddingTop: 'calc(1.5rem + env(safe-area-inset-top, 0px))',
+          paddingBottom: 'calc(4.75rem + env(safe-area-inset-bottom, 0px))',
         }}
       >
         <DeviceInfo />
@@ -64,6 +96,18 @@ export function AppShell() {
         <ManualConnect />
         <StreamerList />
       </main>
+
+      {/* 设置视图 */}
+      <div
+        className={`relative z-10 mx-auto h-dvh max-w-lg flex-col overflow-hidden ${
+          activeTab === 'settings' ? 'flex' : 'hidden'
+        }`}
+      >
+        <SettingsView />
+      </div>
+
+      {/* 底部选项卡导航 */}
+      <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
     </div>
   );
 }
