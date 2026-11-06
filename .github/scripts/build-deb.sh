@@ -57,7 +57,7 @@ chmod 755 "${PKG_NAME}/DEBIAN/postinst" "${PKG_NAME}/DEBIAN/postrm"
   echo "Description: Low-latency real-time audio streaming from PC to Android"
   echo " Gemacast streams audio from your PC to Android devices over a local"
   echo " network with minimal latency using Opus codec and UDP transport."
-  echo "Homepage: https://github.com/apirJS/gemacast"
+  echo "Homepage: https://github.com/justly110/gemacast"
 } > "${PKG_NAME}/DEBIAN/control"
 
 dpkg-deb --build --root-owner-group "${PKG_NAME}"

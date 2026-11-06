@@ -17,8 +17,8 @@ Gemacast turns your Android smartphone into a high-performance wireless or wired
 
 ## Downloads & Setup
 
-- [Latest Releases](https://github.com/apirJS/gemacast/releases/latest): Prebuilt binaries for Windows (.msi, .zip), Linux (.deb, .rpm, .AppImage, .tar.xz), macOS (.dmg), and Android (.apk).
-- [Source Code Repository](https://github.com/apirJS/gemacast): Full Rust and TypeScript codebase licensed under GPL-3.0.
+- [Latest Releases](https://github.com/justly110/gemacast/releases/latest): Prebuilt binaries for Windows (.msi, .zip), Linux (.deb, .rpm, .AppImage, .tar.xz), macOS (.dmg), and Android (.apk).
+- [Source Code Repository](https://github.com/justly110/gemacast): Full Rust and TypeScript codebase licensed under GPL-3.0.
 
 ## Technical Details
 
@@ -29,6 +29,6 @@ Gemacast turns your Android smartphone into a high-performance wireless or wired
 ## Useful Links
 
 - [Official Website](https://gemacast.apirjs.tech/)
-- [GitHub Repository](https://github.com/apirJS/gemacast)
-- [Issue Tracker](https://github.com/apirJS/gemacast/issues)
+- [GitHub Repository](https://github.com/justly110/gemacast)
+- [Issue Tracker](https://github.com/justly110/gemacast/issues)
 - [Contact Author](mailto:echa.apriliyanto.dev@gmail.com)

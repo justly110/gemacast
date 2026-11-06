@@ -251,9 +251,9 @@
 
     <Icon Id="ProductICO" SourceFile="$(var.IconDir)\Product.ico" />
     <Property Id="ARPPRODUCTICON" Value="ProductICO" />
-    <Property Id="ARPHELPLINK" Value="https://github.com/apirJS/gemacast" />
-    <Property Id="ARPURLINFOABOUT" Value="https://github.com/apirJS/gemacast" />
-    <Property Id="ARPURLUPDATEINFO" Value="https://github.com/apirJS/gemacast/releases" />
+    <Property Id="ARPHELPLINK" Value="https://github.com/justly110/gemacast" />
+    <Property Id="ARPURLINFOABOUT" Value="https://github.com/justly110/gemacast" />
+    <Property Id="ARPURLUPDATEINFO" Value="https://github.com/justly110/gemacast/releases" />
     <!-- Hide Modify button — single-feature installer, nothing to modify -->
     <Property Id="ARPNOMODIFY" Value="1" />
 

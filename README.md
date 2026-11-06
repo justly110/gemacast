@@ -1,60 +1,42 @@
-<div align="center">
+# Gemacast
 
-# <img src="assets/logo_transparent.svg" height="56" alt="Gemacast Logo" valign="middle" /> Gemacast
-
-[![Release](https://img.shields.io/github/v/release/apirJS/gemacast?label=release)](https://github.com/apirJS/gemacast/releases/latest)
+[![Release](https://img.shields.io/github/v/release/justly110/gemacast?label=release)](https://github.com/justly110/gemacast/releases/latest)
 [![Rust](https://img.shields.io/badge/rust-1.97.1-orange)](https://www.rust-lang.org/)
 [![TypeScript](https://img.shields.io/badge/typescript-6-blue)](https://www.typescriptlang.org/)
-[![Release Date](https://img.shields.io/github/release-date/apirJS/gemacast)](https://github.com/apirJS/gemacast/releases/latest)
-[![Last Commit](https://img.shields.io/github/last-commit/apirJS/gemacast)](https://github.com/apirJS/gemacast/commits/main)
-[![Downloads](https://img.shields.io/github/downloads/apirJS/gemacast/total)](https://github.com/apirJS/gemacast/releases)
-[![License](https://img.shields.io/github/license/apirJS/gemacast)](LICENSE)
-[![Website](https://img.shields.io/badge/website-gemacast.apirjs.tech-blue)](https://gemacast.apirjs.tech/)
+[![Release Date](https://img.shields.io/github/release-date/justly110/gemacast)](https://github.com/justly110/gemacast/releases/latest)
+[![Last Commit](https://img.shields.io/github/last-commit/justly110/gemacast)](https://github.com/justly110/gemacast/commits/main)
+[![Downloads](https://img.shields.io/github/downloads/justly110/gemacast/total)](https://github.com/justly110/gemacast/releases)
+[![License](https://img.shields.io/github/license/justly110/gemacast)](LICENSE)
 
-Stream desktop audio from PC to Android over Wi-Fi, USB tethering, or ADB.
-Captures full audio or per-application audio and plays it on one or more phones. Turn your phone into a speaker!!
+通过 Wi-Fi、USB 网络共享或 ADB，将电脑上的桌面音频串流到安卓手机。
+既可以捕获整个系统的声音，也可以只捕获某个应用的音频，并同时播放到一台或多台手机上。把你的手机变成一个音箱！
 
-</div>
+## 目录
 
-## Table of Contents
+- [环境要求与安装](#环境要求与安装)
+- [功能特性](#功能特性)
+- [防火墙](#防火墙)
+- [音频格式](#音频格式)
+- [从源码编译](#从源码编译)
+- [常见问题](#常见问题)
+- [许可证](#许可证)
+- [第三方库致谢](#第三方库致谢)
 
-- [Screenshots](#screenshots)
-- [Requirements and Setup](#requirements-and-setup)
-- [Features](#features)
-- [Firewalls](#firewalls)
-- [Audio Formats](#audio-formats)
-- [Compile from Source](#compile-from-source)
-- [FAQ](#faq)
-- [License](#license)
-- [Third-Party Library Acknowledgement](#third-party-library-acknowledgement)
-
-## Screenshots
-
-<div align="center">
-  <img src="assets/mobile-stream-adb-demo.gif" alt="Phone playing" height="480" />
-  <img src="assets/stream-choose-process-audio-demo.jpeg" alt="Choose Process Audio" height="480" />
-  <br /><br />
-  <img src="assets/setting-panel-1.jpeg" alt="Phone settings 1" height="480" />
-  <img src="assets/setting-panel-2.jpeg" alt="Phone settings 2" height="480" />
-  <br /><br />
-  <img src="assets/pc-system-tray.png" alt="PC system tray" width="720" />
-</div>
-
-## Requirements and Setup
+## 环境要求与安装
 
 ### Windows
 
-Minimum: Windows 10 version 2004 or later.
+最低要求：Windows 10 版本 2004 或更高。
 
-1. Download the `.msi` installer or `.zip` archive from [Releases](https://github.com/apirJS/gemacast/releases/latest).
-2. Run the installer. It creates a Windows Firewall rule for ports UDP 23555-23556 and TCP 23559.
-3. Launch Gemacast from the Start menu or system tray.
+1. 从 [Releases](https://github.com/justly110/gemacast/releases/latest) 下载 `.msi` 安装包或 `.zip` 压缩包。
+2. 运行安装程序。它会自动创建 Windows 防火墙规则，放行 UDP 23555-23556 与 TCP 23559 端口。
+3. 从开始菜单或系统托盘启动 Gemacast。
 
 ### Linux
 
-Requires a PipeWire 0.3+ session with WirePlumber for audio capture.
+需要 PipeWire 0.3+ 会话以及 WirePlumber 才能进行音频捕获。
 
-Download `.deb`, `.rpm`, `.AppImage`, or `.tar.xz` from [Releases](https://github.com/apirJS/gemacast/releases/latest).
+从 [Releases](https://github.com/justly110/gemacast/releases/latest) 下载 `.deb`、`.rpm`、`.AppImage` 或 `.tar.xz`。
 
 ```bash
 # Debian / Ubuntu (.deb)
@@ -64,65 +46,65 @@ sudo dpkg -i gemacast-pc_*.deb
 sudo rpm -i gemacast-pc-*.rpm
 ```
 
-The `.deb` and `.rpm` packages automatically install required UI libraries (GTK3, AppIndicator) and configure firewall rules and port reservations.
+`.deb` 与 `.rpm` 包会自动安装所需的界面库（GTK3、AppIndicator），并配置防火墙规则与端口预留。
 
-For `.AppImage` or `.tar.xz`, you must open ports manually (see [Firewalls](#firewalls)). Additionally, the `.tar.xz` binary requires GTK3 and AppIndicator (e.g., `libayatana-appindicator3-1`) installed on your system to display the system tray icon.
+使用 `.AppImage` 或 `.tar.xz` 时，需要手动开放端口（参见 [防火墙](#防火墙)）。此外，`.tar.xz` 中的可执行文件需要系统已安装 GTK3 与 AppIndicator（例如 `libayatana-appindicator3-1`）才能显示系统托盘图标。
 
 ### macOS
 
-Requires macOS >= 13
+需要 macOS >= 13。
 
-Download the `.dmg` from [Releases](https://github.com/apirJS/gemacast/releases/latest).
+从 [Releases](https://github.com/justly110/gemacast/releases/latest) 下载 `.dmg`。
 
-The binary is unsigned and un-notarized. On first launch, right-click the app and select Open, or run:
+该二进制未签名、也未公证。首次启动时请右键点击应用并选择“打开”，或执行：
 
 ```bash
 xattr -d com.apple.quarantine /Applications/Gemacast.app
 ```
 
-Audio capture uses ScreenCaptureKit on macOS 13 and later (requires Screen Recording permission).
-On macOS 12 or below, CPAL is used as a fallback and requires a virtual output device (BlackHole or Soundflower).
+在 macOS 13 及更高版本上，音频捕获使用 ScreenCaptureKit（需要“屏幕录制”权限）。
+在 macOS 12 及更低版本上会回退到 CPAL，此时需要一个虚拟输出设备（BlackHole 或 Soundflower）。
 
 ### Android
 
-Minimum: Android 8.0 (Oreo, API 26) or later.
+最低要求：Android 8.0（Oreo，API 26）或更高。
 
-Download the `.apk` from [Releases](https://github.com/apirJS/gemacast/releases/latest) and install it.
-Most phones should use the smaller ARM64 build, `gemacast-mobile.apk`; use
-`gemacast-mobile-universal.apk` only when you need the multi-architecture build.
-The phone and PC must be on the same network, connected via USB tethering, or linked by an ADB cable with `adb reverse` forwarding.
+从 [Releases](https://github.com/justly110/gemacast/releases/latest) 下载 `.apk` 并安装。
+大多数手机应使用体积更小的 ARM64 版本 `gemacast-mobile.apk`；只有在需要多架构版本时才使用
+`gemacast-mobile-universal.apk`。
+手机与电脑必须处于同一网络、通过 USB 网络共享连接，或用 ADB 数据线连接并通过 `adb reverse` 转发。
 
-## Features
+## 功能特性
 
-| Feature | Details |
+| 功能 | 说明 |
 |---|---|
-| Audio capture | Full desktop audio or per-application audio |
-| Codecs | Opus LowDelay/CELT at 10-512 kbps, or uncompressed PCM at 48 kHz stereo |
-| Multi-device | Stream to multiple Android devices simultaneously with independent settings |
-| Secure pairing | TLS control channel with ECDSA P-256 device auth and 6-digit pairing code |
-| Adaptive jitter buffer | Per-client buffer depth adjusted to link quality on the audio thread |
+| 音频捕获 | 捕获整个桌面音频，或仅捕获单个应用的音频 |
+| 编码格式 | Opus LowDelay/CELT，10-512 kbps；或 48 kHz 立体声未压缩 PCM |
+| 多设备 | 同时推流到多台安卓设备，各自独立设置 |
+| 安全配对 | TLS 控制通道，配合 ECDSA P-256 设备认证与 6 位配对码 |
+| 自适应抖动缓冲 | 在音频线程上按链路质量逐客户端调整缓冲深度 |
 
-## Firewalls
+## 防火墙
 
-Gemacast uses three inbound ports on the PC. All three must be reachable from the phone's network for Wi-Fi and USB tethering connections.
+Gemacast 在电脑上使用三个入站端口。在 Wi-Fi 与 USB 网络共享场景下，这三个端口都必须能从手机所在的网络访问。
 
-| Port  | Protocol | Purpose            |
-|-------|----------|--------------------|
-| 23555 | UDP      | Discovery          |
-| 23556 | UDP      | Audio stream       |
-| 23559 | TCP      | TLS control (HTTPS)|
+| 端口  | 协议 | 用途              |
+|-------|------|-------------------|
+| 23555 | UDP  | 设备发现          |
+| 23556 | UDP  | 音频流            |
+| 23559 | TCP  | TLS 控制（HTTPS） |
 
-ADB connections (TCP 23557, 23558) run over loopback via `adb reverse` and require no firewall rule.
+ADB 连接（TCP 23557、23558）通过 `adb reverse` 走回环地址，无需防火墙规则。
 
-**Windows**: The MSI installer creates rules automatically. For portable installs, allow the ports through Windows Firewall.
+**Windows**：MSI 安装程序会自动创建规则。便携版需要手动在 Windows 防火墙中放行这些端口。
 
-**Linux (ufw)**:
+**Linux（ufw）**：
 ```bash
 sudo ufw allow 23555,23556/udp
 sudo ufw allow 23559/tcp
 ```
 
-**Linux (firewalld)**:
+**Linux（firewalld）**：
 ```bash
 sudo cp linux/gemacast.firewalld.xml /usr/lib/firewalld/services/gemacast.xml
 sudo firewall-cmd --reload
@@ -130,32 +112,32 @@ sudo firewall-cmd --permanent --add-service=gemacast
 sudo firewall-cmd --reload
 ```
 
-**macOS**: Allow incoming connections when the system dialog appears on first launch.
+**macOS**：首次启动时在系统弹窗中允许传入连接。
 
-## Audio Formats
+## 音频格式
 
-| Format       | Codec               | Bitrate          | Frame Size | Latency per Frame |
-|--------------|---------------------|------------------|------------|--------------------|
-| Opus         | Opus LowDelay/CELT  | 10-512 kbps      | 480 samples | 10 ms             |
-| Uncompressed | Raw PCM (f32 stereo)| ~3072 kbps       | 480 samples | 10 ms             |
+| 格式   | 编码器               | 码率             | 帧大小     | 每帧延迟 |
+|--------|----------------------|------------------|------------|----------|
+| Opus   | Opus LowDelay/CELT   | 10-512 kbps      | 480 样本   | 10 ms    |
+| 未压缩 | 原始 PCM（f32 立体声）| ~3072 kbps      | 480 样本   | 10 ms    |
 
-All formats run at 48 kHz stereo. The capture pipeline resamples any source rate to 48 kHz before encoding.
+所有格式均为 48 kHz 立体声。捕获流水线会在编码前将任意源采样率重采样到 48 kHz。
 
-## Compile from Source
+## 从源码编译
 
-### Prerequisites
+### 前置依赖
 
-| Tool | Version | Notes |
+| 工具 | 版本 | 说明 |
 |---|---|---|
-| Rust | 1.97.1 | Pinned in `rust-toolchain.toml` |
-| Clang | any | Required by `audiopus_sys` (Opus C build) |
-| CMake | 3.x | Required by `audiopus_sys` (Opus C build) |
-| Bun | 1.x | Frontend build for the mobile app |
-| Java | 17 (Temurin) | Android target only |
-| Android SDK + NDK | NDK 25.2.9519653 | Android target only |
-| cargo-ndk | latest | Android target only (`cargo install cargo-ndk`) |
+| Rust | 1.97.1 | 已在 `rust-toolchain.toml` 中固定 |
+| Clang | 任意 | `audiopus_sys`（Opus C 构建）需要 |
+| CMake | 3.x | `audiopus_sys`（Opus C 构建）需要 |
+| Bun | 1.x | 移动端前端构建 |
+| Java | 17 (Temurin) | 仅安卓目标需要 |
+| Android SDK + NDK | NDK 25.2.9519653 | 仅安卓目标需要 |
+| cargo-ndk | 最新 | 仅安卓目标需要（`cargo install cargo-ndk`） |
 
-Linux requires PipeWire, ALSA, GTK3, WebKit2GTK, and related development headers:
+Linux 还需要 PipeWire、ALSA、GTK3、WebKit2GTK 及相关开发头文件：
 
 ```bash
 # Debian / Ubuntu
@@ -171,125 +153,125 @@ sudo dnf install clang cmake pkg-config ninja-build meson \
   librsvg2-devel patchelf libxdo-devel systemd-devel dbus-devel
 ```
 
-### Build PC (Windows / Linux / macOS)
+### 编译电脑端（Windows / Linux / macOS）
 
 ```bash
-git clone https://github.com/apirJS/gemacast.git
+git clone https://github.com/justly110/gemacast.git
 cd gemacast
 cargo build --release -p gemacast-pc
 ```
 
-The binary is written to `target/release/gemacast-pc` (or `gemacast-pc.exe` on Windows).
+生成的二进制位于 `target/release/gemacast-pc`（Windows 上为 `gemacast-pc.exe`）。
 
-### Build Android
+### 编译安卓端
 
 ```bash
 cd gemacast/gemacast-mobile
 bun install --frozen-lockfile
 bunx tauri android build --apk
-# Smaller APK for modern ARM64 phones
+# 为现代 ARM64 手机生成体积更小的 APK
 bunx tauri android build --apk --target aarch64 --split-per-abi
 ```
 
-The unsigned APKs are written under
-`gemacast-mobile/src-tauri/gen/android/app/build/outputs/apk/`, in the
-`universal/release/` and `arm64/release/` directories respectively.
+未签名的 APK 分别输出到
+`gemacast-mobile/src-tauri/gen/android/app/build/outputs/apk/` 下的
+`universal/release/` 与 `arm64/release/` 目录。
 
-## FAQ
+## 常见问题
 
 <details>
-<summary><b>The phone cannot find my PC</b></summary>
+<summary><b>手机找不到我的电脑</b></summary>
 <br/>
 
-Both devices have to be on the same network, so a guest Wi-Fi or a VPN will hide your PC even at full signal. The firewall has to let Gemacast through, which is ports UDP 23555 (for presence), UDP 23556 (for audio stream) and TCP 23559 (for controls). Windows asks you about this once on the first launch, so it stays blocked if you closed that popup.
+两台设备必须处于同一网络，所以访客 Wi-Fi 或 VPN 即使在信号满格时也会隐藏你的电脑。防火墙必须放行 Gemacast，即 UDP 23555（设备发现）、UDP 23556（音频流）与 TCP 23559（控制通道）。Windows 只会在首次启动时询问一次，如果你关掉了那个弹窗，端口就会一直保持封锁状态。
 
 </details>
 
 <details>
-<summary><b>What is the real end-to-end latency?</b></summary>
+<summary><b>真正的端到端延迟是多少？</b></summary>
 <br/>
 
-Add up three things: 10 ms to record the audio on PC, half the round trip (RTT) to send it, and whatever the buffer is holding. The buffer is usually the biggest part. The phone shows you the buffer and the round trip while it plays, so you can add up your own number.
+把三部分加起来：电脑上录音的 10 ms、传输往返时间（RTT）的一半，以及缓冲区里存着的数据。缓冲区通常占大头。手机在播放时会显示缓冲区与往返时间，你可以自己加出你的实际数值。
 
 </details>
 
 <details>
-<summary><b>The buffer grows past 200 ms when the screen turns off</b></summary>
+<summary><b>熄屏后缓冲区会涨到 200 ms 以上</b></summary>
 <br/>
 
-Android is saving battery. With the screen off it puts the Wi-Fi chip to sleep and only wakes it up on a set schedule, called DTIM. Audio stops arriving in a steady trickle and starts landing in batch, 100 to 200 ms apart. The buffer grows to cover the longest gap it sees, and that is the expected behavior, because a smaller buffer would just stutter the stream. To keep it low, turn on Keep Screen On in settings, or use USB tether or ADB, where the chip never sleeps.
+这是安卓在省电。熄屏时系统会让 Wi-Fi 芯片休眠，只按固定节奏（即 DTIM）唤醒。音频不再匀速到达，而是每 100 到 200 ms 成批到达。缓冲区会涨到足以覆盖它看到的最长间隙，这是预期行为，因为更小的缓冲区只会让播放卡顿。想压低延迟，请在设置中打开“保持屏幕常亮”，或改用 USB 网络共享 / ADB，这些场景下芯片不会休眠。
 
 </details>
 
 <details>
-<summary><b>Why is there a pairing step?</b></summary>
+<summary><b>为什么需要配对这一步？</b></summary>
 <br/>
 
-Without it, anything on your network could start a stream, see a list of your running apps, and change what your PC is recording. With pairing, you can allow which phone to connect. You allow it once, the first time you connect, and after that your phone remembers the PC and connects flawlessly.
+没有配对，网络中的任何设备都能发起串流、查看你正在运行的应用列表，并改变电脑正在录制的内容。有了配对，你可以决定允许哪台手机连接。首次连接时授权一次，之后手机会记住这台电脑并顺畅连接。
 
 </details>
 
 <details>
-<summary><b>What is the 6-digit code for?</b></summary>
+<summary><b>那 6 位数字有什么用？</b></summary>
 <br/>
 
-It shows that your phone is talking straight to your PC, with nothing in between (no man-in-middle). Each device works out the code by itself, using details only those two share. If some other machine were sitting in the middle, the two codes would come out different and you would see it right away. So just check that both screens show the same six digits, then approve. It is not a password, so it does not matter if someone else sees it.
+它证明你的手机是直接与你的电脑通信，中间没有任何中转（即没有中间人）。两台设备各自利用只有这两者共享的信息独立算出这个码。如果中间夹了别的机器，两边的码会不一致，你立刻就能看出来。所以只需确认两块屏幕上显示的是同样的六位数字，然后批准即可。它不是密码，被别人看到也没关系。
 
 </details>
 
 <details>
-<summary><b>Is the audio encrypted?</b></summary>
+<summary><b>音频有加密吗？</b></summary>
 <br/>
 
-No, and that is on purpose. Pairing is protected, but the audio itself is sent plain. The whole point of this app is low delay, and the audio goes out in tiny pieces, 100 of them every second. Locking and unlocking every one of those adds work at both ends and makes each piece bigger, which is exactly the kind of cost that shows up as delay. So anyone on the same network could listen in if they wanted to. Stick to a network you trust, or use USB.
+没有，而且这是有意为之。配对过程受保护，但音频本身是明文传输的。这个应用的核心就是低延迟，而音频每秒会发出 100 个碎片。给每一个碎片加密解密都会在两端增加工作量并让每个碎片变大，而这恰好会表现为延迟。因此同一网络中的任何人理论上都可以监听。请只使用你信任的网络，或改用 USB。
 
 </details>
 
-## License
+## 许可证
 
 [GPL-3.0-or-later](LICENSE)
 
-## Third-Party Library Acknowledgement
+## 第三方库致谢
 
 ### Rust
 
-| Crate | License | Purpose |
+| Crate | 许可证 | 用途 |
 |---|---|---|
-| [tokio](https://crates.io/crates/tokio) | MIT | Async runtime |
-| [axum](https://crates.io/crates/axum) | MIT | HTTP/WebSocket control server |
-| [tao](https://crates.io/crates/tao) | Apache-2.0 / MIT | Window and system tray event loop (PC) |
-| [tray-icon](https://crates.io/crates/tray-icon) | Apache-2.0 / MIT | System tray icon (PC) |
-| [tauri](https://crates.io/crates/tauri) | Apache-2.0 / MIT | Mobile app framework |
-| [opus](https://crates.io/crates/opus) ([audiopus_sys](https://crates.io/crates/audiopus_sys)) | MIT / BSD-3 / ISC | Opus audio codec bindings |
-| [oboe](https://crates.io/crates/oboe) | Apache-2.0 | Low-latency audio output (Android) |
-| [cpal](https://crates.io/crates/cpal) | Apache-2.0 | Cross-platform audio I/O fallback |
-| [pipewire](https://crates.io/crates/pipewire) | MIT | PipeWire audio capture (Linux) |
-| [screencapturekit](https://crates.io/crates/screencapturekit) | Apache-2.0 / MIT | Screen/audio capture (macOS) |
-| [rubato](https://crates.io/crates/rubato) | MIT / Apache-2.0 | Async sample rate converter |
-| [ringbuf](https://crates.io/crates/ringbuf) | MIT / Apache-2.0 | Lock-free ring buffer |
-| [mdns-sd](https://crates.io/crates/mdns-sd) | Apache-2.0 / MIT | mDNS service discovery |
-| [reqwest](https://crates.io/crates/reqwest) | MIT / Apache-2.0 | HTTP client |
-| [rustls](https://crates.io/crates/rustls) | Apache-2.0 / MIT / ISC | TLS implementation |
-| [ring](https://crates.io/crates/ring) | Apache-2.0 / ISC / OpenSSL | Cryptographic primitives (ECDSA, SHA-256) |
-| [rcgen](https://crates.io/crates/rcgen) | Apache-2.0 / MIT | X.509 certificate generation |
-| [serde](https://crates.io/crates/serde) / [serde_json](https://crates.io/crates/serde_json) | MIT / Apache-2.0 | Serialization |
-| [rfd](https://crates.io/crates/rfd) | MIT | Native file/message dialogs (PC) |
-| [image](https://crates.io/crates/image) | MIT / Apache-2.0 | Image processing for tray icons |
-| [semver](https://crates.io/crates/semver) | MIT / Apache-2.0 | Semantic versioning for update checks |
+| [tokio](https://crates.io/crates/tokio) | MIT | 异步运行时 |
+| [axum](https://crates.io/crates/axum) | MIT | HTTP/WebSocket 控制服务器 |
+| [tao](https://crates.io/crates/tao) | Apache-2.0 / MIT | 窗口与系统托盘事件循环（电脑端） |
+| [tray-icon](https://crates.io/crates/tray-icon) | Apache-2.0 / MIT | 系统托盘图标（电脑端） |
+| [tauri](https://crates.io/crates/tauri) | Apache-2.0 / MIT | 移动端应用框架 |
+| [opus](https://crates.io/crates/opus)（[audiopus_sys](https://crates.io/crates/audiopus_sys)） | MIT / BSD-3 / ISC | Opus 音频编码绑定 |
+| [oboe](https://crates.io/crates/oboe) | Apache-2.0 | 低延迟音频输出（安卓） |
+| [cpal](https://crates.io/crates/cpal) | Apache-2.0 | 跨平台音频 I/O 回退 |
+| [pipewire](https://crates.io/crates/pipewire) | MIT | PipeWire 音频捕获（Linux） |
+| [screencapturekit](https://crates.io/crates/screencapturekit) | Apache-2.0 / MIT | 屏幕/音频捕获（macOS） |
+| [rubato](https://crates.io/crates/rubato) | MIT / Apache-2.0 | 异步采样率转换 |
+| [ringbuf](https://crates.io/crates/ringbuf) | MIT / Apache-2.0 | 无锁环形缓冲区 |
+| [mdns-sd](https://crates.io/crates/mdns-sd) | Apache-2.0 / MIT | mDNS 服务发现 |
+| [reqwest](https://crates.io/crates/reqwest) | MIT / Apache-2.0 | HTTP 客户端 |
+| [rustls](https://crates.io/crates/rustls) | Apache-2.0 / MIT / ISC | TLS 实现 |
+| [ring](https://crates.io/crates/ring) | Apache-2.0 / ISC / OpenSSL | 密码学原语（ECDSA、SHA-256） |
+| [rcgen](https://crates.io/crates/rcgen) | Apache-2.0 / MIT | X.509 证书生成 |
+| [serde](https://crates.io/crates/serde) / [serde_json](https://crates.io/crates/serde_json) | MIT / Apache-2.0 | 序列化 |
+| [rfd](https://crates.io/crates/rfd) | MIT | 原生文件/消息对话框（电脑端） |
+| [image](https://crates.io/crates/image) | MIT / Apache-2.0 | 托盘图标图像处理 |
+| [semver](https://crates.io/crates/semver) | MIT / Apache-2.0 | 更新检查的语义化版本 |
 
-### Frontend (TypeScript)
+### 前端（TypeScript）
 
-| Package | License | Purpose |
+| 包 | 许可证 | 用途 |
 |---|---|---|
-| [react](https://www.npmjs.com/package/react) / [react-dom](https://www.npmjs.com/package/react-dom) | MIT | UI framework |
-| [zustand](https://www.npmjs.com/package/zustand) | MIT | State management |
-| [tailwindcss](https://www.npmjs.com/package/tailwindcss) | MIT | Utility-first CSS |
-| [lucide-react](https://www.npmjs.com/package/lucide-react) | ISC | Icon library |
-| [vite](https://www.npmjs.com/package/vite) | MIT | Build tool and dev server |
-| [@tauri-apps/api](https://www.npmjs.com/package/@tauri-apps/api) | Apache-2.0 / MIT | Tauri IPC bridge |
+| [react](https://www.npmjs.com/package/react) / [react-dom](https://www.npmjs.com/package/react-dom) | MIT | UI 框架 |
+| [zustand](https://www.npmjs.com/package/zustand) | MIT | 状态管理 |
+| [tailwindcss](https://www.npmjs.com/package/tailwindcss) | MIT | 原子化 CSS |
+| [lucide-react](https://www.npmjs.com/package/lucide-react) | ISC | 图标库 |
+| [vite](https://www.npmjs.com/package/vite) | MIT | 构建工具与开发服务器 |
+| [@tauri-apps/api](https://www.npmjs.com/package/@tauri-apps/api) | Apache-2.0 / MIT | Tauri IPC 桥接 |
 
-### Android (Kotlin)
+### 安卓（Kotlin）
 
-| Library | License | Purpose |
+| 库 | 许可证 | 用途 |
 |---|---|---|
-| [Android Keystore API](https://developer.android.com/training/articles/keystore) | Apache-2.0 | Hardware-backed ECDSA key storage |
+| [Android Keystore API](https://developer.android.com/training/articles/keystore) | Apache-2.0 | 硬件级 ECDSA 密钥存储 |
