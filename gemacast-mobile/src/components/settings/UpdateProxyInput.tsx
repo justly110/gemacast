@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSettings } from '../../hooks/use-settings';
 import { SegmentedControl } from '../shared/SegmentedControl';
 import { Globe, Check } from 'lucide-react';
@@ -19,12 +19,22 @@ export function UpdateProxyInput() {
 
   const [selectedType, setSelectedType] = useState<ProxyType>(() => getInitialType(rawProxy));
   const [customValue, setCustomValue] = useState(rawProxy);
+  const [prevProxy, setPrevProxy] = useState(rawProxy);
   const [saved, setSaved] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  if (prevProxy !== (settings.updateProxy ?? '')) {
+    const nextProxy = settings.updateProxy ?? '';
+    setPrevProxy(nextProxy);
+    setSelectedType(getInitialType(nextProxy));
+    setCustomValue(nextProxy);
+  }
 
   useEffect(() => {
-    setSelectedType(getInitialType(settings.updateProxy ?? ''));
-    setCustomValue(settings.updateProxy ?? '');
-  }, [settings.updateProxy]);
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, []);
 
   const handleTypeChange = (type: ProxyType) => {
     setSelectedType(type);
@@ -49,7 +59,8 @@ export function UpdateProxyInput() {
   const handleSaveCustom = () => {
     update({ updateProxy: customValue.trim() });
     setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => setSaved(false), 2000);
   };
 
   const options: { value: ProxyType; label: string }[] = [

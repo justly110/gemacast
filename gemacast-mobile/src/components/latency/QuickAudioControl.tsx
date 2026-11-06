@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Volume2, VolumeX, RotateCcw } from 'lucide-react';
 import { useSettings } from '../../hooks/use-settings';
-import { tauriBridge } from '../../core/tauri-bridge';
 import { triggerHaptic } from '../../core/haptics';
 
 const MIN_DB = -24;
@@ -19,14 +18,22 @@ export function QuickAudioControl() {
   const { settings, update } = useSettings();
   const [localDb, setLocalDb] = useState(settings.gainDb);
   const [lastNonZeroDb, setLastNonZeroDb] = useState(settings.gainDb || 0);
+  const [prevGainDb, setPrevGainDb] = useState(settings.gainDb);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  useEffect(() => {
+  if (prevGainDb !== settings.gainDb) {
+    setPrevGainDb(settings.gainDb);
     setLocalDb(settings.gainDb);
     if (settings.gainDb > MIN_DB) {
       setLastNonZeroDb(settings.gainDb);
     }
-  }, [settings.gainDb]);
+  }
+
+  useEffect(() => {
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, []);
 
   const applyGain = (val: number) => {
     setLocalDb(val);
@@ -35,9 +42,6 @@ export function QuickAudioControl() {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
       update({ gainDb: val });
-      tauriBridge.setAudioGain({ gainDb: val }).catch((err) => {
-        console.warn('Failed to set audio gain:', err);
-      });
     }, DEBOUNCE_MS);
   };
 

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { ChevronDown } from 'lucide-react';
 
 export type SelectOption<T extends string = string> = {
@@ -31,14 +31,23 @@ export function CustomSelect<T extends string = string>({
 
   const selectedOption = options.find((o) => o.value === value);
 
-  const startClosing = () => {
+  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const startClosing = useCallback(() => {
     if (!open || closing) return;
     setClosing(true);
-    setTimeout(() => {
+    if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
+    closeTimerRef.current = setTimeout(() => {
       setOpen(false);
       setClosing(false);
     }, FADE_MS);
-  };
+  }, [open, closing]);
+
+  useEffect(() => {
+    return () => {
+      if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
+    };
+  }, []);
 
   const handleSelect = (optionValue: T) => {
     onChange(optionValue);
@@ -66,7 +75,7 @@ export function CustomSelect<T extends string = string>({
     return () => {
       document.removeEventListener('pointerdown', handlePointerDown);
     };
-  }, [open, closing]);
+  }, [open, closing, startClosing]);
 
   return (
     <div

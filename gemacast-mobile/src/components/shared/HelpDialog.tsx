@@ -1,4 +1,3 @@
-import { useRef, useState, useCallback, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { HELP_CONTENT } from '../../core/help-content';
 
@@ -54,68 +53,4 @@ export function HelpDialog({
       )}
     </dialog>
   );
-}
-
-export function useHelpDialog() {
-  const [activeKey, setActiveKey] = useState<string | null>(null);
-  const dialogRef = useRef<HTMLDialogElement>(null);
-  const hasHistoryRef = useRef(false);
-
-  const closeHelp = useCallback(() => {
-    try {
-      dialogRef.current?.close();
-    } catch {}
-    setActiveKey(null);
-    if (hasHistoryRef.current) {
-      hasHistoryRef.current = false;
-      if (typeof window !== 'undefined' && window.location.hash.includes('+help')) {
-        window.history.back();
-      }
-    }
-  }, []);
-
-  const openHelp = useCallback((key: string) => {
-    setActiveKey(key);
-    dialogRef.current?.showModal();
-    if (!hasHistoryRef.current && typeof window !== 'undefined') {
-      hasHistoryRef.current = true;
-      const currentHash = window.location.hash || '#root';
-      window.history.pushState({ modal: 'help' }, '', `${currentHash}+help`);
-    }
-  }, []);
-
-  useEffect(() => {
-    const handlePopState = () => {
-      if (hasHistoryRef.current) {
-        hasHistoryRef.current = false;
-        try {
-          dialogRef.current?.close();
-        } catch {}
-        setActiveKey(null);
-      }
-    };
-    window.addEventListener('popstate', handlePopState);
-    return () => {
-      window.removeEventListener('popstate', handlePopState);
-      try {
-        dialogRef.current?.close();
-      } catch {}
-    };
-  }, []);
-
-  const renderHelpButton = (helpKey: string) => (
-    <button
-      type="button"
-      className="flex h-4.5 w-4.5 items-center justify-center rounded-full border border-border/60 bg-muted/40 text-[10px] font-bold text-muted-foreground backdrop-blur-sm transition-all duration-150 hover:border-primary/50 hover:bg-primary/10 hover:text-primary active:scale-90"
-      onClick={(e) => {
-        e.stopPropagation();
-        openHelp(helpKey);
-      }}
-      aria-label="帮助"
-    >
-      ?
-    </button>
-  );
-
-  return { activeKey, openHelp, closeHelp, renderHelpButton, dialogRef };
 }

@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
 import { useSettings } from '../../hooks/use-settings';
-import { tauriBridge } from '../../core/tauri-bridge';
 import { RotateCcw } from 'lucide-react';
 
 const MIN_DB = -24;
@@ -17,12 +16,19 @@ function formatDb(db: number): string {
 export function GainSlider() {
   const { settings, update } = useSettings();
   const [localDb, setLocalDb] = useState(settings.gainDb);
+  const [prevGainDb, setPrevGainDb] = useState(settings.gainDb);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+  if (prevGainDb !== settings.gainDb) {
+    setPrevGainDb(settings.gainDb);
     setLocalDb(settings.gainDb);
-  }, [settings.gainDb]);
+  }
+
+  useEffect(() => {
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseFloat(e.target.value);
@@ -31,18 +37,12 @@ export function GainSlider() {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
       update({ gainDb: value });
-      tauriBridge.setAudioGain({ gainDb: value }).catch((err) => {
-        console.warn('Failed to set audio gain:', err);
-      });
     }, DEBOUNCE_MS);
   };
 
   const handleReset = () => {
     setLocalDb(0);
     update({ gainDb: 0 });
-    tauriBridge.setAudioGain({ gainDb: 0 }).catch((err) => {
-      console.warn('Failed to reset audio gain:', err);
-    });
   };
 
   const offset = (localDb - MIN_DB) / (MAX_DB - MIN_DB);

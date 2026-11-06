@@ -1,7 +1,8 @@
 import { useAppStore } from '../../stores/app-store';
 import { hasLiveSession, Status } from '../../core/types';
 import { StatusChip } from '../device/StatusChip';
-import { HelpDialog, useHelpDialog } from '../shared/HelpDialog';
+import { HelpDialog } from '../shared/HelpDialog';
+import { useHelpDialog } from '../../hooks/use-help-dialog';
 import { ConnectionMetrics } from './ConnectionMetrics';
 import { NetworkLinkBadge } from './NetworkLinkBadge';
 import { AudioVisualizer } from './AudioVisualizer';

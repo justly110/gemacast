@@ -1,10 +1,14 @@
 import { describe, it, expect, beforeEach } from 'bun:test';
 import { render, screen, cleanup, fireEvent, act } from '@testing-library/react';
 import { useAppStore } from '../../stores/app-store';
+import { __resetModalHistoryForTest } from '../../core/modal-history';
 import { AppShell } from './AppShell';
 
 beforeEach(() => {
   cleanup();
+  // Modal entries outlive a test file's render trees, and a stale count would
+  // make the router treat this test's popstate as a dialog's.
+  __resetModalHistoryForTest();
   window.location.hash = '';
   useAppStore.getState().init({
     deviceId: 'test',

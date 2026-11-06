@@ -11,6 +11,28 @@ use tray_icon::{
     menu::{CheckMenuItem, Menu, MenuItem, PredefinedMenuItem, Submenu},
 };
 
+/// Characters of device name kept in the tray tooltip.
+///
+/// Win32's `NOTIFYICONDATAW.szTip` holds 127 characters including the NUL, and
+/// a long `PC_<hex>` name plus the version line overruns it. Keeping the name
+/// short leaves room for the rest of the line on every backend.
+const TOOLTIP_NAME_LIMIT: usize = 70;
+
+/// The second tooltip line for `count` connected phones.
+fn tooltip_device_line(count: usize, name: Option<&str>) -> String {
+    if count != 1 {
+        return format!("已连接: {count} 台设备");
+    }
+    let Some(name) = name else {
+        return format!("已连接: {count} 台设备");
+    };
+    if name.chars().count() <= TOOLTIP_NAME_LIMIT {
+        return format!("已连接: {name}");
+    }
+    let head: String = name.chars().take(TOOLTIP_NAME_LIMIT).collect();
+    format!("已连接: {head}…")
+}
+
 /// Load the tray icon from the embedded PNG.
 fn load_icon() -> Result<Icon, Box<dyn std::error::Error>> {
     let image_bytes = include_bytes!("../../gemacast-mobile/src-tauri/icons/gemacast-pc.png");
@@ -222,6 +244,9 @@ impl TrayManager {
     }
 
     /// Update the check mark for a device (checked = connected).
+    ///
+    /// The tooltip tracks membership, not this flag, so no refresh is needed
+    /// here — `add_device` and `remove_device` are the ones that change it.
     pub fn set_device_connected(&self, device_id: &DeviceId, connected: bool) {
         if let Some(item) = self.device_menu_items.get(device_id) {
             item.set_checked(connected);
@@ -251,15 +276,23 @@ impl TrayManager {
             let _ = self
                 ._tray_icon
                 .set_tooltip(Some(format!("Gemacast v{version_str}")));
-        } else {
-            self.connected_devices_submenu
-                .set_text(format!("已连接的手机 ({count})"));
-            let names: Vec<String> = self.device_menu_items.values().map(|item| item.text()).collect();
-            let _ = self._tray_icon.set_tooltip(Some(format!(
-                "Gemacast v{version_str}\n已连接: {}",
-                names.join(", ")
-            )));
+            return;
         }
+        self.connected_devices_submenu
+            .set_text(format!("已连接的手机 ({count})"));
+        let _ = self
+            ._tray_icon
+            .set_tooltip(Some(format!("Gemacast v{version_str}\n{}", self.device_tooltip_line(count))));
+    }
+
+    /// The second tooltip line, derived from the submenu's current contents.
+    fn device_tooltip_line(&self, count: usize) -> String {
+        let name = if count == 1 {
+            self.device_menu_items.values().next().map(|item| item.text())
+        } else {
+            None
+        };
+        tooltip_device_line(count, name.as_deref())
     }
 
     /// Find which device (if any) corresponds to a clicked menu item.
@@ -379,5 +412,34 @@ impl TrayManager {
         if let Some(sep) = self.update_up_to_date_separator.take() {
             let _ = self.tray_menu.remove(&sep);
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{TOOLTIP_NAME_LIMIT, tooltip_device_line};
+
+    #[test]
+    fn a_single_device_is_named_in_the_tooltip() {
+        let line = tooltip_device_line(1, Some("Pixel 8 (192.168.1.5) [WIFI]"));
+        assert_eq!(line, "已连接: Pixel 8 (192.168.1.5) [WIFI]");
+    }
+
+    #[test]
+    fn an_overlong_device_name_is_shortened_to_the_tooltip_budget() {
+        let name = "PC_".to_string() + &"a".repeat(200);
+        let line = tooltip_device_line(1, Some(&name));
+        assert!(line.chars().count() <= "已连接: ".chars().count() + TOOLTIP_NAME_LIMIT + 1);
+        assert!(line.ends_with('…'));
+    }
+
+    #[test]
+    fn several_devices_collapse_to_a_count() {
+        assert_eq!(tooltip_device_line(3, None), "已连接: 3 台设备");
+    }
+
+    #[test]
+    fn a_missing_name_still_produces_a_line() {
+        assert_eq!(tooltip_device_line(1, None), "已连接: 1 台设备");
     }
 }

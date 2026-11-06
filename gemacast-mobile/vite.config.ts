@@ -7,19 +7,21 @@ const host = process.env.TAURI_DEV_HOST;
 const port = process.env.PORT;
 
 export default defineConfig({
-  plugins: [
-    react(),
-    tailwindcss(),
-    babel({
-      presets: [reactCompilerPreset()],
-    }),
-  ],
+  plugins: [react(), tailwindcss(), babel({ presets: [reactCompilerPreset()] })],
   clearScreen: false,
   build: {
     target: 'esnext',
-  },
-  esbuild: {
-    drop: ['console', 'debugger'],
+    // Vite 8 minifies with oxc, whose option surface has no equivalent of
+    // esbuild's `drop`, so the old `esbuild: { drop: [...] }` block had quietly
+    // become a no-op and production bundles shipped every console call. Terser
+    // exposes the flag directly.
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+      },
+    },
   },
   server: {
     port: port ? parseInt(port) : 1420,

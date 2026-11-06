@@ -283,11 +283,24 @@ pub async fn restart_session(
     state.audio.restart_session(exclusive_mode).await
 }
 
+/// Map a gain in dBFS onto the linear volume the audio session takes.
+///
+/// The bottom of the slider is a real mute, not merely a small number: the UI
+/// shows "已静音" there, so anything the user can still hear would contradict it.
+/// -24 dB is also the endpoint, so treating it as an exact zero costs no usable
+/// range. The ceiling stays at +12 dB.
+fn gain_db_to_linear(gain_db: f32) -> f32 {
+    if gain_db <= -24.0 {
+        0.0
+    } else {
+        10f32.powf(gain_db.min(12.0) / 20.0)
+    }
+}
+
 #[tauri::command]
 pub async fn set_audio_gain(gain_db: f32, state: State<'_, AppState>) -> Result<(), String> {
     tracing::info!("[Cmd] set_audio_gain: {}dB", gain_db);
-    let clamped_db = gain_db.clamp(-24.0, 12.0);
-    let linear = 10f32.powf(clamped_db / 20.0);
+    let linear = gain_db_to_linear(gain_db);
     state.audio.set_volume(linear).await
 }
 
@@ -330,4 +343,32 @@ pub fn get_network_link_pair(state: State<'_, AppState>) -> Option<NetworkLinkPa
             effective_label: network_link_label(effective),
         }
     })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::gain_db_to_linear;
+
+    #[test]
+    fn the_bottom_of_the_slider_should_be_exact_silence() {
+        // The UI calls this state "已静音"; a 6% residual would audibly contradict it.
+        assert_eq!(gain_db_to_linear(-24.0), 0.0);
+        assert_eq!(gain_db_to_linear(-40.0), 0.0);
+    }
+
+    #[test]
+    fn unity_gain_should_stay_unity() {
+        assert!((gain_db_to_linear(0.0) - 1.0).abs() < 1e-6);
+    }
+
+    #[test]
+    fn the_gain_should_be_clamped_at_the_top_of_the_slider() {
+        assert!((gain_db_to_linear(99.0) - gain_db_to_linear(12.0)).abs() < 1e-6);
+    }
+
+    #[test]
+    fn a_gain_just_above_the_floor_should_still_pass_audio() {
+        // -23.5 dB is the first usable step; it must not be swept into the mute.
+        assert!(gain_db_to_linear(-23.5) > 0.0);
+    }
 }

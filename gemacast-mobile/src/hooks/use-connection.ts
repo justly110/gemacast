@@ -2,6 +2,7 @@ import { useAppStore } from '../stores/app-store';
 import { useToastStore } from '../stores/toast-store';
 import { tauriBridge } from '../core/tauri-bridge';
 import { GemaCastError } from '../core/error';
+import { swallow } from '../core/background-errors';
 import { getPresetConfig } from '../core/presets';
 import {
   loadLastMode,
@@ -202,7 +203,7 @@ export async function disconnect(
         pcOutputVolume: null,
       });
       store.getState().resetMetrics();
-      tauriBridge.notifyStreamingStopped().catch(console.warn);
+      tauriBridge.notifyStreamingStopped().catch(swallow);
       if (forgetStreamer) toast.getState().show('info', '已断开连接');
       return ok(true);
     }
@@ -214,11 +215,11 @@ export async function disconnect(
         deviceId: state.deviceInfo.deviceId,
       });
       await new Promise((r) => setTimeout(r, 150));
-      tauriBridge.killPlayback().catch(console.warn);
+      tauriBridge.killPlayback().catch(swallow);
     } catch (e) {
       console.warn('disconnect_from_streamer IPC failed:', e);
       await new Promise((r) => setTimeout(r, 150));
-      tauriBridge.killPlayback().catch(console.warn);
+      tauriBridge.killPlayback().catch(swallow);
     }
 
     store.getState().patch({
@@ -257,7 +258,7 @@ export function handleStreamerTimeout(deviceId: string) {
       connectedStreamer: null,
     });
     store.getState().resetMetrics();
-    tauriBridge.killPlayback().catch(console.warn);
+    tauriBridge.killPlayback().catch(swallow);
   }
 }
 
@@ -280,8 +281,8 @@ export function handleForceDisconnect(forgetStreamer: boolean = true) {
     isSuspended: !forgetStreamer,
   });
   store.getState().resetMetrics();
-  tauriBridge.notifyStreamingStopped().catch(console.warn);
-  tauriBridge.killPlayback().catch(console.warn);
+  tauriBridge.notifyStreamingStopped().catch(swallow);
+  tauriBridge.killPlayback().catch(swallow);
 }
 
 export async function reconnectOnAppOpen() {
@@ -333,8 +334,8 @@ export async function handleLinkLost() {
   });
   store.getState().resetMetrics();
 
-  await tauriBridge.notifyStreamingStopped().catch(console.warn);
-  await tauriBridge.killPlayback().catch(console.warn);
+  await tauriBridge.notifyStreamingStopped().catch(swallow);
+  await tauriBridge.killPlayback().catch(swallow);
 
   if (!streamer) return;
 
@@ -383,7 +384,7 @@ export async function changeAudioSource(source: AudioSource): Promise<Result<tru
 }
 
 export function killPlayback() {
-  tauriBridge.killPlayback().catch(console.warn);
+  tauriBridge.killPlayback().catch(swallow);
 }
 
 export function useConnection() {

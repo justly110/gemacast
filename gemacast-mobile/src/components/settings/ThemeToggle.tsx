@@ -1,24 +1,11 @@
 import { useSettings } from '../../hooks/use-settings';
 import { Sun, Moon } from 'lucide-react';
 import { triggerHaptic } from '../../core/haptics';
-
-export function applyTheme(theme: 'light' | 'dark' | 'system') {
-  const isDark =
-    theme === 'system'
-      ? typeof window !== 'undefined' &&
-        window.matchMedia('(prefers-color-scheme: dark)').matches
-      : theme === 'dark';
-  document.documentElement.classList.toggle('dark', isDark);
-  document.documentElement.classList.toggle('light', !isDark);
-}
+import { applyTheme, resolveIsDark } from '../../core/theme';
 
 export function ThemeToggle() {
   const { settings, update } = useSettings();
-  const isDark =
-    settings.theme === 'system'
-      ? typeof window !== 'undefined' &&
-        window.matchMedia('(prefers-color-scheme: dark)').matches
-      : settings.theme === 'dark';
+  const isDark = resolveIsDark(settings.theme);
 
   const toggle = () => {
     triggerHaptic('light');

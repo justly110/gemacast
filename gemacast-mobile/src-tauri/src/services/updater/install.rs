@@ -73,11 +73,21 @@ pub fn install_apk_android(app: &tauri::AppHandle, path: &str) -> Result<(), Str
         })
         .map_err(|e| format!("Failed to access webview: {e:?}"))?;
 
-    // Block until the JNI closure has finished executing on the WebView thread.
+    // Block with timeout until the JNI closure has finished executing on the WebView thread.
     let (lock, cvar) = &*pair;
     let mut guard = lock.lock().unwrap();
+    let timeout = std::time::Duration::from_secs(15);
+    let start = std::time::Instant::now();
     while guard.is_none() {
-        guard = cvar.wait(guard).unwrap();
+        let elapsed = start.elapsed();
+        if elapsed >= timeout {
+            return Err("Timed out waiting for Android installer intent dispatch".to_string());
+        }
+        let (new_guard, wait_res) = cvar.wait_timeout(guard, timeout - elapsed).unwrap();
+        guard = new_guard;
+        if wait_res.timed_out() && guard.is_none() {
+            return Err("Timed out waiting for Android installer intent dispatch".to_string());
+        }
     }
 
     // Unwrap the result from the JNI closure.

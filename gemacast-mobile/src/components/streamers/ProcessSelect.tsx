@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Monitor, Volume2, Settings, ChevronDown, RefreshCw } from 'lucide-react';
 import type { AudioSource, ProcessInfo, DiscoveredStreamer } from '../../core/types';
 import { useConnection } from '../../hooks/use-connection';
@@ -28,15 +28,24 @@ export function ProcessSelect({
   const containerRef = useRef<HTMLDivElement>(null);
   const { fetchProcessList } = useConnection();
 
-  const startClosing = () => {
+  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const startClosing = useCallback(() => {
     if (!open || closing) return;
     setClosing(true);
-    setTimeout(() => {
+    if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
+    closeTimerRef.current = setTimeout(() => {
       setOpen(false);
       setClosing(false);
       setSearch('');
     }, 150);
-  };
+  }, [open, closing]);
+
+  useEffect(() => {
+    return () => {
+      if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
+    };
+  }, []);
 
   // 点击外部区域时收起
   useEffect(() => {
@@ -52,7 +61,7 @@ export function ProcessSelect({
     return () => {
       document.removeEventListener('pointerdown', handlePointerDown);
     };
-  }, [open, closing]);
+  }, [open, closing, startClosing]);
 
   const sortedProcesses = [...processList].sort((a, b) => {
     if (a.hasAudioSession !== b.hasAudioSession) {

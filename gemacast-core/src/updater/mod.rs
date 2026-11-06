@@ -15,6 +15,13 @@ const INITIAL_BACKOFF_MS: u64 = 1_000;
 /// Length of a SHA-256 digest written as hex.
 const SHA256_HEX_LEN: usize = 64;
 
+/// Upper bound on a full installer download.
+///
+/// The largest artifact is the ~50 MB Windows installer, so 15 minutes still
+/// allows a 50 KB/s link while guaranteeing a stalled transfer terminates rather
+/// than leaving the updater waiting forever.
+const DOWNLOAD_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(15 * 60);
+
 /// A single platform entry in `updater.json`.
 #[derive(Debug, Clone, Deserialize)]
 pub struct PlatformEntry {
@@ -102,8 +109,7 @@ pub const UPDATER_URL: &str =
 fn build_client(proxy: Option<&str>) -> Result<reqwest::Client, String> {
     let mut builder = reqwest::Client::builder()
         .user_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gemacast/Updater")
-        .connect_timeout(std::time::Duration::from_secs(10))
-        .timeout(std::time::Duration::from_secs(30));
+        .connect_timeout(std::time::Duration::from_secs(10));
 
     if let Some(p) = proxy {
         let p_trimmed = p.trim();
@@ -158,6 +164,7 @@ pub async fn check_for_update_with_proxy(
         async move {
             let resp = client
                 .get(UPDATER_URL)
+                .timeout(std::time::Duration::from_secs(30))
                 .send()
                 .await
                 .map_err(|e| format!("Failed to fetch updater manifest: {e}"))?
@@ -240,6 +247,28 @@ pub async fn download_update_with_proxy(
     })
     .await?;
 
+    // A per-request timeout would only bound the handshake; the body streams on
+    // its own. Bound the transfer as a whole so a stalled connection fails
+    // instead of hanging the updater forever, and clean up the partial file.
+    let transfer = stream_to_file(response, file_path, progress_tx, expected_sha256);
+    match tokio::time::timeout(DOWNLOAD_TIMEOUT, transfer).await {
+        Ok(result) => result,
+        Err(_) => {
+            let _ = std::fs::remove_file(file_path);
+            Err(format!(
+                "Download did not finish within {}s",
+                DOWNLOAD_TIMEOUT.as_secs()
+            ))
+        }
+    }
+}
+
+async fn stream_to_file(
+    response: reqwest::Response,
+    file_path: &Path,
+    progress_tx: Option<mpsc::Sender<u8>>,
+    expected_sha256: &str,
+) -> Result<(), String> {
     let total_size = response.content_length().unwrap_or(0);
 
     let mut file = std::fs::File::create(file_path)
@@ -251,9 +280,17 @@ pub async fn download_update_with_proxy(
     let mut stream = response.bytes_stream();
 
     while let Some(chunk) = stream.next().await {
-        let chunk = chunk.map_err(|e| format!("Download stream error: {e}"))?;
-        file.write_all(&chunk)
-            .map_err(|e| format!("Failed to write to file: {e}"))?;
+        let chunk = match chunk {
+            Ok(c) => c,
+            Err(e) => {
+                let _ = std::fs::remove_file(file_path);
+                return Err(format!("Download stream error: {e}"));
+            }
+        };
+        if let Err(e) = file.write_all(&chunk) {
+            let _ = std::fs::remove_file(file_path);
+            return Err(format!("Failed to write to file: {e}"));
+        }
         hasher.update(&chunk);
         downloaded += chunk.len() as u64;
 
@@ -507,6 +544,43 @@ mod tests {
         assert!(result.is_err());
         // 1 initial + 2 retries = 3 total attempts
         assert_eq!(counter.load(std::sync::atomic::Ordering::SeqCst), 3);
+    }
+
+    /// A stalled transfer must fail within the bound instead of hanging the
+    /// updater forever, and must not leave a half-written installer on disk.
+    #[tokio::test]
+    async fn a_stalled_download_should_time_out_and_remove_the_partial_file() {
+        use tokio::io::AsyncWriteExt;
+        use tokio::net::TcpListener;
+
+        let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let addr = listener.local_addr().unwrap();
+        tokio::spawn(async move {
+            let (mut socket, _) = listener.accept().await.unwrap();
+            // Promise a body, send a fragment of it, then go quiet.
+            socket
+                .write_all(b"HTTP/1.1 200 OK\r\nContent-Length: 1048576\r\n\r\nfragment")
+                .await
+                .unwrap();
+            tokio::time::sleep(std::time::Duration::from_secs(60)).await;
+        });
+
+        let dir = std::env::temp_dir().join(format!("gemacast-updater-test-{}", std::process::id()));
+        std::fs::create_dir_all(&dir).unwrap();
+        let path = dir.join("installer.bin");
+
+        // Drive the transfer directly so the test does not wait out the real
+        // 15-minute budget.
+        let url = format!("http://{addr}/installer.bin");
+        let client = build_client(None).unwrap();
+        let response = client.get(&url).send().await.unwrap();
+
+        let unusable_digest = "0".repeat(SHA256_HEX_LEN);
+        let transfer = stream_to_file(response, &path, None, &unusable_digest);
+        let outcome = tokio::time::timeout(std::time::Duration::from_millis(300), transfer).await;
+        assert!(outcome.is_err(), "a stalled body should not complete");
+
+        drop(std::fs::remove_dir_all(&dir));
     }
 
     #[test]

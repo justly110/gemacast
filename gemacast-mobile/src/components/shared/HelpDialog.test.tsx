@@ -1,6 +1,8 @@
 import { describe, it, expect, beforeEach, mock } from 'bun:test';
 import { render, screen, cleanup, fireEvent, renderHook, act } from '@testing-library/react';
-import { HelpDialog, useHelpDialog } from './HelpDialog';
+import { HelpDialog } from './HelpDialog';
+import { useHelpDialog } from '../../hooks/use-help-dialog';
+import { __resetModalHistoryForTest, dispatchPopState, pendingModalEntries } from '../../core/modal-history';
 import { HELP_CONTENT as actualHelpContent } from '../../core/help-content';
 
 mock.module('../../core/help-content', () => ({
@@ -15,6 +17,7 @@ mock.module('../../core/help-content', () => ({
 
 beforeEach(() => {
   cleanup();
+  __resetModalHistoryForTest();
   HTMLDialogElement.prototype.showModal = mock();
   HTMLDialogElement.prototype.close = mock();
 });
@@ -63,7 +66,7 @@ describe('useHelpDialog Hook', () => {
     expect(mockDialog.showModal).toHaveBeenCalled();
   });
 
-  it('closes dialog and clears activeKey on popstate event', () => {
+  it('closes dialog and clears activeKey when the router attributes a back press to it', () => {
     const { result } = renderHook(() => useHelpDialog());
     const mockDialog = document.createElement('dialog');
     mockDialog.showModal = mock();
@@ -76,11 +79,32 @@ describe('useHelpDialog Hook', () => {
     });
     expect(result.current.activeKey).toBe('test-key');
 
+    // The tab router is what receives the real `popstate`; the dialog hears about
+    // it through this module rather than its own listener.
     act(() => {
-      window.dispatchEvent(new Event('popstate'));
+      dispatchPopState();
     });
 
     expect(result.current.activeKey).toBeNull();
     expect(mockDialog.close).toHaveBeenCalled();
+  });
+
+  it('does not leave a history entry behind once the dialog is closed', () => {
+    const { result } = renderHook(() => useHelpDialog());
+    const mockDialog = document.createElement('dialog');
+    mockDialog.showModal = mock();
+    mockDialog.close = mock();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (result.current.dialogRef as any).current = mockDialog;
+
+    act(() => {
+      result.current.openHelp('test-key');
+    });
+    expect(pendingModalEntries()).toBe(1);
+
+    act(() => {
+      result.current.closeHelp();
+    });
+    expect(pendingModalEntries()).toBe(0);
   });
 });

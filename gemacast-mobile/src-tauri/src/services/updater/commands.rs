@@ -90,7 +90,11 @@ pub async fn cleanup_stale_updates(app: tauri::AppHandle) -> Result<(), String> 
 pub async fn install_apk(app: tauri::AppHandle, path: String) -> Result<(), String> {
     #[cfg(target_os = "android")]
     {
-        crate::services::updater::install::install_apk_android(&app, &path)
+        tokio::task::spawn_blocking(move || {
+            crate::services::updater::install::install_apk_android(&app, &path)
+        })
+        .await
+        .map_err(|e| format!("Task join error: {e}"))?
     }
 
     #[cfg(not(target_os = "android"))]

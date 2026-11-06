@@ -1,5 +1,6 @@
 import { SlidersHorizontal, Sun, Moon, Laptop } from 'lucide-react';
-import { ThemeToggle, applyTheme } from './ThemeToggle';
+import { ThemeToggle } from './ThemeToggle';
+import { applyTheme } from '../../core/theme';
 import { BufferPresetSelect } from './BufferPresetSelect';
 import { CustomJitterConfig } from './CustomJitterConfig';
 import { BitrateSelect } from './BitrateSelect';
@@ -12,7 +13,8 @@ import { ModeSelector } from './ModeSelector';
 import { UpdateBanner } from './UpdateBanner';
 import { UpdateProxyInput } from './UpdateProxyInput';
 import { ForgetPcIdentity } from './ForgetPcIdentity';
-import { HelpDialog, useHelpDialog } from '../shared/HelpDialog';
+import { HelpDialog } from '../shared/HelpDialog';
+import { useHelpDialog } from '../../hooks/use-help-dialog';
 import { useAppStore } from '../../stores/app-store';
 import { useSettings } from '../../hooks/use-settings';
 import { triggerHaptic } from '../../core/haptics';

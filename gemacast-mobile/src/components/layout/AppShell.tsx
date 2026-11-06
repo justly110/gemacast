@@ -8,6 +8,7 @@ import { SettingsView } from '../settings/SettingsView';
 import { BottomNav, type TabId } from './BottomNav';
 import { useWakeLock } from '../../hooks/use-wake-lock';
 import { useAppStore } from '../../stores/app-store';
+import { releaseAllModalEntries, dispatchPopState } from '../../core/modal-history';
 
 export function AppShell() {
   const keepScreenOn = useAppStore((s) => s.settings.keepScreenOn);
@@ -35,6 +36,9 @@ export function AppShell() {
 
   useEffect(() => {
     const handlePopState = () => {
+      // A dialog owns the press when its entry is on top of the stack; the tab
+      // must then stay put while the dialog closes itself.
+      if (dispatchPopState()) return;
       setActiveTab(window.location.hash.startsWith('#settings') ? 'settings' : 'home');
     };
     window.addEventListener('popstate', handlePopState);
@@ -42,12 +46,16 @@ export function AppShell() {
   }, []);
 
   useEffect(() => {
-    // Whenever activeTab changes, close any lingering open modal dialogs to prevent document inert lock
+    // A modal left open under the old tab would keep the document inert, so the
+    // dialogs go with the view — and their history entries go with them.
     document.querySelectorAll('dialog[open]').forEach((el) => {
       try {
         (el as HTMLDialogElement).close();
-      } catch {}
+      } catch {
+        // Already closed; nothing to undo.
+      }
     });
+    releaseAllModalEntries();
   }, [activeTab]);
 
   return (

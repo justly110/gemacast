@@ -9,7 +9,8 @@ import { useNetworkMonitor } from './hooks/use-network-monitor';
 import { reconnectOnAppOpen } from './hooks/use-connection';
 import { startListening } from './hooks/use-discovery';
 import { AppShell } from './components/layout/AppShell';
-import { applyTheme } from './components/settings/ThemeToggle';
+import { applyTheme } from './core/theme';
+import { swallow } from './core/background-errors';
 
 function AppInner() {
   useTauriEvents();
@@ -29,7 +30,7 @@ function AppInner() {
         if (now - lastBackPressed < 2000) {
           import('@tauri-apps/api/window')
             .then((m) => m.getCurrentWindow().close())
-            .catch(console.warn);
+            .catch(swallow);
         } else {
           lastBackPressed = now;
           useToastStore.getState().show('info', '再次点击返回键退出应用');
@@ -39,7 +40,7 @@ function AppInner() {
     };
 
     const handleVisibility = () => {
-      if (document.visibilityState === 'visible') reconnectOnAppOpen().catch(console.warn);
+      if (document.visibilityState === 'visible') reconnectOnAppOpen().catch(swallow);
     };
 
     window.addEventListener('popstate', handlePopState);
@@ -112,7 +113,7 @@ export function App() {
       const theme = useAppStore.getState().settings.theme;
       applyTheme(theme);
 
-      await reconnectOnAppOpen().catch(console.warn);
+      await reconnectOnAppOpen().catch(swallow);
 
       setReady(true);
     })();
