@@ -8,7 +8,13 @@
     <IconDir Condition="'$(IconDir)' == ''">$(MSBuildProjectDirectory)\..\assets</IconDir>
     <!-- Pass preprocessor variables to WiX -->
     <DefineConstants>SourceDir=$(SourceDir);IconDir=$(IconDir);Version=$(Version)</DefineConstants>
+    <!-- 安装界面本地化：zh-CN 由 zh-CN.wxl 提供，其余字符串回退到 WixUI 扩展的 en-US -->
+    <Cultures>zh-CN</Cultures>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Wxl Include="zh-CN.wxl" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="WixToolset.Firewall.wixext" Version="6.0.2" />

@@ -60,8 +60,8 @@
         <Control Id="Description" Type="Text" X="135" Y="70" Width="220" Height="40" Transparent="yes" NoPrefix="yes" Text="!(loc.ExitDialogDescription)" />
         <Control Id="Title" Type="Text" X="135" Y="20" Width="220" Height="60" Transparent="yes" NoPrefix="yes" Text="!(loc.ExitDialogTitle)" />
 
-        <Control Id="DesktopShortcutCheckBox" Type="CheckBox" X="135" Y="170" Width="220" Height="17" Property="CREATEDESKTOPSHORTCUT" CheckBoxValue="1" Text="Create a desktop shortcut" />
-        <Control Id="LaunchCheckBox" Type="CheckBox" X="135" Y="190" Width="220" Height="17" Property="LAUNCHAPP" CheckBoxValue="1" Text="Launch Gemacast" />
+        <Control Id="DesktopShortcutCheckBox" Type="CheckBox" X="135" Y="170" Width="220" Height="17" Property="CREATEDESKTOPSHORTCUT" CheckBoxValue="1" Text="!(loc.ExitDialogDesktopShortcut)" />
+        <Control Id="LaunchCheckBox" Type="CheckBox" X="135" Y="190" Width="220" Height="17" Property="LAUNCHAPP" CheckBoxValue="1" Text="!(loc.ExitDialogLaunchApp)" />
       </Dialog>
       <Publish Dialog="MyExitDialog" Control="Finish" Event="DoAction" Value="LaunchApp" Condition="LAUNCHAPP = 1 and NOT Installed" />
     </UI>

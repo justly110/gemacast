@@ -12,16 +12,18 @@
     UpgradeCode preserved from the old cargo-wix MSI for upgrade compatibility.
   -->
 
+  <!-- Language="2052" = zh-CN：决定"应用和功能"里的显示语言与安装界面的默认区域性 -->
   <Package Name="Gemacast"
            Manufacturer="Echa Apriliyanto"
            Version="$(var.Version)"
+           Language="2052"
            UpgradeCode="6D490F3C-E477-4FC8-ABF4-71D7CFEA7B53"
            Scope="perMachine"
            InstallerVersion="500"
            Compressed="yes">
 
     <MajorUpgrade Schedule="afterInstallInitialize"
-                  DowngradeErrorMessage="A newer version of [ProductName] is already installed. Setup will now exit." />
+                  DowngradeErrorMessage="!(loc.DowngradeError)" />
 
     <MediaTemplate EmbedCab="yes" />
 
@@ -128,14 +130,14 @@
               Source="$(var.SourceDir)\gemacast-pc.exe"
               KeyPath="yes">
           <fire:FirewallException Id="GemacastFirewallTcp"
-                                  Name="Gemacast (TCP)"
-                                  Description="Allow Gemacast inbound TCP for audio streaming"
+                                  Name="!(loc.FirewallRuleNameTcp)"
+                                  Description="!(loc.FirewallRuleDescTcp)"
                                   Protocol="tcp"
                                   Scope="any"
                                   Profile="all" />
           <fire:FirewallException Id="GemacastFirewallUdp"
-                                  Name="Gemacast (UDP)"
-                                  Description="Allow Gemacast inbound UDP for device discovery"
+                                  Name="!(loc.FirewallRuleNameUdp)"
+                                  Description="!(loc.FirewallRuleDescUdp)"
                                   Protocol="udp"
                                   Scope="any"
                                   Profile="all" />
@@ -209,7 +211,7 @@
       <Component Id="StartMenuShortcut" Guid="*">
         <Shortcut Id="AppStartMenuShortcut"
                   Name="Gemacast"
-                  Description="Low-latency real-time audio streaming from PC to Android"
+                  Description="!(loc.ShortcutDescription)"
                   Target="[INSTALLFOLDER]gemacast-pc.exe"
                   WorkingDirectory="INSTALLFOLDER"
                   Icon="ProductICO" />
@@ -227,7 +229,7 @@
       <Component Id="DesktopShortcut" Guid="*" Condition="CREATEDESKTOPSHORTCUT = 1">
         <Shortcut Id="AppDesktopShortcut"
                   Name="Gemacast"
-                  Description="Low-latency real-time audio streaming from PC to Android"
+                  Description="!(loc.ShortcutDescription)"
                   Target="[INSTALLFOLDER]gemacast-pc.exe"
                   WorkingDirectory="INSTALLFOLDER"
                   Icon="ProductICO" />
