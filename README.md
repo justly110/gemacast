@@ -177,6 +177,34 @@ bunx tauri android build --apk --target aarch64 --split-per-abi
 `gemacast-mobile/src-tauri/gen/android/app/build/outputs/apk/` 下的
 `universal/release/` 与 `arm64/release/` 目录。
 
+### 固定安卓签名（发布必需）
+
+Android 只允许同一包名、同一张证书的新版本覆盖安装。签名一变，系统就要求先卸载旧版本，
+用户会连同本机的设置与配对信息一起丢掉。所以 release APK 必须始终由同一把密钥签名。
+
+keystore 保存在仓库之外（默认 `~/.gemacast/gemacast-release.p12`），CI 从 secrets 里取：
+
+| 名称 | 类型 | 内容 |
+|---|---|---|
+| `ANDROID_KEYSTORE_BASE64` | Secret | keystore 文件的 base64 |
+| `ANDROID_KEYSTORE_PASSWORD` | Secret | keystore 口令 |
+| `ANDROID_KEY_ALIAS` | Secret | 证书别名 |
+| `ANDROID_KEY_PASSWORD` | Secret | 私钥口令（PKCS#12 下与 keystore 口令相同） |
+| `ANDROID_CERT_SHA256` | Variable | 证书 SHA-256 指纹，32 字节小写十六进制、无冒号 |
+
+一次性的配置引导（生成或复用 keystore → 写入上述五项 → 打印指纹）：
+
+```bash
+bash .github/scripts/setup-android-signing.sh
+```
+
+`build-apk.yml` 对签名是硬要求：缺 secret 或缺指纹变量直接失败；签完后用
+`apksigner verify --print-certs` 把实际证书指纹与 `ANDROID_CERT_SHA256` 比对，不符即中止发布。
+“临时生成一次性密钥”的旧回退路径已删除——它每次都会签出一个装不上的包。
+
+keystore 与口令必须长期保存并备份。**丢了它们等于永久失去升级能力**：已装在用户手机上的版本
+无法被任何新证书覆盖，只能卸载重装。
+
 ## 常见问题
 
 <details>

@@ -86,29 +86,50 @@ jobs:
         run: |
           bunx tauri android build --apk --target aarch64
 
-      - name: Sign APK (Release / Debug Keystore)
+      # 签名证书必须逐次稳定，否则 Android 拒绝覆盖安装，用户每次升级都要卸载。
+      # 缺 secret 或指纹不符一律硬失败，绝不回退到一次性生成的密钥。
+      - name: Sign APK (pinned release keystore)
         env:
           KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
           KEYSTORE_PASS: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           KEY_PASS: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          EXPECTED_CERT_SHA256: ${{ vars.ANDROID_CERT_SHA256 }}
         run: |
+          set -eu
+          APKSIGNER="$ANDROID_HOME/build-tools/34.0.0/apksigner"
           APK_FILE=$(find gemacast-mobile/src-tauri/gen/android/app/build/outputs/apk -name "*.apk" | head -n 1)
           echo "Found APK: $APK_FILE"
 
-          if [ -n "$KEYSTORE_BASE64" ]; then
-            echo "Using configured GitHub Secret Keystore for signing..."
-            echo "$KEYSTORE_BASE64" | base64 -d > release.keystore
-            KS_PASS="${KEYSTORE_PASS:-android}"
-            K_ALIAS="${KEY_ALIAS:-gemacast}"
-            K_PASS="${KEY_PASS:-android}"
-            $ANDROID_HOME/build-tools/34.0.0/apksigner sign --ks release.keystore --ks-pass pass:"$KS_PASS" --ks-key-alias "$K_ALIAS" --key-pass pass:"$K_PASS" --out gemacast-mobile-arm64.apk "$APK_FILE"
-          else
-            echo "No Secret Keystore found, generating standard debug keystore..."
-            keytool -genkey -v -keystore debug.keystore -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000 -storepass android -keypass android -dname "CN=Gemacast Debug,O=Gemacast,C=CN"
-            $ANDROID_HOME/build-tools/34.0.0/apksigner sign --ks debug.keystore --ks-pass pass:android --key-pass pass:android --out gemacast-mobile-arm64.apk "$APK_FILE"
+          if [ -z "${KEYSTORE_BASE64:-}" ] || [ -z "${EXPECTED_CERT_SHA256:-}" ]; then
+            echo "::error::安卓签名未配置：缺少 ANDROID_KEYSTORE_BASE64 或仓库变量 ANDROID_CERT_SHA256。"
+            echo "::error::用一次性密钥签名会产出无法覆盖安装的 APK，因此这里直接失败。"
+            echo "::error::本机执行一次 bash .github/scripts/setup-android-signing.sh 后重跑本工作流。"
+            exit 1
           fi
-          echo "Signed successfully: gemacast-mobile-arm64.apk"
+
+          umask 077
+          trap 'rm -f release.keystore' EXIT
+          printf '%s' "$KEYSTORE_BASE64" | base64 -d > release.keystore
+
+          # 口令只经管道进入 apksigner：不出现于 argv、不落盘、不回显。
+          # 两行分别是 keystore 口令与私钥口令（PKCS#12 里二者相同）。
+          printf '%s\n%s\n' "${KEYSTORE_PASS:-}" "${KEY_PASS:-${KEYSTORE_PASS:-}}" \
+            | "$APKSIGNER" sign --ks release.keystore --ks-pass stdin \
+                --ks-key-alias "${KEY_ALIAS:-gemacast}" \
+                --key-pass stdin --out gemacast-mobile-arm64.apk "$APK_FILE"
+
+          SIGNED_CERT=$("$APKSIGNER" verify --print-certs gemacast-mobile-arm64.apk \
+            | sed -n 's/^Signer #1 certificate SHA-256 digest: //p' | tr 'A-F' 'a-f')
+          EXPECTED_CERT=$(printf '%s' "$EXPECTED_CERT_SHA256" | tr -d ':' | tr 'A-F' 'a-f')
+          echo "Signed certificate SHA-256: ${SIGNED_CERT:-<unreadable>}"
+          echo "Pinned  certificate SHA-256: $EXPECTED_CERT"
+          if [ "$SIGNED_CERT" != "$EXPECTED_CERT" ]; then
+            echo "::error::签名证书与 ANDROID_CERT_SHA256 不符，已中止发布。"
+            echo "::error::检查 ANDROID_KEYSTORE_BASE64 / ANDROID_KEY_ALIAS 是否指向那把固定密钥。"
+            exit 1
+          fi
+          echo "Signature verified against the pinned certificate."
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4

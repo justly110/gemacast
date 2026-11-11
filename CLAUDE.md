@@ -90,6 +90,19 @@ build breaks without it. `rust-toolchain.toml` deliberately omits the Android
 targets — an Android-only CI step adds them, so the other three jobs do not
 download four std libraries they never link.
 
+Release APK signing is **pinned, and CI hard-fails without it**.
+`.github/workflows/build-apk.yml` decodes `ANDROID_KEYSTORE_BASE64` with
+`ANDROID_KEYSTORE_PASSWORD` / `ANDROID_KEY_ALIAS` / `ANDROID_KEY_PASSWORD`
+(passwords reach `apksigner` through stdin, never argv or disk), then compares the
+signed certificate against the `ANDROID_CERT_SHA256` repository variable via
+`apksigner verify --print-certs` and aborts on any mismatch. There is deliberately
+**no debug-keystore fallback**: it generated a fresh key per run, so every build
+produced an APK Android refuses to install over the previous one, forcing each
+upgrade to uninstall and lose pairing state. The keystore is created once by
+[.github/scripts/setup-android-signing.sh](.github/scripts/setup-android-signing.sh)
+and lives outside the repo at `~/.gemacast/gemacast-release.p12` (`.gitignore`
+covers `*.p12`); losing it means losing the ability to ship upgrades forever.
+
 ### CI gates ([ci.yml](.github/workflows/ci.yml))
 
 Six independent jobs; all must pass. `audit` (`rustsec/audit-check`), `frontend`

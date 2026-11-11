@@ -6,6 +6,8 @@ dist/
 # Android / Keystore secrets
 *.jks*
 *.keystore
+*.p12
+*.p12.*
 keystore_b64.txt
 *.apk
 *.aab
