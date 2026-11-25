@@ -28,6 +28,7 @@ mod events;
 mod firewall;
 mod logging;
 mod pc_identity;
+mod session_end;
 mod state;
 pub mod tasks;
 pub mod traits;
@@ -43,6 +44,7 @@ pub mod testing;
 fn main() {
     crash_log::install_panic_hook();
     logging::init();
+    session_end::watch();
 
     // Enforce single instance via file lock.
     let lock_dir = std::env::temp_dir().join("gemacast");

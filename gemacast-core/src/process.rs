@@ -6,6 +6,35 @@
 //! `CREATE_NO_WINDOW` suppresses that.
 
 use std::ffi::OsStr;
+use std::sync::atomic::{AtomicBool, Ordering};
+
+/// Set once the OS begins tearing down this process's session (logoff,
+/// shutdown, console close). While set, no child process may be created.
+///
+/// Windows destroys the window station and desktop before the process is
+/// killed. `CreateProcess` in that window succeeds, but the child dies in the
+/// loader with `STATUS_DLL_INIT_FAILED (0xc0000142)` while user32/gdi32
+/// initialise, and the system paints an "Application Error" dialog over the
+/// shutdown screen. The only fix is not to create the process at all.
+static SHUTDOWN_REQUESTED: AtomicBool = AtomicBool::new(false);
+
+/// Record that the current session is ending; blocks all future child spawns.
+///
+/// Idempotent and safe to call from a window procedure or signal thread.
+pub fn request_shutdown() {
+    SHUTDOWN_REQUESTED.store(true, Ordering::SeqCst);
+}
+
+/// Undo [`request_shutdown`] when the OS cancels a pending session end
+/// (`WM_ENDSESSION` with `wParam == FALSE`).
+pub fn cancel_shutdown_request() {
+    SHUTDOWN_REQUESTED.store(false, Ordering::SeqCst);
+}
+
+/// Whether the session is ending and child processes must not be created.
+pub fn shutdown_requested() -> bool {
+    SHUTDOWN_REQUESTED.load(Ordering::SeqCst)
+}
 
 /// Run the child with no console at all
 /// (`CREATE_NO_WINDOW`, <https://learn.microsoft.com/windows/win32/procthread/process-creation-flags>).

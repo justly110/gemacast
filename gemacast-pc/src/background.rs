@@ -504,7 +504,8 @@ impl EngineReady {
             self.fatal_error_tx.clone(),
         );
 
-        spawn_adb_port_forwarding_watchdog(&mut set, self.adb_shutdown_tx.clone());
+        let adb_watchdog =
+            spawn_adb_port_forwarding_watchdog(self.adb_shutdown_tx.clone());
 
         device_watchdog::spawn_device_watchdog(
             &mut set,
@@ -584,7 +585,11 @@ impl EngineReady {
         }
 
         let _ = control_shutdown_tx.send(());
+        // Wake the ADB tasks, then wait for the forwarding watchdog specifically:
+        // it is the only task that creates adb.exe, and it must not see the
+        // server disappear on the exit path and start a new one.
         let _ = self.adb_shutdown_tx.send(());
+        stop_adb_watchdog(adb_watchdog).await;
 
         let graceful_drain = async {
             while let Some(result) = set.join_next().await {
@@ -608,6 +613,20 @@ impl EngineReady {
         self.tray.notify_shutdown_complete();
 
         tracing::info!("Background engine has fully shut down");
+    }
+}
+
+/// Wait for the ADB forwarding watchdog to observe the shutdown broadcast.
+///
+/// Aborts it if a stuck `adb` command is holding it, so process exit never
+/// waits on the watchdog.
+async fn stop_adb_watchdog(mut watchdog: tokio::task::JoinHandle<()>) {
+    tokio::select! {
+        _ = &mut watchdog => {}
+        _ = tokio::time::sleep(std::time::Duration::from_secs(2)) => {
+            tracing::warn!("ADB forwarding watchdog did not stop in time; aborting it");
+            watchdog.abort();
+        }
     }
 }
 

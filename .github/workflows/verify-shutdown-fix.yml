@@ -1,0 +1,29 @@
+name: Verify shutdown fix (temporary)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Rust Toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: "1.97.1"
+
+      - name: Cache Rust Dependencies
+        uses: Swatinem/rust-cache@v2
+
+      - name: Check gemacast-pc (all targets)
+        run: cargo check --all-targets -p gemacast-pc
+
+      - name: Test adb reverse watchdog
+        run: cargo test -p gemacast-core --lib network::adb::reverse
