@@ -104,6 +104,15 @@ pub async fn kill_adb_server() {
     .await;
 }
 
+/// Keep reverse forwards present while devices stay connected.
+///
+/// Liveness comes from `adb devices` (which starts a server when none is
+/// running) plus the failure state machine below; it deliberately does not
+/// probe port 5037, whose listener can outlive the server for a moment and
+/// would report a dying server as healthy.
+///
+/// The task stops on `tcp_drop_tx` without touching ADB, and refuses to spawn
+/// once [`shutdown_requested`] is set (logoff/shutdown).
 pub fn spawn_adb_port_forwarding_watchdog(
     tcp_drop_tx: tokio::sync::broadcast::Sender<()>,
 ) -> tokio::task::JoinHandle<()> {
@@ -175,7 +184,7 @@ pub fn spawn_adb_port_forwarding_watchdog(
                 }
             }
         }
-    });
+    })
 }
 
 #[derive(Default)]
